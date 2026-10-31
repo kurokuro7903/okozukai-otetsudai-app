@@ -1,0 +1,925 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>お小遣い・お手伝いRPG｜家族みんなで使える公開版</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+--bg:#fdf8ef;
+--bg-soft:#fffdf7;
+--surface:#ffffff;
+--surface-2:#fff6e3;
+--ink:#33302a;
+--ink-soft:#6f6a5e;
+--line:#eadfc8;
+--amber:#f59e0b;
+--amber-deep:#d97706;
+--amber-soft:#fef3c7;
+--teal:#0d9488;
+--teal-deep:#0f766e;
+--teal-soft:#ccfbf1;
+--coral:#e4572e;
+--coral-soft:#fde8e1;
+--gold:#eab308;
+--shadow:0 6px 20px rgba(120,84,20,.10);
+--radius:18px;
+}
+@media (prefers-color-scheme: dark){
+:root{
+--bg:#1c1a16;
+--bg-soft:#221f1a;
+--surface:#2a2721;
+--surface-2:#33291a;
+--ink:#f3ecdd;
+--ink-soft:#b8ae99;
+--line:#453d2f;
+--amber:#fbbf24;
+--amber-deep:#f59e0b;
+--amber-soft:#3d2f10;
+--teal:#2dd4bf;
+--teal-deep:#5eead4;
+--teal-soft:#123b36;
+--coral:#fb8b6a;
+--coral-soft:#40231a;
+--gold:#facc15;
+--shadow:0 6px 20px rgba(0,0,0,.35);
+}
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+margin:0;
+background:var(--bg);
+color:var(--ink);
+font-family:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",sans-serif;
+line-height:1.7;
+-webkit-text-size-adjust:100%;
+}
+h1,h2,h3{font-family:"Zen Maru Gothic","M PLUS Rounded 1c",sans-serif;line-height:1.35;margin:0}
+p{margin:0}
+button{font-family:inherit;cursor:pointer}
+input,select{font-family:inherit}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 64px}
+.lucide{width:1.1em;height:1.1em;vertical-align:-.15em}
+
+/* ---------- intro ---------- */
+.intro{padding:36px 0 8px}
+.intro-badge{
+display:inline-flex;align-items:center;gap:6px;
+background:var(--teal-soft);color:var(--teal-deep);
+font-weight:800;font-size:.82rem;padding:5px 14px;border-radius:999px;
+}
+.intro h1{font-size:clamp(1.7rem,5.5vw,2.6rem);font-weight:900;margin:14px 0 10px}
+.intro h1.hl{color:var(--amber-deep)}
+.intro.lead{font-size:1.02rem;color:var(--ink-soft);max-width:640px}
+.intro-cta{margin-top:20px;display:flex;flex-wrap:wrap;gap:10px}
+.btn{
+display:inline-flex;align-items:center;gap:8px;
+border:none;border-radius:999px;padding:12px 22px;
+font-weight:800;font-size:.98rem;text-decoration:none;
+transition:transform.12s ease, opacity.12s ease;
+}
+.btn:active{transform:scale(.97)}
+.btn-amber{background:var(--amber);color:#fff}
+.btn-ghost{background:var(--surface);color:var(--ink);border:2px solid var(--line)}
+.char-strip{
+margin-top:26px;background:var(--surface);border:2px solid var(--line);
+border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);
+}
+.char-strip h3{font-size:.95rem;margin-bottom:10px;color:var(--ink-soft)}
+.evo-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.evo-cell{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:52px}
+.evo-cell.face{font-size:1.9rem;line-height:1.2}
+.evo-cell.nm{font-size:.68rem;color:var(--ink-soft);font-weight:700;text-align:center}
+.evo-arrow{color:var(--amber);font-weight:900}
+.evo-label{font-weight:900;font-size:.85rem;margin:10px 0 4px}
+.evo-label:first-of-type{margin-top:0}
+
+section.block{margin-top:40px}
+section.block > h2{font-size:1.35rem;font-weight:900;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+section.block >.sub{color:var(--ink-soft);font-size:.94rem;margin-bottom:16px}
+.steps{display:grid;gap:12px}
+@media(min-width:700px){.steps{grid-template-columns:repeat(3,1fr)}}
+.step{
+background:var(--surface);border:2px solid var(--line);border-radius:var(--radius);
+padding:16px;box-shadow:var(--shadow);
+}
+.step.num{
+display:inline-flex;align-items:center;justify-content:center;
+width:28px;height:28px;border-radius:50%;background:var(--amber);color:#fff;
+font-weight:900;font-size:.9rem;margin-bottom:8px;
+}
+.step h3{font-size:1rem;margin-bottom:6px}
+.step p,.step li{font-size:.88rem;color:var(--ink-soft)}
+.step ul{margin:6px 0 0;padding-left:1.1em}
+.safe-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+@media(min-width:700px){.safe-list{grid-template-columns:1fr 1fr}}
+.safe-list li{
+display:flex;gap:10px;align-items:flex-start;background:var(--surface);
+border:2px solid var(--line);border-radius:14px;padding:12px 14px;font-size:.92rem;
+}
+.safe-list.lucide{color:var(--teal);flex:none;margin-top:.25em}
+
+/* ---------- app ---------- */
+.app-shell{
+background:var(--bg-soft);border:2px solid var(--line);border-radius:24px;
+box-shadow:var(--shadow);overflow:hidden;
+}
+.mode-tabs{display:flex;gap:0;border-bottom:2px solid var(--line)}
+.mode-tab{
+flex:1;border:none;background:transparent;padding:14px 8px;
+font-weight:900;font-size:1rem;color:var(--ink-soft);
+display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.mode-tab.active{background:var(--amber-soft);color:var(--amber-deep)}
+.mode-tab.active.parent{background:var(--teal-soft);color:var(--teal-deep)}
+.app-body{padding:18px 16px 22px}
+.empty-note{
+text-align:center;padding:28px 14px;color:var(--ink-soft);
+background:var(--surface);border:2px dashed var(--line);border-radius:var(--radius);
+}
+.empty-note.big{font-size:2.2rem;display:block;margin-bottom:6px}
+.child-switch{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.child-chip{
+border:2px solid var(--line);background:var(--surface);border-radius:999px;
+padding:7px 14px;font-weight:800;font-size:.9rem;color:var(--ink);
+}
+.child-chip.active{border-color:var(--amber);background:var(--amber-soft);color:var(--amber-deep)}
+.hero-card{
+background:var(--surface);border:2px solid var(--line);border-radius:var(--radius);
+padding:18px;text-align:center;box-shadow:var(--shadow);
+}
+.hero-face{font-size:4.4rem;line-height:1.15}
+.hero-name{font-weight:900;font-size:1.15rem}
+.hero-stage{color:var(--amber-deep);font-weight:800;font-size:.9rem}
+.lv-row{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:8px;font-weight:800;font-size:.92rem}
+.lv-row.coin{color:var(--amber-deep)}
+.lv-row.pay{color:var(--teal-deep)}
+.expbar{height:14px;background:var(--surface-2);border:2px solid var(--line);border-radius:999px;overflow:hidden;margin-top:12px}
+.expbar > div{height:100%;background:linear-gradient(90deg,var(--amber),var(--gold));width:0%;transition:width.5s ease}
+.exp-note{font-size:.82rem;color:var(--ink-soft);margin-top:6px}
+.stat-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.stat{
+background:var(--surface-2);border-radius:12px;padding:6px 12px;
+font-size:.82rem;font-weight:800;color:var(--ink-soft);
+}
+.stat b{color:var(--ink)}
+.quest-list{display:grid;gap:10px;margin-top:16px}
+@media(min-width:700px){.quest-list{grid-template-columns:1fr 1fr}}
+.quest{
+background:var(--surface);border:2px solid var(--line);border-radius:var(--radius);
+padding:14px;display:flex;flex-direction:column;gap:8px;
+}
+.quest h3{font-size:1.02rem;display:flex;align-items:center;gap:8px}
+.quest.reward{font-size:.85rem;font-weight:800;color:var(--amber-deep)}
+.quest.reward.exp{color:var(--teal-deep)}
+.quest.actions{display:flex;gap:8px;margin-top:auto}
+.qbtn{
+border:none;border-radius:999px;padding:9px 16px;font-weight:800;font-size:.88rem;
+display:inline-flex;align-items:center;gap:6px;
+}
+.qbtn-done{background:var(--amber);color:#fff}
+.qbtn-wait{background:var(--surface-2);color:var(--ink-soft)}
+.qbtn-approve{background:var(--teal);color:#fff}
+.qbtn-reject{background:var(--surface);color:var(--coral);border:2px solid var(--coral-soft)}
+.qbtn-pay{background:var(--teal);color:#fff}
+.qbtn-small{padding:6px 12px;font-size:.8rem}
+.qbtn-edit{background:var(--surface);border:2px solid var(--line);color:var(--ink-soft)}
+.qbtn-del{background:var(--surface);border:2px solid var(--coral-soft);color:var(--coral)}
+.pending-tag{font-size:.75rem;font-weight:800;background:var(--amber-soft);color:var(--amber-deep);border-radius:999px;padding:2px 10px}
+.log-list{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.log-list li{
+background:var(--surface);border:2px solid var(--line);border-radius:12px;
+padding:9px 13px;font-size:.88rem;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
+}
+.log-list.when{color:var(--ink-soft);font-size:.8rem}
+.app-h{font-size:1.05rem;font-weight:900;margin:20px 0 8px;display:flex;align-items:center;gap:8px}
+.app-h:first-child{margin-top:0}
+
+/* parent */
+.pin-box{max-width:340px;margin:8px auto;text-align:center}
+.pin-dots{display:flex;justify-content:center;gap:10px;margin:14px 0}
+.pin-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--teal);background:transparent}
+.pin-dot.filled{background:var(--teal)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,72px);gap:10px;justify-content:center}
+.pin-key{
+height:56px;border-radius:16px;border:2px solid var(--line);background:var(--surface);
+font-size:1.25rem;font-weight:900;color:var(--ink);
+}
+.pin-key:active{background:var(--teal-soft)}
+.pin-msg{color:var(--coral);font-weight:800;font-size:.88rem;min-height:1.4em}
+.form-card{
+background:var(--surface);border:2px solid var(--line);border-radius:var(--radius);
+padding:16px;margin-top:12px;
+}
+.form-grid{display:grid;gap:10px}
+@media(min-width:700px){.form-grid.cols{grid-template-columns:2fr 1fr 1fr}}
+.field label{display:block;font-size:.8rem;font-weight:800;color:var(--ink-soft);margin-bottom:4px}
+.field input,.field select{
+width:100%;padding:10px 12px;border:2px solid var(--line);border-radius:12px;
+background:var(--bg-soft);color:var(--ink);font-size:.95rem;font-weight:700;
+}
+.chara-pick{display:flex;gap:8px;flex-wrap:wrap}
+.chara-opt{
+border:2px solid var(--line);background:var(--bg-soft);border-radius:14px;
+padding:8px 14px;font-weight:800;font-size:.95rem;color:var(--ink);
+}
+.chara-opt.active{border-color:var(--amber);background:var(--amber-soft)}
+.rec-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.rec-chip{
+border:2px dashed var(--line);background:var(--surface);border-radius:999px;
+padding:6px 12px;font-size:.82rem;font-weight:700;color:var(--ink-soft);
+}
+.rec-chip:hover{border-color:var(--amber);color:var(--amber-deep)}
+.parent-child-card{
+background:var(--surface);border:2px solid var(--line);border-radius:var(--radius);
+padding:14px 16px;margin-top:10px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;
+}
+.parent-child-card.who{font-weight:900}
+.parent-child-card.meta{font-size:.85rem;color:var(--ink-soft)}
+.parent-child-card.due{font-weight:900;color:var(--amber-deep)}
+.toast{
+position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);
+background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:999px;
+font-weight:800;font-size:.9rem;opacity:0;pointer-events:none;transition:all.25s ease;z-index:50;
+max-width:92vw;text-align:center;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.levelup-banner{
+display:none;background:var(--amber-soft);border:2px solid var(--amber);
+border-radius:var(--radius);padding:14px;text-align:center;font-weight:900;
+color:var(--amber-deep);margin-top:14px;font-size:1.02rem;
+}
+.levelup-banner.show{display:block}
+
+/* share texts */
+.share-card{
+background:var(--surface);border:2px solid var(--line);border-radius:var(--radius);
+padding:16px 18px;margin-top:12px;box-shadow:var(--shadow);
+}
+.share-card h3{font-size:.98rem;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.share-card pre{
+white-space:pre-wrap;word-break:break-word;font-family:inherit;
+font-size:.9rem;background:var(--bg-soft);border:2px solid var(--line);
+border-radius:12px;padding:12px 14px;margin:0;color:var(--ink);
+}
+.copy-btn{
+border:none;background:var(--teal);color:#fff;border-radius:999px;
+padding:7px 16px;font-weight:800;font-size:.82rem;display:inline-flex;align-items:center;gap:6px;flex:none;
+}
+footer{margin-top:44px;text-align:center;color:var(--ink-soft);font-size:.82rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ======= 紹介 ======= -->
+<div class="intro">
+<span class="intro-badge"><i data-lucide="sparkles"></i> だれでも無料で使える公開版</span>
+<h1>お手伝いが<span class="hl">冒険</span>になる！<br />お小遣い・お手伝いRPG</h1>
+<p class="lead">
+お皿洗いやお風呂掃除などのお手伝いが、ゲームの「クエスト」に変わる小学生〜中学生向けアプリです。
+クエストをクリアすると経験値（EXP）とお小遣いが貯まって、レベルが上がるごとに相棒キャラクターが進化していきます。
+このページを開けば、どのご家庭でもそのまま使い始められます。
+</p>
+<div class="intro-cta">
+<a class="btn btn-amber" href="#app"><i data-lucide="swords"></i> 今すぐ冒険をはじめる</a>
+<a class="btn btn-ghost" href="#howto"><i data-lucide="book-open"></i> 使い方を見る</a>
+</div>
+
+<div class="char-strip" aria-label="キャラクターの進化">
+<h3>相棒キャラは3種類・全5段階に進化します</h3>
+<div class="evo-label">ドラゴン</div>
+<div class="evo-row" data-evo="dragon"></div>
+<div class="evo-label">ネコ</div>
+<div class="evo-row" data-evo="cat"></div>
+<div class="evo-label">ロボット</div>
+<div class="evo-row" data-evo="robot"></div>
+</div>
+</div>
+
+<section class="block" id="howto">
+<h2><i data-lucide="map"></i> 使い方</h2>
+<p class="sub">最初だけ親が準備して、あとは子どもと親で回していくだけです。</p>
+<div class="steps">
+<div class="step">
+<span class="num">1</span>
+<h3>親が準備する</h3>
+<ul>
+<li>下のアプリで「親画面」を開き、4桁のPIN（暗証番号）を設定</li>
+<li>お子さんの名前と相棒キャラ（ドラゴン／ネコ／ロボット）を登録 ※きょうだいなど複数人OK</li>
+<li>お手伝いクエストを登録（内容・EXP・お小遣いの金額）</li>
+</ul>
+<p style="margin-top:8px">例：お皿洗い ＋10EXP・20円／お風呂掃除 ＋20EXP・50円</p>
+</div>
+<div class="step">
+<span class="num">2</span>
+<h3>子どもが冒険する</h3>
+<ul>
+<li>クエストボードから今日やるお手伝いを選ぶ</li>
+<li>終わったら「できた！」を押す（親の承認待ちになります）</li>
+<li>承認されるとEXPとお小遣いが反映されます</li>
+</ul>
+<p style="margin-top:8px">EXPが貯まるとレベルアップ＆進化！「次の進化まであと○○EXP」も見えるので目標を持って続けられます。</p>
+</div>
+<div class="step">
+<span class="num">3</span>
+<h3>親が確認・お支払い</h3>
+<ul>
+<li>「できた！」クエストを承認／差し戻し</li>
+<li>未払いのお小遣い合計がひと目で分かります</li>
+<li>渡したら「渡した」で記録。いつ・いくら渡したかの履歴も残ります</li>
+</ul>
+</div>
+</div>
+</section>
+
+<section class="block">
+<h2><i data-lucide="shield-check"></i> 安心ポイント</h2>
+<ul class="safe-list">
+<li><i data-lucide="lock"></i><span>親画面は4桁PINでロック。金額の設定や承認は親だけができます。</span></li>
+<li><i data-lucide="ban"></i><span>広告・課金・外部とのやり取りは一切ありません。</span></li>
+<li><i data-lucide="users"></i><span>きょうだいで別々に登録でき、それぞれのレベルとお小遣いを管理できます。</span></li>
+<li><i data-lucide="flame"></i><span>連続でがんばった日数やクリア回数も記録され、続ける励みになります。</span></li>
+</ul>
+</section>
+
+<!-- ======= アプリ本体 ======= -->
+<section class="block" id="app">
+<h2><i data-lucide="gamepad-2"></i> アプリ本体</h2>
+<p class="sub">開いたらすぐ使えます。まずは「親画面」でPIN設定とお子さんの登録からどうぞ。</p>
+
+<div class="app-shell">
+<div class="mode-tabs" role="tablist">
+<button class="mode-tab active" id="tab-child" role="tab"><i data-lucide="swords"></i> 子ども画面</button>
+<button class="mode-tab parent" id="tab-parent" role="tab"><i data-lucide="lock"></i> 親画面</button>
+</div>
+<div class="app-body">
+<div id="view-child"></div>
+<div id="view-parent" style="display:none"></div>
+</div>
+</div>
+</section>
+
+<!-- ======= 紹介文 ======= -->
+<section class="block" id="share">
+<h2><i data-lucide="megaphone"></i> 紹介文（コピーして使えます）</h2>
+<p class="sub">SNS投稿やお友達への紹介に、そのまま貼って使える文章です。</p>
+
+<div class="share-card">
+<h3>詳しく紹介したいとき（長文）
+<button class="copy-btn" data-copy="share-long"><i data-lucide="copy"></i> コピー</button>
+</h3>
+<pre id="share-long">お手伝いが冒険になる！お小遣い・お手伝いRPG
+
+お手伝いをゲームの「クエスト」に変える、小学生〜中学生向けのお小遣いアプリです。
+クエストをクリアすると経験値（EXP）とお小遣いが貯まって、レベルが上がるごとに相棒キャラクターが進化していきます。
+
+
+クエストボードからお手伝いを選んで、終わったら「できた！」を押すだけ。親が承認するとEXPとお小遣いが反映されます。キャラはドラゴン／ネコ／ロボットの3種類から選べて、全5段階に進化。「次の進化まであと○○EXP」が見えるので、目標を持って続けられます。
+
+
+親画面は4桁PINでロック。子どもの登録、クエストの追加・編集、承認、未払いのお小遣い確認と「渡した」記録ができます。
+
+
+・金額の設定や承認は親だけ（PINロック）
+・広告・課金・外部とのやり取りはなし
+・きょうだいなど複数人の登録もできます
+
+お手伝いが「やらされるもの」から「進化させたいからやるもの」に。家族で冒険を始めてみてください！</pre>
+</div>
+
+<div class="share-card">
+<h3>SNS用・A案（紹介メイン）
+<button class="copy-btn" data-copy="share-a"><i data-lucide="copy"></i> コピー</button>
+</h3>
+<pre id="share-a">お手伝いが「冒険」になるアプリを作りました⚔️
+
+お皿洗いなどのお手伝いがクエストに！
+クリアでEXPとお小遣いが貯まり、レベルアップで相棒キャラが5段階に進化🐉
+
+承認と金額設定は親だけ（PINロック）、広告・課金なしで家庭内で安全に使えます
+
+#子育て #お手伝い #アプリ開発</pre>
+</div>
+
+<div class="share-card">
+<h3>SNS用・B案（短め・インパクト重視）
+<button class="copy-btn" data-copy="share-b"><i data-lucide="copy"></i> コピー</button>
+</h3>
+<pre id="share-b">「お手伝いして」って言わなくてよくなるかも？
+
+お手伝い＝クエスト、お小遣い＝報酬、レベルアップでキャラが進化するRPGアプリを作りました🎮
+
+「進化させたいからやる！」が狙いです
+
+#子育て #お小遣い</pre>
+</div>
+</section>
+
+<footer>お小遣い・お手伝いRPG ― 家族みんなの冒険を応援します</footer>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ============ データ定義 ============ */
+var CHARACTERS = {
+dragon: { label: "ドラゴン", stages: [
+{ face: "🥚", name: "たまご"},
+{ face: "🦎", name: "ベビードラゴン"},
+{ face: "🐲", name: "こどもドラゴン"},
+{ face: "🐉", name: "ドラゴン"},
+{ face: "👑🐉", name: "ドラゴンロード"}
+]},
+cat: { label: "ネコ", stages: [
+{ face: "🥚", name: "たまご"},
+{ face: "🐱", name: "こねこ"},
+{ face: "🐈", name: "ねこ"},
+{ face: "😼", name: "かっこいいねこ"},
+{ face: "🦁", name: "ライオンキング"}
+]},
+robot: { label: "ロボット", stages: [
+{ face: "📦", name: "ナゾのはこ"},
+{ face: "🤖", name: "ちびロボ"},
+{ face: "🦾🤖", name: "パワーロボ"},
+{ face: "🚀🤖", name: "ロケットロボ"},
+{ face: "👑🤖", name: "ロボキング"}
+]}
+};
+/* レベル到達に必要な累計EXP（Lv1=0） */
+var LEVEL_EXP = [0, 30, 70, 120, 180, 250, 330, 420, 520, 630, 750, 880];
+var MAX_LEVEL = LEVEL_EXP.length;
+function levelOf(exp){
+var lv = 1;
+for (var i = 0; i < LEVEL_EXP.length; i++){ if (exp >= LEVEL_EXP[i]) lv = i + 1;}
+return lv;
+}
+function stageOf(level){
+if (level >= 12) return 5;
+if (level >= 8) return 4;
+if (level >= 5) return 3;
+if (level >= 3) return 2;
+return 1;
+}
+var RECOMMENDED = [
+{ name: "お皿洗い", exp: 10, coins: 20},
+{ name: "お風呂掃除", exp: 20, coins: 50},
+{ name: "洗濯物をたたむ", exp: 10, coins: 20},
+{ name: "ゴミ出し", exp: 10, coins: 30},
+{ name: "玄関の靴をそろえる", exp: 5, coins: 10},
+{ name: "テーブルをふく", exp: 5, coins: 10},
+{ name: "お部屋の片づけ", exp: 15, coins: 30},
+{ name: "買い物のお手伝い", exp: 15, coins: 40}
+];
+
+/* ============ 状態 ============ */
+var state = {
+pin: null,
+parentUnlocked: false,
+children: [], /* {id,name,chara,exp,earned(total coins),unpaid,streak,lastClear,clears,log:[{quest,exp,coins,when}]} */
+quests: [], /* {id,name,exp,coins} */
+pending: [], /* {id,childId,questId,questName,exp,coins,when} */
+payments: [], /* {childName,amount,when} */
+activeChildId: null
+};
+var uid = 1;
+function nextId(){ return uid++;}
+function todayStr(d){
+d = d || new Date();
+return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+}
+function fmtDate(iso){
+var d = new Date(iso);
+return (d.getMonth() + 1) + "/" + d.getDate() + " " +
+("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+}
+function esc(s){
+return String(s).replace(/[&<>"']/g, function(c){
+return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c];
+});
+}
+function toast(msg){
+var t = document.getElementById("toast");
+t.textContent = msg;
+t.classList.add("show");
+setTimeout(function(){ t.classList.remove("show");}, 2600);
+}
+function childById(id){
+for (var i = 0; i < state.children.length; i++) if (state.children[i].id === id) return state.children[i];
+return null;
+}
+function refreshIcons(){ if (window.lucide) lucide.createIcons();}
+
+/* ============ 進化ストリップ（紹介） ============ */
+Object.keys(CHARACTERS).forEach(function(key){
+var row = document.querySelector('[data-evo="' + key + '"]');
+if (!row) return;
+row.innerHTML = CHARACTERS[key].stages.map(function(s, i){
+return (i > 0? '<span class="evo-arrow">→</span>': '') +
+'<span class="evo-cell"><span class="face">' + s.face + '</span><span class="nm">' + s.name + '</span></span>';
+}).join("");
+});
+
+/* ============ 子ども画面 ============ */
+var viewChild = document.getElementById("view-child");
+var viewParent = document.getElementById("view-parent");
+
+function renderChild(){
+if (state.children.length === 0){
+viewChild.innerHTML =
+'<div class="empty-note"><span class="big">🥚</span>' +
+'まだ冒険者が登録されていません。<br>最初に「親画面」でPINを設定して、お子さんを登録してください。</div>';
+refreshIcons(); return;
+}
+if (!childById(state.activeChildId)) state.activeChildId = state.children[0].id;
+var c = childById(state.activeChildId);
+var lv = levelOf(c.exp);
+var st = stageOf(lv);
+var stage = CHARACTERS[c.chara].stages[st - 1];
+var nextLvExp = lv < MAX_LEVEL? LEVEL_EXP[lv]: null;
+var curBase = LEVEL_EXP[lv - 1];
+var pct = nextLvExp? Math.min(100, Math.round((c.exp - curBase) / (nextLvExp - curBase) * 100)): 100;
+var nextStageLv = st === 1? 3: st === 2? 5: st === 3? 8: st === 4? 12: null;
+var toEvolve = nextStageLv? (LEVEL_EXP[nextStageLv - 1] - c.exp): 0;
+
+var chips = state.children.map(function(k){
+return '<button class="child-chip' + (k.id === c.id? ' active': '') + '" data-switch="' + k.id + '">' +
+CHARACTERS[k.chara].stages[stageOf(levelOf(k.exp)) - 1].face + ' ' + esc(k.name) + '</button>';
+}).join("");
+
+var questsHtml;
+if (state.quests.length === 0){
+questsHtml = '<div class="empty-note"><span class="big">🗺️</span>クエストがまだありません。<br>「親画面」からクエストを登録してください。</div>';
+} else {
+questsHtml = '<div class="quest-list">' + state.quests.map(function(q){
+var mine = state.pending.filter(function(p){ return p.childId === c.id && p.questId === q.id;});
+var btn = mine.length
+? '<span class="pending-tag">承認待ち ×' + mine.length + '</span> <button class="qbtn qbtn-done" data-done="' + q.id + '">もう1回できた！</button>'
+: '<button class="qbtn qbtn-done" data-done="' + q.id + '"><i data-lucide="check"></i> できた！</button>';
+return '<div class="quest"><h3><i data-lucide="scroll"></i> ' + esc(q.name) + '</h3>' +
+'<p class="reward"><span class="exp">＋' + q.exp + ' EXP</span> ／ <span>＋' + q.coins + '円</span></p>' +
+'<div class="actions">' + btn + '</div></div>';
+}).join("") + '</div>';
+}
+
+var logHtml = "";
+if (c.log.length){
+logHtml = '<h3 class="app-h"><i data-lucide="trophy"></i> クリア記録</h3><ul class="log-list">' +
+c.log.slice(0, 10).map(function(l){
+return '<li><span>⚔️ ' + esc(l.quest) + '（＋' + l.exp + 'EXP・' + l.coins + '円）</span><span class="when">' + fmtDate(l.when) + '</span></li>';
+}).join("") + '</ul>';
+}
+
+viewChild.innerHTML =
+'<div class="child-switch">' + chips + '</div>' +
+'<div class="hero-card">' +
+'<div class="hero-face">' + stage.face + '</div>' +
+'<div class="hero-name">' + esc(c.name) + '</div>' +
+'<div class="hero-stage">' + CHARACTERS[c.chara].label + '「' + stage.name + '」（進化 ' + st + ' / 5）</div>' +
+'<div class="lv-row"><span>⭐ Lv.' + lv + '</span><span class="coin">💰 未払い ' + c.unpaid + '円</span><span class="pay">🏦 もらった合計 ' + (c.earned - c.unpaid) + '円</span></div>' +
+'<div class="expbar"><div style="width:' + pct + '%"></div></div>' +
+'<p class="exp-note">' + (nextLvExp
+? '次のレベルまで あと ' + (nextLvExp - c.exp) + ' EXP' + (nextStageLv? ' ／ 次の進化まで あと ' + toEvolve + ' EXP': '')
+: '最高レベル到達！すごい！') + '</p>' +
+'<div class="stat-row">' +
+'<span class="stat">🔥 連続がんばり <b>' + c.streak + '日</b></span>' +
+'<span class="stat">⚔️ クリア回数 <b>' + c.clears + '回</b></span>' +
+'<span class="stat">✨ 累計EXP <b>' + c.exp + '</b></span>' +
+'</div>' +
+'</div>' +
+'<div class="levelup-banner" id="levelup-banner"></div>' +
+'<h3 class="app-h"><i data-lucide="map"></i> クエストボード</h3>' +
+questsHtml + logHtml;
+refreshIcons();
+}
+
+/* ============ 親画面 ============ */
+var pinEntry = "";
+var pinConfirm = null; /* 設定時の確認用 */
+
+function renderParent(){
+if (!state.pin){
+renderPinSetup(); return;
+}
+if (!state.parentUnlocked){
+renderPinLock(); return;
+}
+renderParentMain();
+}
+function pinDots(n){
+var s = '<div class="pin-dots">';
+for (var i = 0; i < 4; i++) s += '<span class="pin-dot' + (i < n? ' filled': '') + '"></span>';
+return s + '</div>';
+}
+function pinPadHTML(){
+var keys = ["1","2","3","4","5","6","7","8","9","","0","⌫"];
+return '<div class="pin-pad">' + keys.map(function(k){
+if (k === "") return '<span></span>';
+return '<button class="pin-key" data-pin="' + k + '">' + k + '</button>';
+}).join("") + '</div>';
+}
+function renderPinSetup(){
+viewParent.innerHTML =
+'<div class="pin-box"><h3 class="app-h" style="justify-content:center"><i data-lucide="key-round"></i> 親PINの設定</h3>' +
+'<p style="color:var(--ink-soft);font-size:.9rem">' + (pinConfirm === null? '4桁のPINを決めてください。金額の設定や承認は、このPINがないと開けません。': '確認のため、もう一度同じPINを入力してください。') + '</p>' +
+pinDots(pinEntry.length) + '<p class="pin-msg" id="pin-msg"></p>' + pinPadHTML() + '</div>';
+refreshIcons();
+}
+function renderPinLock(){
+viewParent.innerHTML =
+'<div class="pin-box"><h3 class="app-h" style="justify-content:center"><i data-lucide="lock"></i> 親PINを入力</h3>' +
+pinDots(pinEntry.length) + '<p class="pin-msg" id="pin-msg"></p>' + pinPadHTML() + '</div>';
+refreshIcons();
+}
+function handlePinKey(k){
+if (k === "⌫"){ pinEntry = pinEntry.slice(0, -1); renderParent(); return;}
+if (pinEntry.length >= 4) return;
+pinEntry += k;
+if (pinEntry.length < 4){ renderParent(); return;}
+var entered = pinEntry; pinEntry = "";
+if (!state.pin){
+if (pinConfirm === null){ pinConfirm = entered; renderParent(); return;}
+if (pinConfirm === entered){
+state.pin = entered; pinConfirm = null; state.parentUnlocked = true;
+toast("PINを設定しました"); renderParent();
+} else {
+pinConfirm = null; renderParent();
+var m = document.getElementById("pin-msg");
+if (m) m.textContent = "PINが一致しませんでした。最初から入力してください。";
+}
+return;
+}
+if (entered === state.pin){
+state.parentUnlocked = true; renderParent();
+} else {
+renderParent();
+var m2 = document.getElementById("pin-msg");
+if (m2) m2.textContent = "PINが違います。";
+}
+}
+
+function renderParentMain(){
+var pendingHtml;
+if (state.pending.length === 0){
+pendingHtml = '<div class="empty-note"><span class="big">📭</span>承認待ちのクエストはありません。</div>';
+} else {
+pendingHtml = '<div class="quest-list">' + state.pending.map(function(p){
+var k = childById(p.childId);
+return '<div class="quest"><h3><i data-lucide="hourglass"></i> ' + esc(p.questName) + '</h3>' +
+'<p class="reward">' + esc(k? k.name: '?') + ' さん ／ <span class="exp">＋' + p.exp + ' EXP</span>・＋' + p.coins + '円</p>' +
+'<p style="font-size:.8rem;color:var(--ink-soft)">' + fmtDate(p.when) + ' に「できた！」</p>' +
+'<div class="actions"><button class="qbtn qbtn-approve" data-approve="' + p.id + '"><i data-lucide="badge-check"></i> 承認する</button>' +
+'<button class="qbtn qbtn-reject" data-reject="' + p.id + '">差し戻す</button></div></div>';
+}).join("") + '</div>';
+}
+
+var childrenHtml;
+if (state.children.length === 0){
+childrenHtml = '<div class="empty-note"><span class="big">🥚</span>まだ登録がありません。下のフォームから登録してください。</div>';
+} else {
+childrenHtml = state.children.map(function(c){
+return '<div class="parent-child-card"><div><span class="who">' +
+CHARACTERS[c.chara].stages[stageOf(levelOf(c.exp)) - 1].face + ' ' + esc(c.name) + '</span>' +
+'<div class="meta">Lv.' + levelOf(c.exp) + ' ／ 累計 ' + c.earned + '円 ／ クリア ' + c.clears + '回</div></div>' +
+'<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span class="due">未払い ' + c.unpaid + '円</span>' +
+(c.unpaid > 0? '<button class="qbtn qbtn-pay" data-pay="' + c.id + '"><i data-lucide="hand-coins"></i> 渡した</button>': '') +
+'<button class="qbtn qbtn-del qbtn-small" data-delchild="' + c.id + '">削除</button></div></div>';
+}).join("");
+}
+
+var questsHtml;
+if (state.quests.length === 0){
+questsHtml = '<div class="empty-note"><span class="big">🗺️</span>クエストがまだありません。下のおすすめから追加するか、自分で作ってください。</div>';
+} else {
+questsHtml = state.quests.map(function(q){
+return '<div class="parent-child-card"><div><span class="who">⚔️ ' + esc(q.name) + '</span>' +
+'<div class="meta">＋' + q.exp + ' EXP ／ ＋' + q.coins + '円</div></div>' +
+'<button class="qbtn qbtn-del qbtn-small" data-delquest="' + q.id + '">削除</button></div>';
+}).join("");
+}
+
+var recHtml = RECOMMENDED.map(function(r, i){
+return '<button class="rec-chip" data-rec="' + i + '">＋ ' + esc(r.name) + '（' + r.exp + 'EXP・' + r.coins + '円）</button>';
+}).join("");
+
+var payHtml = "";
+if (state.payments.length){
+payHtml = '<h3 class="app-h"><i data-lucide="history"></i> お小遣いを渡した記録</h3><ul class="log-list">' +
+state.payments.slice(0, 10).map(function(p){
+return '<li><span>💰 ' + esc(p.childName) + ' さんに ' + p.amount + '円</span><span class="when">' + fmtDate(p.when) + '</span></li>';
+}).join("") + '</ul>';
+}
+
+viewParent.innerHTML =
+'<div style="display:flex;justify-content:flex-end"><button class="qbtn qbtn-edit" id="btn-lock"><i data-lucide="lock"></i> 親画面をロック</button></div>' +
+
+'<h3 class="app-h"><i data-lucide="hourglass"></i> 承認待ち</h3>' + pendingHtml +
+
+'<h3 class="app-h"><i data-lucide="users"></i> 子どもの登録・お小遣い</h3>' + childrenHtml +
+'<div class="form-card"><h3 style="font-size:.98rem;margin-bottom:10px">子どもを追加</h3>' +
+'<div class="form-grid">' +
+'<div class="field"><label>名前</label><input id="f-child-name" type="text" placeholder="例：はると" maxlength="12" /></div>' +
+'<div class="field"><label>相棒キャラ</label><div class="chara-pick" id="f-child-chara">' +
+Object.keys(CHARACTERS).map(function(key, i){
+return '<button class="chara-opt' + (i === 0? ' active': '') + '" data-chara="' + key + '">' + CHARACTERS[key].stages[2].face + ' ' + CHARACTERS[key].label + '</button>';
+}).join("") +
+'</div></div>' +
+'<div><button class="qbtn qbtn-approve" id="btn-add-child"><i data-lucide="user-plus"></i> 登録する</button></div>' +
+'</div></div>' +
+
+'<h3 class="app-h"><i data-lucide="scroll"></i> クエスト管理</h3>' + questsHtml +
+'<div class="form-card"><h3 style="font-size:.98rem">おすすめクエストから追加</h3><div class="rec-list">' + recHtml + '</div>' +
+'<h3 style="font-size:.98rem;margin-top:16px">クエストを自分で作る</h3>' +
+'<div class="form-grid cols" style="margin-top:8px">' +
+'<div class="field"><label>クエスト名</label><input id="f-quest-name" type="text" placeholder="例：洗濯物を干す" maxlength="20" /></div>' +
+'<div class="field"><label>EXP</label><input id="f-quest-exp" type="number" min="1" max="999" value="10" /></div>' +
+'<div class="field"><label>お小遣い（円）</label><input id="f-quest-coins" type="number" min="0" max="100000" value="20" /></div>' +
+'</div>' +
+'<div style="margin-top:10px"><button class="qbtn qbtn-approve" id="btn-add-quest"><i data-lucide="plus"></i> クエストを追加</button></div>' +
+'</div>' +
+payHtml;
+refreshIcons();
+bindParentMain();
+}
+
+var newChildChara = "dragon";
+function bindParentMain(){
+document.getElementById("btn-lock").addEventListener("click", function(){
+state.parentUnlocked = false; pinEntry = ""; renderParent(); toast("親画面をロックしました");
+});
+var pick = document.getElementById("f-child-chara");
+if (pick){
+newChildChara = "dragon";
+pick.addEventListener("click", function(e){
+var b = e.target.closest("[data-chara]");
+if (!b) return;
+newChildChara = b.getAttribute("data-chara");
+pick.querySelectorAll(".chara-opt").forEach(function(o){ o.classList.toggle("active", o === b);});
+});
+}
+document.getElementById("btn-add-child").addEventListener("click", function(){
+var name = document.getElementById("f-child-name").value.trim();
+if (!name){ toast("名前を入力してください"); return;}
+var c = { id: nextId(), name: name, chara: newChildChara, exp: 0, earned: 0, unpaid: 0, streak: 0, lastClear: null, clears: 0, log: []};
+state.children.push(c);
+if (!state.activeChildId) state.activeChildId = c.id;
+toast(name + " さんを登録しました"); renderParent(); renderChild();
+});
+document.getElementById("btn-add-quest").addEventListener("click", function(){
+var name = document.getElementById("f-quest-name").value.trim();
+var exp = parseInt(document.getElementById("f-quest-exp").value, 10);
+var coins = parseInt(document.getElementById("f-quest-coins").value, 10);
+if (!name){ toast("クエスト名を入力してください"); return;}
+if (!(exp > 0)){ toast("EXPは1以上にしてください"); return;}
+if (!(coins >= 0)){ toast("お小遣いは0円以上にしてください"); return;}
+state.quests.push({ id: nextId(), name: name, exp: exp, coins: coins});
+toast("クエストを追加しました"); renderParent(); renderChild();
+});
+}
+
+/* ============ イベント（委任） ============ */
+document.addEventListener("click", function(e){
+var pinKey = e.target.closest("[data-pin]");
+if (pinKey){ handlePinKey(pinKey.getAttribute("data-pin")); return;}
+
+var sw = e.target.closest("[data-switch]");
+if (sw){ state.activeChildId = parseInt(sw.getAttribute("data-switch"), 10); renderChild(); return;}
+
+var done = e.target.closest("[data-done]");
+if (done){
+var qid = parseInt(done.getAttribute("data-done"), 10);
+var q = null;
+state.quests.forEach(function(x){ if (x.id === qid) q = x;});
+var c = childById(state.activeChildId);
+if (q && c){
+state.pending.push({ id: nextId(), childId: c.id, questId: q.id, questName: q.name, exp: q.exp, coins: q.coins, when: new Date().toISOString()});
+toast("「" + q.name + "」を報告しました。親の承認を待ってね！");
+renderChild();
+}
+return;
+}
+
+var ap = e.target.closest("[data-approve]");
+if (ap){
+var pid = parseInt(ap.getAttribute("data-approve"), 10);
+var idx = -1, p = null;
+state.pending.forEach(function(x, i){ if (x.id === pid){ idx = i; p = x;}});
+if (p){
+var kid = childById(p.childId);
+state.pending.splice(idx, 1);
+if (kid){
+var beforeLv = levelOf(kid.exp);
+var beforeStage = stageOf(beforeLv);
+kid.exp += p.exp; kid.earned += p.coins; kid.unpaid += p.coins; kid.clears += 1;
+var t = todayStr();
+if (kid.lastClear!== t){
+var y = new Date(); y.setDate(y.getDate() - 1);
+kid.streak = (kid.lastClear === todayStr(y))? kid.streak + 1: 1;
+kid.lastClear = t;
+}
+kid.log.unshift({ quest: p.questName, exp: p.exp, coins: p.coins, when: new Date().toISOString()});
+var afterLv = levelOf(kid.exp);
+var afterStage = stageOf(afterLv);
+renderParent(); renderChild();
+if (afterStage > beforeStage){
+toast("🎉 " + kid.name + " さんのキャラが進化しました！");
+var b = document.getElementById("levelup-banner");
+if (b){ b.textContent = "🎉 進化！ " + CHARACTERS[kid.chara].stages[afterStage - 1].face + "「" + CHARACTERS[kid.chara].stages[afterStage - 1].name + "」になりました！"; b.classList.add("show");}
+} else if (afterLv > beforeLv){
+toast("⭐ " + kid.name + " さんが Lv." + afterLv + " にレベルアップ！");
+} else {
+toast("承認しました（＋" + p.exp + "EXP・" + p.coins + "円）");
+}
+}
+}
+return;
+}
+
+var rj = e.target.closest("[data-reject]");
+if (rj){
+var rid = parseInt(rj.getAttribute("data-reject"), 10);
+state.pending = state.pending.filter(function(x){ return x.id!== rid;});
+toast("差し戻しました"); renderParent(); renderChild(); return;
+}
+
+var pay = e.target.closest("[data-pay]");
+if (pay){
+var kid2 = childById(parseInt(pay.getAttribute("data-pay"), 10));
+if (kid2 && kid2.unpaid > 0){
+state.payments.unshift({ childName: kid2.name, amount: kid2.unpaid, when: new Date().toISOString()});
+toast(kid2.name + " さんに " + kid2.unpaid + "円を渡した記録をつけました");
+kid2.unpaid = 0;
+renderParent(); renderChild();
+}
+return;
+}
+
+var dc = e.target.closest("[data-delchild]");
+if (dc){
+var did = parseInt(dc.getAttribute("data-delchild"), 10);
+state.children = state.children.filter(function(x){ return x.id!== did;});
+state.pending = state.pending.filter(function(x){ return x.childId!== did;});
+if (state.activeChildId === did) state.activeChildId = state.children.length? state.children[0].id: null;
+toast("登録を削除しました"); renderParent(); renderChild(); return;
+}
+
+var dq = e.target.closest("[data-delquest]");
+if (dq){
+var qid2 = parseInt(dq.getAttribute("data-delquest"), 10);
+state.quests = state.quests.filter(function(x){ return x.id!== qid2;});
+toast("クエストを削除しました"); renderParent(); renderChild(); return;
+}
+
+var rec = e.target.closest("[data-rec]");
+if (rec){
+var r = RECOMMENDED[parseInt(rec.getAttribute("data-rec"), 10)];
+state.quests.push({ id: nextId(), name: r.name, exp: r.exp, coins: r.coins});
+toast("「" + r.name + "」を追加しました"); renderParent(); renderChild(); return;
+}
+
+var cp = e.target.closest("[data-copy]");
+if (cp){
+var el = document.getElementById(cp.getAttribute("data-copy"));
+var text = el? el.textContent: "";
+var doneMsg = function(){ toast("紹介文をコピーしました");};
+if (navigator.clipboard && navigator.clipboard.writeText){
+navigator.clipboard.writeText(text).then(doneMsg, function(){ fallbackCopy(text); doneMsg();});
+} else { fallbackCopy(text); doneMsg();}
+return;
+}
+});
+function fallbackCopy(text){
+var ta = document.createElement("textarea");
+ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+document.body.appendChild(ta); ta.select();
+try { document.execCommand("copy");} catch (err) {}
+document.body.removeChild(ta);
+}
+
+/* ============ 画面切り替え ============ */
+var tabChild = document.getElementById("tab-child");
+var tabParent = document.getElementById("tab-parent");
+function showMode(mode){
+var isChild = mode === "child";
+viewChild.style.display = isChild? "": "none";
+viewParent.style.display = isChild? "none": "";
+tabChild.classList.toggle("active", isChild);
+tabParent.classList.toggle("active",!isChild);
+if (!isChild) renderParent(); else renderChild();
+}
+tabChild.addEventListener("click", function(){ showMode("child");});
+tabParent.addEventListener("click", function(){ showMode("parent");});
+
+renderChild();
+refreshIcons();
+</script>
+</body>
+</html>
