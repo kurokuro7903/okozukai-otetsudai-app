@@ -21,6 +21,8 @@ header{background:#16a34a;color:#fff;padding:16px;position:sticky;top:0;z-index:
 .bars{display:flex;align-items:flex-end;gap:8px;height:110px;margin-top:12px;position:relative;border-bottom:2px solid #bbf7d0}
 .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}.bar{width:70%;background:#22c55e;border-radius:6px 6px 0 0;min-height:2px}.bar-col small{font-size:12px}
 .avg-line{position:absolute;left:0;right:0;border-top:2px dashed #f59e0b;pointer-events:none}
+.bars.big{height:160px}.bar.max{background:#f97316}.bar-num{font-size:14px;font-weight:700;color:#14532d}.bar-num.max{color:#ea580c}
+.rank-row{display:flex;align-items:center;gap:8px;margin:7px 0}.rank-day{width:52px;font-weight:700}.rank-track{flex:1;background:#f0fdf4;border-radius:8px;height:22px;overflow:hidden}.rank-fill{height:100%;background:#22c55e;border-radius:8px;min-width:2px}.rank-fill.max{background:#f97316}.rank-val{width:86px;text-align:right;font-size:13px}
 .days{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
 .day{border:1px solid #bbf7d0;border-radius:10px;padding:10px;text-align:center;background:#fbfdfc;cursor:pointer}.day:active{background:#dcfce7}.day b{display:block;font-size:16px}.day .total{font-size:20px;font-weight:700;color:#15803d}.day .cnt{font-size:11px;color:#666}
 button{border:0;border-radius:10px;padding:10px 14px;font-size:15px;background:#16a34a;color:#fff;cursor:pointer}button.sub{background:#e5e7eb;color:#111}button.danger{background:#fee2e2;color:#991b1b}button.small{padding:6px 10px;font-size:13px}
@@ -42,8 +44,16 @@ dialog{border:0;border-radius:14px;padding:18px;width:min(92vw,480px)}dialog::ba
       <div class="stat"><b id="allDaily">0</b><span>1日平均（÷6）</span></div>
       <div class="stat"><b id="allColl">0</b><span>回収日平均</span></div>
     </div>
-    <div class="bars" id="allBars"></div>
     <p class="muted">曜日をタップすると、その施設・曜日の入力（1回目・2回目…）を追加・編集できます。入力はこのiPhoneの中に保存されます。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="margin:0 0 6px">曜日別グラフ（全施設）</h2>
+    <p id="graphSummary" style="margin:0 0 6px;font-weight:700;color:#ea580c"></p>
+    <div class="bars big" id="weekGraph"></div>
+    <p class="muted" style="margin:6px 0 0">オレンジの破線は1日平均です。一番多い曜日はオレンジ色で表示します。</p>
+    <h3 style="margin:16px 0 8px">多い曜日ランキング</h3>
+    <div id="weekRank"></div>
   </div>
 
   <div class="card">
@@ -68,7 +78,7 @@ dialog{border:0;border-radius:14px;padding:18px;width:min(92vw,480px)}dialog::ba
   </div>
 
   <div id="list"></div>
-  <p class="muted" style="text-align:center;padding:12px">データはこの端末のブラウザに保存されます。<br>ホーム画面のアイコンから開いて使ってください。<br>バージョン3（施設名・比較一覧タップで入力できます）</p>
+  <p class="muted" style="text-align:center;padding:12px">データはこの端末のブラウザに保存されます。<br>ホーム画面のアイコンから開いて使ってください。<br>バージョン4（曜日別グラフつき）</p>
 </div>
 
 <dialog id="facEditor">
@@ -112,7 +122,11 @@ function render(){
   document.getElementById("allColl").textContent=collCnt?fmt(collSum/collCnt):"0";
   const max=Math.max(1,...DAYS.map(([d])=>perDay[d]));
   const dailyAvg=all/6;
-  document.getElementById("allBars").innerHTML=DAYS.map(([d,l])=>`<div class="bar-col"><div class="bar" style="height:${Math.max(3,perDay[d]/max*78)}px"></div><small>${l}<br>${perDay[d]}袋</small></div>`).join("")+(dailyAvg?`<div class="avg-line" style="bottom:${18+dailyAvg/max*78}px"></div>`:"");
+  const maxDays=DAYS.filter(([d])=>perDay[d]===max&&max>0).map(([,l])=>l+"曜日");
+  document.getElementById("graphSummary").textContent=all>0?`一番多いのは ${maxDays.join("・")}（${max}袋）です`:"まだ入力がありません。入力すると一番多い曜日が分かります。";
+  document.getElementById("weekGraph").innerHTML=DAYS.map(([d,l])=>{const isMax=perDay[d]===max&&max>0;return `<div class="bar-col"><div class="bar-num ${isMax?"max":""}">${perDay[d]}袋</div><div class="bar ${isMax?"max":""}" style="height:${Math.max(3,perDay[d]/max*104)}px"></div><small style="font-weight:${isMax?"700":"400"}">${l}${isMax?" ★":""}</small></div>`}).join("")+(dailyAvg?`<div class="avg-line" style="bottom:${20+dailyAvg/max*104}px"></div>`:"");
+  const ranked=[...DAYS].sort((a,b)=>perDay[b[0]]-perDay[a[0]]);
+  document.getElementById("weekRank").innerHTML=ranked.map(([d,l],idx)=>{const v=perDay[d];const pct=all?Math.round(v/all*100):0;const isMax=v===max&&max>0;return `<div class="rank-row"><div class="rank-day">${idx+1}位 ${l}</div><div class="rank-track"><div class="rank-fill ${isMax?"max":""}" style="width:${Math.max(2,v/max*100)}%"></div></div><div class="rank-val">${v}袋（${pct}%）</div></div>`}).join("");
   const sorted=data.facilities.map((f,i)=>({f,i})).sort((a,b)=>facTotal(b.f)-facTotal(a.f));
   document.getElementById("compBody").innerHTML=sorted.map(({f,i})=>{const t=facTotal(f),c=collDays(f);return `<tr onclick="openFacInput(${i})" style="cursor:pointer"><td style="color:#15803d;font-weight:600;text-decoration:underline;text-underline-offset:3px">${esc(f.name)}</td><td>${t}</td><td>${fmt(t/6)}</td><td>${c?fmt(t/c):"-"}</td></tr>`}).join("")||`<tr><td colspan="4">施設がありません</td></tr>`;
   document.getElementById("list").innerHTML=data.facilities.map((f,fi)=>{
