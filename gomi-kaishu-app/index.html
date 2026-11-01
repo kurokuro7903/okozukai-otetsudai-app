@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ゴミ回収確認アプリ</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ゴミ回収">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2316a34a'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle'%3E%F0%9F%97%91%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2316a34a'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle'%3E%F0%9F%97%91%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;background:#f0fdf4;color:#14532d}
+header{background:#16a34a;color:#fff;padding:16px;position:sticky;top:0;z-index:10}header h1{margin:0;font-size:20px}
+.wrap{max-width:720px;margin:0 auto;padding:12px}
+.card{background:#fff;border:1px solid #bbf7d0;border-radius:14px;padding:14px;margin:12px 0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.stats{display:flex;gap:8px;flex-wrap:wrap}.stat{flex:1;min-width:100px;background:#f0fdf4;border-radius:10px;padding:10px;text-align:center}.stat b{display:block;font-size:22px;color:#15803d}.stat span{font-size:12px;color:#166534}
+.bars{display:flex;align-items:flex-end;gap:8px;height:110px;margin-top:12px;position:relative;border-bottom:2px solid #bbf7d0}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}.bar{width:70%;background:#22c55e;border-radius:6px 6px 0 0;min-height:2px}.bar-col small{font-size:12px}
+.avg-line{position:absolute;left:0;right:0;border-top:2px dashed #f59e0b;pointer-events:none}
+.days{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.day{border:1px solid #bbf7d0;border-radius:10px;padding:10px;text-align:center;background:#fbfdfc;cursor:pointer}.day:active{background:#dcfce7}.day b{display:block;font-size:16px}.day .total{font-size:20px;font-weight:700;color:#15803d}.day .cnt{font-size:11px;color:#666}
+button{border:0;border-radius:10px;padding:10px 14px;font-size:15px;background:#16a34a;color:#fff;cursor:pointer}button.sub{background:#e5e7eb;color:#111}button.danger{background:#fee2e2;color:#991b1b}button.small{padding:6px 10px;font-size:13px}
+input,textarea{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:10px;font-size:16px}
+.entry{display:flex;gap:8px;align-items:center;margin:8px 0}.entry input{flex:1}
+.comp{width:100%;border-collapse:collapse;font-size:14px}.comp th,.comp td{padding:7px 4px;border-bottom:1px solid #e5e7eb;text-align:right}.comp th:first-child,.comp td:first-child{text-align:left}
+.mini{position:relative;height:64px;display:flex;align-items:flex-end;gap:5px;border-bottom:2px solid #bbf7d0;margin-top:8px}.mini .bar-col .bar{background:#4ade80}
+.muted{color:#666;font-size:13px;line-height:1.6}.hidden{display:none}
+dialog{border:0;border-radius:14px;padding:18px;width:min(92vw,480px)}dialog::backdrop{background:rgba(0,0,0,.4)}
+</style>
+</head>
+<body>
+<header><h1>🗑️ ゴミ回収確認アプリ</h1></header>
+<div class="wrap">
+  <div class="card">
+    <h2 style="margin:0 0 10px">全施設まとめ（月〜土）</h2>
+    <div class="stats">
+      <div class="stat"><b id="allTotal">0</b><span>週間合計（袋）</span></div>
+      <div class="stat"><b id="allDaily">0</b><span>1日平均（÷6）</span></div>
+      <div class="stat"><b id="allColl">0</b><span>回収日平均</span></div>
+    </div>
+    <div class="bars" id="allBars"></div>
+    <p class="muted">曜日をタップすると、その施設・曜日の入力（1回目・2回目…）を追加・編集できます。入力はこのiPhoneの中に保存されます。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="margin:0 0 10px">施設ごとの比較</h2>
+    <div style="overflow-x:auto"><table class="comp"><thead><tr><th>施設</th><th>週間合計</th><th>1日平均</th><th>回収日平均</th></tr></thead><tbody id="compBody"></tbody></table></div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin:0 0 10px">施設を追加</h2>
+    <input id="newName" placeholder="施設名">
+    <div style="height:8px"></div>
+    <input id="newMemo" placeholder="メモ（任意）">
+    <div style="height:10px"></div>
+    <button id="addOne" style="width:100%">＋ 施設を追加</button>
+    <details style="margin-top:14px"><summary>まとめて追加（1行に1件・最大50件）</summary>
+      <div style="height:8px"></div>
+      <textarea id="bulkText" rows="6" placeholder="施設名を1行に1件ずつ入力"></textarea>
+      <div style="height:8px"></div>
+      <button id="addBulk" class="sub" style="width:100%">まとめて追加する</button>
+    </details>
+  </div>
+
+  <div id="list"></div>
+  <p class="muted" style="text-align:center;padding:12px">データはこの端末のブラウザに保存されます。<br>ホーム画面のアイコンから開いて使ってください。</p>
+</div>
+
+<dialog id="editor">
+  <h3 id="edTitle" style="margin-top:0"></h3>
+  <div id="edEntries"></div>
+  <button id="edAdd" style="width:100%;margin-top:8px">＋ 入力を追加</button>
+  <div style="height:10px"></div>
+  <button id="edClear" class="danger" style="width:100%">この曜日をすべて消す</button>
+  <div style="height:10px"></div>
+  <button id="edClose" class="sub" style="width:100%">閉じる</button>
+</dialog>
+
+<script>
+const DAYS=[["mon","月"],["tue","火"],["wed","水"],["thu","木"],["fri","金"],["sat","土"]];
+const KEY="gomi-kaishu-home-v1";
+const SEED_NAMES=["中川歯科医院","ブレッエル","しんの","徳島石油　庄町店","りんりん薬局","かまど","そごう給食","バラ園","麺八","飛鳥","スコーン","徳島石油　出来島","盛眼科","宝タクシー","阿波ドール","第一ゼミ","おなじみや","味噌そばジャック","ペイサン","米と魚と","ステーキダイニング琥珀","ラーメン澤家","地鶏音","郵便局","はるちゃんと","酒仙","旬の味　福井","たけがみ","餃子屋","ラーメン招福","竹の瀬","布雪","焼肉　美美","盛岡医院","麺王　福島","延印刷","佳話辺","サンタイカフェ","バースキャパー","おやじの料理　海","くろしお"];
+function emptyEntries(){return {mon:[],tue:[],wed:[],thu:[],fri:[],sat:[]}}
+function seed(){return SEED_NAMES.map((name,i)=>{const e=emptyEntries(); if(name==="ブレッエル"){e.wed=[2]} return {id:Date.now()+i,name,memo:"",entries:e}})}
+let data;
+try{const raw=localStorage.getItem(KEY); data=raw?JSON.parse(raw):{facilities:seed()}; if(!data.facilities) data={facilities:seed()};}catch(e){data={facilities:seed()}}
+function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+function dayTotal(f,d){return (f.entries[d]||[]).reduce((a,b)=>a+Number(b||0),0)}
+function facTotal(f){return DAYS.reduce((a,[d])=>a+dayTotal(f,d),0)}
+function collDays(f){return DAYS.filter(([d])=>(f.entries[d]||[]).length>0).length}
+function fmt(n){return (Math.round(n*10)/10).toString()}
+function render(){
+  save();
+  let all=0, collSum=0, collCnt=0; const perDay={};
+  DAYS.forEach(([d])=>perDay[d]=0);
+  data.facilities.forEach(f=>{all+=facTotal(f); DAYS.forEach(([d])=>{perDay[d]+=dayTotal(f,d); if((f.entries[d]||[]).length){collSum+=dayTotal(f,d); collCnt++}})});
+  document.getElementById("allTotal").textContent=all;
+  document.getElementById("allDaily").textContent=fmt(all/6);
+  document.getElementById("allColl").textContent=collCnt?fmt(collSum/collCnt):"0";
+  const max=Math.max(1,...DAYS.map(([d])=>perDay[d]));
+  const dailyAvg=all/6;
+  document.getElementById("allBars").innerHTML=DAYS.map(([d,l])=>`<div class="bar-col"><div class="bar" style="height:${Math.max(3,perDay[d]/max*78)}px"></div><small>${l}<br>${perDay[d]}袋</small></div>`).join("")+(dailyAvg?`<div class="avg-line" style="bottom:${18+dailyAvg/max*78}px"></div>`:"");
+  const sorted=[...data.facilities].sort((a,b)=>facTotal(b)-facTotal(a));
+  document.getElementById("compBody").innerHTML=sorted.map(f=>{const t=facTotal(f),c=collDays(f);return `<tr><td>${esc(f.name)}</td><td>${t}</td><td>${fmt(t/6)}</td><td>${c?fmt(t/c):"-"}</td></tr>`}).join("")||`<tr><td colspan="4">施設がありません</td></tr>`;
+  document.getElementById("list").innerHTML=data.facilities.map((f,fi)=>{
+    const t=facTotal(f),c=collDays(f),maxF=Math.max(1,...DAYS.map(([d])=>dayTotal(f,d)));
+    const mini=DAYS.map(([d,l])=>`<div class="bar-col"><div class="bar" style="height:${Math.max(2,dayTotal(f,d)/maxF*40)}px"></div><small>${l}</small></div>`).join("");
+    const days=DAYS.map(([d,l])=>`<div class="day" onclick="openEditor(${fi},'${d}')"><b>${l}</b><div class="total">${(f.entries[d]||[]).length?dayTotal(f,d):"−"}</div><div class="cnt">${(f.entries[d]||[]).length?(f.entries[d].length)+"回":"回収なし"}</div></div>`).join("");
+    return `<div class="card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:start"><h3 style="margin:0">${esc(f.name)}</h3><span><button class="small sub" onclick="editFac(${fi})">編集</button> <button class="small danger" onclick="delFac(${fi})">削除</button></span></div>
+    ${f.memo?`<p class="muted">${esc(f.memo)}</p>`:""}
+    <div class="stats" style="margin-top:10px"><div class="stat"><b>${t}</b><span>週間合計</span></div><div class="stat"><b>${fmt(t/6)}</b><span>1日平均（÷6）</span></div><div class="stat"><b>${c?fmt(t/c):"-"}</b><span>回収日平均</span></div></div>
+    <div class="mini">${mini}${t?`<div class="avg-line" style="bottom:${14+(t/6)/maxF*40}px"></div>`:""}</div>
+    <div class="days">${days}</div></div>`}).join("");
+}
+function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+let curF=null,curD=null;
+window.openEditor=function(fi,d){curF=fi;curD=d;const f=data.facilities[fi];document.getElementById("edTitle").textContent=f.name+" ・ "+DAYS.find(x=>x[0]===d)[1]+"曜日";drawEd();document.getElementById("editor").showModal()};
+function drawEd(){const f=data.facilities[curF];const arr=f.entries[curD]||[];document.getElementById("edEntries").innerHTML=arr.length?arr.map((v,i)=>`<div class="entry"><span>${i+1}回目</span><input type="number" inputmode="numeric" min="0" value="${v}" onchange="updEntry(${i},this.value)"><button class="danger small" onclick="delEntry(${i})">削除</button></div>`).join(""):`<p class="muted">まだ入力がありません。下のボタンで追加してください。</p>`}
+window.updEntry=function(i,v){data.facilities[curF].entries[curD][i]=Math.max(0,Number(v||0));render()}
+window.delEntry=function(i){data.facilities[curF].entries[curD].splice(i,1);drawEd();render()}
+document.getElementById("edAdd").onclick=()=>{data.facilities[curF].entries[curD].push(0);drawEd();render()};
+document.getElementById("edClear").onclick=()=>{if(confirm("この曜日の入力をすべて消しますか？")){data.facilities[curF].entries[curD]=[];drawEd();render()}};
+document.getElementById("edClose").onclick=()=>document.getElementById("editor").close();
+document.getElementById("editor").addEventListener("close",render);
+window.editFac=function(fi){const f=data.facilities[fi];const n=prompt("施設名",f.name);if(n===null)return;const m=prompt("メモ",f.memo||"");if(m===null)return;f.name=n.trim()||f.name;f.memo=m;render()};
+window.delFac=function(fi){if(confirm("この施設を削除しますか？")){data.facilities.splice(fi,1);render()}};
+document.getElementById("addOne").onclick=()=>{const n=document.getElementById("newName").value.trim();if(!n)return alert("施設名を入れてください");data.facilities.push({id:Date.now(),name:n,memo:document.getElementById("newMemo").value.trim(),entries:emptyEntries()});document.getElementById("newName").value="";document.getElementById("newMemo").value="";render()};
+document.getElementById("addBulk").onclick=()=>{const lines=document.getElementById("bulkText").value.split(/\n/).map(s=>s.trim()).filter(Boolean).slice(0,50);if(!lines.length)return alert("施設名を入れてください");lines.forEach((n,i)=>data.facilities.push({id:Date.now()+i,name:n,memo:"",entries:emptyEntries()}));document.getElementById("bulkText").value="";render()};
+render();
+</script>
+</body>
+</html>
