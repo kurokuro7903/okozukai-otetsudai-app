@@ -68,6 +68,14 @@ dialog{border:0;border-radius:14px;padding:18px;width:min(92vw,480px)}dialog::ba
   <p class="muted" style="text-align:center;padding:12px">データはこの端末のブラウザに保存されます。<br>ホーム画面のアイコンから開いて使ってください。</p>
 </div>
 
+<dialog id="facEditor">
+  <h3 id="facTitle" style="margin-top:0"></h3>
+  <p class="muted" style="margin-top:0">曜日ごとに袋の数を入力できます。数字を変えるだけで保存されます。</p>
+  <div id="facBody" style="max-height:55vh;overflow-y:auto"></div>
+  <div style="height:10px"></div>
+  <button id="facClose" class="sub" style="width:100%">閉じる</button>
+</dialog>
+
 <dialog id="editor">
   <h3 id="edTitle" style="margin-top:0"></h3>
   <div id="edEntries"></div>
@@ -108,7 +116,7 @@ function render(){
     const t=facTotal(f),c=collDays(f),maxF=Math.max(1,...DAYS.map(([d])=>dayTotal(f,d)));
     const mini=DAYS.map(([d,l])=>`<div class="bar-col"><div class="bar" style="height:${Math.max(2,dayTotal(f,d)/maxF*40)}px"></div><small>${l}</small></div>`).join("");
     const days=DAYS.map(([d,l])=>`<div class="day" onclick="openEditor(${fi},'${d}')"><b>${l}</b><div class="total">${(f.entries[d]||[]).length?dayTotal(f,d):"−"}</div><div class="cnt">${(f.entries[d]||[]).length?(f.entries[d].length)+"回":"回収なし"}</div></div>`).join("");
-    return `<div class="card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:start"><h3 style="margin:0">${esc(f.name)}</h3><span><button class="small sub" onclick="editFac(${fi})">編集</button> <button class="small danger" onclick="delFac(${fi})">削除</button></span></div>
+    return `<div class="card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:start"><h3 style="margin:0;cursor:pointer;color:#15803d;text-decoration:underline;text-underline-offset:4px" onclick="openFacInput(${fi})">${esc(f.name)} <small style="font-size:12px;color:#16a34a">タップで入力</small></h3><span><button class="small sub" onclick="editFac(${fi})">編集</button> <button class="small danger" onclick="delFac(${fi})">削除</button></span></div>
     ${f.memo?`<p class="muted">${esc(f.memo)}</p>`:""}
     <div class="stats" style="margin-top:10px"><div class="stat"><b>${t}</b><span>週間合計</span></div><div class="stat"><b>${fmt(t/6)}</b><span>1日平均（÷6）</span></div><div class="stat"><b>${c?fmt(t/c):"-"}</b><span>回収日平均</span></div></div>
     <div class="mini">${mini}${t?`<div class="avg-line" style="bottom:${14+(t/6)/maxF*40}px"></div>`:""}</div>
@@ -116,6 +124,13 @@ function render(){
 }
 function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 let curF=null,curD=null;
+window.openFacInput=function(fi){curF=fi;document.getElementById("facTitle").textContent=data.facilities[fi].name+" ・ 入力";drawFac();document.getElementById("facEditor").showModal()};
+function drawFac(){const f=data.facilities[curF];document.getElementById("facBody").innerHTML=DAYS.map(([d,l])=>{const arr=f.entries[d]||[];const rows=arr.map((v,i)=>`<div class="entry"><span>${l} ${i+1}回目</span><input type="number" inputmode="numeric" min="0" value="${v}" onchange="fUpd('${d}',${i},this.value)"><button class="danger small" onclick="fDel('${d}',${i})">削除</button></div>`).join("");return `<div style="border:1px solid #bbf7d0;border-radius:10px;padding:10px;margin:8px 0"><b>${l}曜日</b> <span class="muted">合計 ${dayTotal(f,d)}袋</span>${rows}<button class="small" style="width:100%;margin-top:6px" onclick="fAdd('${d}')">＋ ${l}曜日に入力を追加</button></div>`}).join("")}
+window.fUpd=function(d,i,v){data.facilities[curF].entries[d][i]=Math.max(0,Number(v||0));render();drawFac()};
+window.fDel=function(d,i){data.facilities[curF].entries[d].splice(i,1);render();drawFac()};
+window.fAdd=function(d){data.facilities[curF].entries[d].push(0);render();drawFac()};
+document.getElementById("facClose").onclick=()=>document.getElementById("facEditor").close();
+document.getElementById("facEditor").addEventListener("close",render);
 window.openEditor=function(fi,d){curF=fi;curD=d;const f=data.facilities[fi];document.getElementById("edTitle").textContent=f.name+" ・ "+DAYS.find(x=>x[0]===d)[1]+"曜日";drawEd();document.getElementById("editor").showModal()};
 function drawEd(){const f=data.facilities[curF];const arr=f.entries[curD]||[];document.getElementById("edEntries").innerHTML=arr.length?arr.map((v,i)=>`<div class="entry"><span>${i+1}回目</span><input type="number" inputmode="numeric" min="0" value="${v}" onchange="updEntry(${i},this.value)"><button class="danger small" onclick="delEntry(${i})">削除</button></div>`).join(""):`<p class="muted">まだ入力がありません。下のボタンで追加してください。</p>`}
 window.updEntry=function(i,v){data.facilities[curF].entries[curD][i]=Math.max(0,Number(v||0));render()}
