@@ -48,6 +48,7 @@ dialog{border:0;border-radius:14px;padding:18px;width:min(92vw,480px)}dialog::ba
 
   <div class="card">
     <h2 style="margin:0 0 10px">施設ごとの比較</h2>
+    <p class="muted" style="margin:0 0 8px">一覧の施設名をタップすると、そのまま入力できます。</p>
     <div style="overflow-x:auto"><table class="comp"><thead><tr><th>施設</th><th>週間合計</th><th>1日平均</th><th>回収日平均</th></tr></thead><tbody id="compBody"></tbody></table></div>
   </div>
 
@@ -67,7 +68,7 @@ dialog{border:0;border-radius:14px;padding:18px;width:min(92vw,480px)}dialog::ba
   </div>
 
   <div id="list"></div>
-  <p class="muted" style="text-align:center;padding:12px">データはこの端末のブラウザに保存されます。<br>ホーム画面のアイコンから開いて使ってください。<br>バージョン2（施設名タップで入力できます）</p>
+  <p class="muted" style="text-align:center;padding:12px">データはこの端末のブラウザに保存されます。<br>ホーム画面のアイコンから開いて使ってください。<br>バージョン3（施設名・比較一覧タップで入力できます）</p>
 </div>
 
 <dialog id="facEditor">
@@ -112,8 +113,8 @@ function render(){
   const max=Math.max(1,...DAYS.map(([d])=>perDay[d]));
   const dailyAvg=all/6;
   document.getElementById("allBars").innerHTML=DAYS.map(([d,l])=>`<div class="bar-col"><div class="bar" style="height:${Math.max(3,perDay[d]/max*78)}px"></div><small>${l}<br>${perDay[d]}袋</small></div>`).join("")+(dailyAvg?`<div class="avg-line" style="bottom:${18+dailyAvg/max*78}px"></div>`:"");
-  const sorted=[...data.facilities].sort((a,b)=>facTotal(b)-facTotal(a));
-  document.getElementById("compBody").innerHTML=sorted.map(f=>{const t=facTotal(f),c=collDays(f);return `<tr><td>${esc(f.name)}</td><td>${t}</td><td>${fmt(t/6)}</td><td>${c?fmt(t/c):"-"}</td></tr>`}).join("")||`<tr><td colspan="4">施設がありません</td></tr>`;
+  const sorted=data.facilities.map((f,i)=>({f,i})).sort((a,b)=>facTotal(b.f)-facTotal(a.f));
+  document.getElementById("compBody").innerHTML=sorted.map(({f,i})=>{const t=facTotal(f),c=collDays(f);return `<tr onclick="openFacInput(${i})" style="cursor:pointer"><td style="color:#15803d;font-weight:600;text-decoration:underline;text-underline-offset:3px">${esc(f.name)}</td><td>${t}</td><td>${fmt(t/6)}</td><td>${c?fmt(t/c):"-"}</td></tr>`}).join("")||`<tr><td colspan="4">施設がありません</td></tr>`;
   document.getElementById("list").innerHTML=data.facilities.map((f,fi)=>{
     const t=facTotal(f),c=collDays(f),maxF=Math.max(1,...DAYS.map(([d])=>dayTotal(f,d)));
     const mini=DAYS.map(([d,l])=>`<div class="bar-col"><div class="bar" style="height:${Math.max(2,dayTotal(f,d)/maxF*40)}px"></div><small>${l}</small></div>`).join("");
