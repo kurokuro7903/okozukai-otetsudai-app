@@ -23,6 +23,7 @@ header{background:#16a34a;color:#fff;padding:16px;position:sticky;top:0;z-index:
 .avg-line{position:absolute;left:0;right:0;border-top:2px dashed #f59e0b;pointer-events:none}
 .bars.big{height:160px}.bar.max{background:#f97316}.bar-num{font-size:14px;font-weight:700;color:#14532d}.bar-num.max{color:#ea580c}
 .rank-row{display:flex;align-items:center;gap:8px;margin:7px 0}.rank-day{width:52px;font-weight:700}.rank-track{flex:1;background:#f0fdf4;border-radius:8px;height:22px;overflow:hidden}.rank-fill{height:100%;background:#22c55e;border-radius:8px;min-width:2px}.rank-fill.max{background:#f97316}.rank-val{width:86px;text-align:right;font-size:13px}
+.fac-row{display:flex;align-items:center;gap:8px;margin:9px 0}.fac-rank{width:30px;font-weight:700;color:#666}.fac-name{width:34%;font-weight:600;color:#15803d;text-decoration:underline;text-underline-offset:3px;cursor:pointer;word-break:break-all}.fac-val{width:86px;text-align:right;font-size:13px}
 .days{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
 .day{border:1px solid #bbf7d0;border-radius:10px;padding:10px;text-align:center;background:#fbfdfc;cursor:pointer}.day:active{background:#dcfce7}.day b{display:block;font-size:16px}.day .total{font-size:20px;font-weight:700;color:#15803d}.day .cnt{font-size:11px;color:#666}
 button{border:0;border-radius:10px;padding:10px 14px;font-size:15px;background:#16a34a;color:#fff;cursor:pointer}button.sub{background:#e5e7eb;color:#111}button.danger{background:#fee2e2;color:#991b1b}button.small{padding:6px 10px;font-size:13px}
@@ -58,6 +59,13 @@ dialog{border:0;border-radius:14px;padding:18px;width:min(92vw,480px)}dialog::ba
   </div>
 
   <div class="card">
+    <h2 style="margin:0 0 6px">施設ごとの一覧グラフ</h2>
+    <p id="facGraphSummary" style="margin:0 0 6px;font-weight:700;color:#ea580c"></p>
+    <div id="facRankGraph"></div>
+    <p class="muted" style="margin:6px 0 0">バーの長さは週間合計（袋）です。施設名をタップするとそのまま入力できます。</p>
+  </div>
+
+  <div class="card">
     <h2 style="margin:0 0 10px">施設ごとの比較</h2>
     <p class="muted" style="margin:0 0 8px">一覧の施設名をタップすると、そのまま入力できます。</p>
     <div style="overflow-x:auto"><table class="comp"><thead><tr><th>施設</th><th>週間合計</th><th>1日平均</th><th>回収日平均</th></tr></thead><tbody id="compBody"></tbody></table></div>
@@ -79,7 +87,7 @@ dialog{border:0;border-radius:14px;padding:18px;width:min(92vw,480px)}dialog::ba
   </div>
 
   <div id="list"></div>
-  <p class="muted" style="text-align:center;padding:12px">データはこの端末のブラウザに保存されます。<br>ホーム画面のアイコンから開いて使ってください。<br>バージョン5（施設ごとのグラフつき）</p>
+  <p class="muted" style="text-align:center;padding:12px">データはこの端末のブラウザに保存されます。<br>ホーム画面のアイコンから開いて使ってください。<br>バージョン6（施設ごとの一覧グラフつき）</p>
 </div>
 
 <dialog id="facEditor">
@@ -102,7 +110,7 @@ dialog{border:0;border-radius:14px;padding:18px;width:min(92vw,480px)}dialog::ba
 
 <script>
 const DAYS=[["mon","月"],["tue","火"],["wed","水"],["thu","木"],["fri","金"],["sat","土"]];
-const APP_VERSION=5;
+const APP_VERSION=6;
 async function checkUpdate(){try{const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"});if(!r.ok)return;const t=await r.text();const m=t.match(/バージョン(\d+)/);if(m&&Number(m[1])>APP_VERSION){location.replace(location.pathname+"?v="+m[1]);}}catch(e){}}
 checkUpdate();
 const KEY="gomi-kaishu-home-v1";
@@ -129,6 +137,11 @@ function render(){
   const maxDays=DAYS.filter(([d])=>perDay[d]===max&&max>0).map(([,l])=>l+"曜日");
   document.getElementById("graphSummary").textContent=all>0?`一番多いのは ${maxDays.join("・")}（${max}袋）です`:"まだ入力がありません。入力すると一番多い曜日が分かります。";
   document.getElementById("weekGraph").innerHTML=DAYS.map(([d,l])=>{const isMax=perDay[d]===max&&max>0;return `<div class="bar-col"><div class="bar-num ${isMax?"max":""}">${perDay[d]}袋</div><div class="bar ${isMax?"max":""}" style="height:${Math.max(3,perDay[d]/max*104)}px"></div><small style="font-weight:${isMax?"700":"400"}">${l}${isMax?" ★":""}</small></div>`}).join("")+(dailyAvg?`<div class="avg-line" style="bottom:${20+dailyAvg/max*104}px"></div>`:"");
+  const facSorted=data.facilities.map((f,i)=>({f,i,t:facTotal(f)})).sort((a,b)=>b.t-a.t);
+  const facMax=Math.max(1,...facSorted.map(x=>x.t));
+  const topFacs=facSorted.filter(x=>x.t===facMax&&x.t>0);
+  document.getElementById("facGraphSummary").textContent=all>0?`一番多い施設は ${topFacs.map(x=>x.f.name).join("・")}（${facMax}袋）です`:"まだ入力がありません。入力すると施設ごとのグラフが出ます。";
+  document.getElementById("facRankGraph").innerHTML=facSorted.map((x,idx)=>{const pct=all?Math.round(x.t/all*100):0;const isMax=x.t===facMax&&x.t>0;return `<div class="fac-row"><div class="fac-rank">${idx+1}位</div><div class="fac-name" onclick="openFacInput(${x.i})">${esc(x.f.name)}${isMax?" ★":""}</div><div class="rank-track"><div class="rank-fill ${isMax?"max":""}" style="width:${Math.max(2,x.t/facMax*100)}%"></div></div><div class="fac-val">${x.t}袋（${pct}%）</div></div>`}).join("")||`<p class="muted">施設がありません</p>`;
   const ranked=[...DAYS].sort((a,b)=>perDay[b[0]]-perDay[a[0]]);
   document.getElementById("weekRank").innerHTML=ranked.map(([d,l],idx)=>{const v=perDay[d];const pct=all?Math.round(v/all*100):0;const isMax=v===max&&max>0;return `<div class="rank-row"><div class="rank-day">${idx+1}位 ${l}</div><div class="rank-track"><div class="rank-fill ${isMax?"max":""}" style="width:${Math.max(2,v/max*100)}%"></div></div><div class="rank-val">${v}袋（${pct}%）</div></div>`}).join("");
   const sorted=data.facilities.map((f,i)=>({f,i})).sort((a,b)=>facTotal(b.f)-facTotal(a.f));
