@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="冷蔵庫こんだて">
+<meta name="theme-color" content="#e86a2c">
+<title>冷蔵庫こんだて｜あまりもの献立</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;background:#fff7f0;color:#333}
+header{background:#e86a2c;color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
+header h1{margin:0;font-size:20px}header p{margin:4px 0 0;font-size:12px;opacity:.95}
+main{padding:12px 12px 90px;max-width:640px;margin:0 auto}
+.card{background:#fff;border:1px solid #f0d9c8;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+h2{font-size:17px;margin:0 0 8px}h3{font-size:15px;margin:10px 0 6px}
+.btn{display:block;width:100%;padding:14px;border:0;border-radius:12px;background:#e86a2c;color:#fff;font-size:16px;font-weight:700;cursor:pointer;margin:8px 0}
+.btn.sub{background:#fff;color:#e86a2c;border:2px solid #e86a2c}.btn.gray{background:#eee;color:#333}.btn.green{background:#2e9e5b}.btn.small{width:auto;display:inline-block;padding:8px 12px;font-size:13px;margin:4px 4px 4px 0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:8px 11px;border-radius:999px;border:1.5px solid #ddd;background:#fff;font-size:14px;cursor:pointer}
+.chip.on{background:#e86a2c;border-color:#e86a2c;color:#fff}.chip.have{background:#e6f6ec;border-color:#2e9e5b;color:#17693a;cursor:default}.chip.miss{background:#fdecec;border-color:#d9534f;color:#a02c28;cursor:default}.chip.sea.on{background:#6b4fd8;border-color:#6b4fd8}
+.item{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #f3e2d3}.item:last-child{border-bottom:0}
+.item b{font-size:15px}.muted{color:#888;font-size:12px}.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700}
+.badge.urgent{background:#d9534f;color:#fff}.badge.soon{background:#f5a623;color:#fff}.badge.best{background:#2e9e5b;color:#fff}.badge.fav{background:#ffd94d;color:#7a5b00}
+input[type=text],input[type=date],input[type=number],select{width:100%;padding:11px;border:1.5px solid #ddd;border-radius:10px;font-size:15px;margin:4px 0 8px;background:#fff}
+label{font-size:13px;font-weight:700}
+nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #eee;display:flex;z-index:6}
+nav button{flex:1;padding:10px 2px 14px;background:none;border:0;font-size:12px;color:#888;cursor:pointer}nav button.on{color:#e86a2c;font-weight:800}
+nav button span{display:block;font-size:20px}
+.page{display:none}.page.on{display:block}
+img#preview{width:100%;border-radius:12px;display:none;margin-top:8px}
+.price{font-size:20px;font-weight:800;color:#e86a2c}.total-row{display:flex;justify-content:space-between;align-items:center}
+a.maplink{color:#1565c0;font-size:13px}
+footer{text-align:center;color:#bbb;font-size:11px;padding:10px}
+details{margin-top:8px}summary{cursor:pointer;font-weight:700;color:#e86a2c;font-size:14px}
+ol.steps{padding-left:20px;line-height:1.7;font-size:14px}
+.notice{background:#fff3cd;border-radius:10px;padding:10px;font-size:12px;line-height:1.6;margin:8px 0}
+</style>
+</head>
+<body>
+<header><h1>🥕 冷蔵庫こんだて</h1><p>余りものを撮る → 献立提案 → 足りないものは最安のお店へ</p></header>
+<main>
+<!-- 撮影・冷蔵庫 -->
+<section id="page-fridge" class="page on">
+  <div class="card">
+    <h2>📸 冷蔵庫を撮影する</h2>
+    <p class="muted">冷蔵庫の中を撮ると下に写真が出ます。写真の中にある食材をタップで選んでください（自動で決めつけず、あなたが確認してから追加する方式です）。</p>
+    <button class="btn" onclick="document.getElementById('photoInput').click()">📷 撮影する／写真を選ぶ</button>
+    <input type="file" id="photoInput" accept="image/*" capture="environment" style="display:none">
+    <img id="preview" alt="冷蔵庫の写真">
+    <div id="photoArea" style="display:none">
+      <h3>写真の中にあるものは？</h3>
+      <div class="chips" id="photoChips"></div>
+      <button class="btn green" onclick="addPhotoSelection()">✅ 選んだ食材を冷蔵庫に追加</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2>🧊 冷蔵庫の中身（<span id="fridgeCount">0</span>件）</h2>
+    <div id="fridgeList"></div>
+    <h3>手で追加する</h3>
+    <div class="chips" id="quickChips"></div>
+    <label>食材名</label><input type="text" id="newName" placeholder="例：玉ねぎ">
+    <label>量</label><input type="text" id="newAmount" placeholder="例：2個、300g、半分">
+    <label>賞味・消費期限（任意）</label><input type="date" id="newExpiry">
+    <button class="btn sub" onclick="addManual()">＋ 追加する</button>
+  </div>
+</section>
+<!-- 献立 -->
+<section id="page-menu" class="page">
+  <div class="card">
+    <h2>🍳 おすすめ献立</h2>
+    <p class="muted">冷蔵庫にある割合が高く、期限が近い食材を使う献立から順に表示します。</p>
+    <button class="btn" onclick="renderRecipes()">🔄 献立を提案する</button>
+    <div id="recipeList"></div>
+  </div>
+</section>
+<!-- 買い物・店舗 -->
+<section id="page-shop" class="page">
+  <div class="card">
+    <h2>🛒 買い物リスト</h2>
+    <div id="shopList"></div>
+    <label>手で追加する</label><input type="text" id="shopNew" placeholder="例：牛乳">
+    <button class="btn sub" onclick="addShopManual()">＋ 買い物リストに追加</button>
+  </div>
+  <div class="card">
+    <h2>🏪 最安のお店を探す</h2>
+    <p class="muted">基準の場所：<b id="locLabel">徳島市東沖洲（今回の現在地）</b></p>
+    <p class="muted" id="locMeta"></p>
+    <button class="btn small gray" onclick="getLocation(false)">📍 現在地を取り直す</button>
+    <label>座標で直す（「34.1267, 134.5225」形式）</label><input type="text" id="locCoord" placeholder="緯度, 経度">
+    <button class="btn small sub" onclick="applyCoord()">座標を基準の場所にする</button>
+    <label style="display:block;margin-top:8px"><input type="checkbox" id="favOnly" onchange="renderStores()"> お気に入りの店舗だけで比べる</label>
+    <div class="notice">価格は各店の傾向から出した<b>目安価格</b>です。実際の店頭・チラシ価格とは異なります。お店カードの「価格を直す」で実際の価格に直すと、その価格で比べます。</div>
+    <div id="storeList"></div>
+    <div id="splitBox"></div>
+  </div>
+</section>
+<!-- 設定 -->
+<section id="page-setting" class="page">
+  <div class="card">
+    <h2>🧂 家にある調味料</h2>
+    <p class="muted">あるものをタップでONにしてください。献立の「足りない調味料」表示に使います。</p>
+    <div class="chips" id="seasonChips"></div>
+  </div>
+  <div class="card">
+    <h2>⭐ お気に入りの店舗</h2>
+    <div id="storeEditList"></div>
+    <h3>店舗を追加する</h3>
+    <label>店名</label><input type="text" id="stName" placeholder="例：○○スーパー △△店">
+    <label>住所</label><input type="text" id="stAddr" placeholder="例：徳島市○○町1-2-3">
+    <label>座標（任意・「34.06, 134.59」形式）</label><input type="text" id="stCoord" placeholder="緯度, 経度">
+    <button class="btn sub" onclick="addStore()">＋ 店舗を追加</button>
+  </div>
+  <div class="card">
+    <button class="btn gray" onclick="if(confirm('冷蔵庫・買い物リスト・直した価格を全部消しますか？')){localStorage.removeItem(KEY);location.reload()}">データを全部消す</button>
+  </div>
+</section>
+<footer>冷蔵庫こんだて バージョン2<br>データはこの端末の中だけに保存されます</footer>
+</main>
+<nav>
+<button id="nav-fridge" class="on" onclick="showPage('fridge')"><span>🧊</span>冷蔵庫</button>
+<button id="nav-menu" onclick="showPage('menu')"><span>🍳</span>献立</button>
+<button id="nav-shop" onclick="showPage('shop')"><span>🛒</span>買い物・店舗</button>
+<button id="nav-setting" onclick="showPage('setting')"><span>⚙️</span>設定</button>
+</nav>
+<script>
+const KEY='reizoko-kondate-v1';
+const ING_GROUPS={'野菜':['玉ねぎ','じゃがいも','にんじん','キャベツ','白菜','ほうれん草','もやし','ピーマン','なす','きゅうり','トマト','ブロッコリー','ねぎ','大根','かぼちゃ','わかめ'],'肉・魚':['豚肉','鶏肉','牛肉','ひき肉','ベーコン','ウインナー','ハム','鮭','さば','ツナ缶','ちくわ'],'卵・乳・豆':['卵','牛乳','チーズ','バター','豆腐','油揚げ','納豆'],'主食':['ごはん','うどん','そうめん','パスタ','食パン','小麦粉']};
+const ALL_ING=Object.values(ING_GROUPS).flat();
+const SEASONINGS=['醤油','味噌','塩','砂糖','みりん','酒','酢','サラダ油','ごま油','ケチャップ','マヨネーズ','カレールー','コンソメ','だし','豆板醤','オイスターソース','ポン酢','めんつゆ','生姜','にんにく'];
+const BASE_PRICE={'玉ねぎ':150,'じゃがいも':180,'にんじん':150,'キャベツ':180,'白菜':250,'ほうれん草':180,'もやし':40,'ピーマン':150,'なす':180,'きゅうり':150,'トマト':250,'ブロッコリー':200,'ねぎ':120,'大根':180,'かぼちゃ':250,'わかめ':150,'豚肉':450,'鶏肉':350,'牛肉':700,'ひき肉':400,'ベーコン':250,'ウインナー':300,'ハム':250,'鮭':400,'さば':350,'ツナ缶':150,'ちくわ':120,'卵':300,'牛乳':230,'チーズ':300,'バター':350,'豆腐':80,'油揚げ':100,'納豆':100,'ごはん':200,'うどん':100,'そうめん':250,'パスタ':200,'食パン':180,'小麦粉':250,'醤油':250,'味噌':350,'みりん':250,'ケチャップ':200,'マヨネーズ':300,'カレールー':250,'コンソメ':200,'めんつゆ':300,'ポン酢':250,'豆板醤':250,'オイスターソース':300,'だし':300};
+const R=(n,t,c,ing,sea,steps)=>({n,t,c,ing:ing.split(',').map(s=>{const[a,b]=s.split(':');return{n:a,q:b||''}}),sea:sea?sea.split(','):[],steps:steps.split('|')});
+const RECIPES=[
+R('親子丼','15分','和食','鶏肉:150g,玉ねぎ:1個,卵:2個','醤油,みりん,砂糖,だし','玉ねぎを薄切りにし、鶏肉は一口大に切る|だし・醤油・みりん・砂糖で煮る|鶏肉と玉ねぎを煮て、溶き卵を回しかけ半熟で火を止める|ごはんにのせる'),
+R('豚の生姜焼き','15分','和食','豚肉:200g,玉ねぎ:1個','醤油,みりん,酒,生姜','生姜をすりおろし調味料を混ぜる|豚肉と玉ねぎを炒める|タレを絡めて照りが出たら完成'),
+R('野菜炒め','10分','中華','豚肉:100g,キャベツ:1/4個,もやし:1袋,にんじん:1/2本,ピーマン:2個','塩,醤油,ごま油','野菜を食べやすく切る|強火で豚肉→硬い野菜→葉物・もやしの順に炒める|塩と醤油で味を整える'),
+R('肉じゃが','30分','和食','豚肉:150g,じゃがいも:3個,玉ねぎ:1個,にんじん:1本','醤油,みりん,酒,砂糖,だし','材料を大きめに切る|肉と野菜を炒め、水と調味料を加える|落とし蓋をして15分煮る'),
+R('カレー','30分','洋食','豚肉:200g,じゃがいも:2個,玉ねぎ:2個,にんじん:1本','カレールー,サラダ油','材料を切って炒める|水を加えて15分煮る|火を止めてルーを溶かし、とろみがつくまで煮る'),
+R('ほうれん草とベーコンの卵炒め','10分','洋食','ほうれん草:1束,ベーコン:2枚,卵:2個','塩,バター','ほうれん草をざく切り、ベーコンを短冊に切る|バターでベーコンとほうれん草を炒める|溶き卵を加えて大きく混ぜる'),
+R('鮭のムニエル','15分','洋食','鮭:2切れ,小麦粉:大さじ2','塩,バター','鮭に塩と小麦粉をまぶす|バターで両面をこんがり焼く|レモンや醤油を少し垂らしてもおいしい'),
+R('さばの味噌煮','20分','和食','さば:2切れ','味噌,みりん,酒,砂糖,生姜','さばに切り込みを入れる|調味料と水で煮立てる|落とし蓋をして10分煮る'),
+R('麻婆豆腐','15分','中華','豆腐:1丁,ひき肉:150g,ねぎ:1/2本','豆板醤,醤油,酒,ごま油,にんにく','ひき肉をにんにくと炒め豆板醤を加える|水と調味料、豆腐を加えて煮る|水溶き片栗粉があればとろみをつけ、ごま油とねぎを加える'),
+R('回鍋肉','15分','中華','豚肉:150g,キャベツ:1/4個,ピーマン:2個','味噌,豆板醤,醤油,砂糖,酒','豚肉と野菜を切る|豚肉を炒め、野菜を加える|合わせ調味料を絡める'),
+R('チャーハン','10分','中華','ごはん:2膳,卵:2個,ハム:2枚,ねぎ:1/2本','塩,醤油,ごま油','卵をごはんで炒める|ハムとねぎを加える|鍋肌から醤油を回しかける'),
+R('焼きうどん','10分','和食','うどん:2玉,豚肉:100g,キャベツ:1/6個,もやし:1/2袋','醤油,みりん,だし','肉と野菜を炒める|うどんをほぐしながら加える|調味料を絡める'),
+R('ナポリタン','20分','洋食','パスタ:200g,ウインナー:4本,玉ねぎ:1個,ピーマン:2個','ケチャップ,バター','パスタをゆでる|具をバターで炒める|ケチャップを炒めてからパスタを絡める'),
+R('ツナとキャベツのパスタ','15分','洋食','パスタ:200g,ツナ缶:1缶,キャベツ:1/6個','醤油,ごま油,塩','パスタをゆで、終わる前にキャベツも一緒にゆでる|ツナと調味料で和える'),
+R('白菜と豚肉のミルフィーユ鍋','20分','和食','白菜:1/4株,豚肉:200g','ポン酢,だし','白菜と豚肉を交互に重ねて切る|鍋に並べてだしで煮る|ポン酢で食べる'),
+R('大根と鶏肉の煮物','25分','和食','大根:1/3本,鶏肉:200g','醤油,みりん,酒,だし','大根を下ゆでする|鶏肉と一緒に調味料で煮る'),
+R('かぼちゃの煮物','20分','和食','かぼちゃ:1/4個','醤油,みりん,砂糖,だし','かぼちゃを一口大に切る|調味料で柔らかくなるまで煮る'),
+R('なすとピーマンの味噌炒め','12分','和食','なす:3本,ピーマン:2個','味噌,みりん,砂糖,サラダ油','なすとピーマンを切る|油で炒める|味噌ダレを絡める'),
+R('きゅうりとツナのサラダ','5分','洋食','きゅうり:2本,ツナ缶:1缶','マヨネーズ,塩','きゅうりを薄切りにして塩もみする|水気を絞ってツナとマヨネーズで和える'),
+R('トマトと卵の中華炒め','8分','中華','トマト:2個,卵:3個','塩,砂糖,ごま油','卵を半熟に炒めて取り出す|トマトを炒める|卵を戻して塩と砂糖で整える'),
+R('もやしナムル','8分','韓国風','もやし:1袋,にんじん:1/3本','ごま油,塩,醤油,にんにく','もやしとにんじんをゆでる|水気を絞って調味料で和える'),
+R('じゃがいもチーズ焼き','15分','洋食','じゃがいも:2個,チーズ:2枚,ベーコン:2枚','塩,サラダ油','じゃがいもを薄切りにする|フライパンに並べてベーコンとチーズをのせる|両面こんがり焼く'),
+R('豆腐ハンバーグ','25分','和食','豆腐:1丁,ひき肉:200g,玉ねぎ:1/2個','醤油,塩','豆腐の水切りをする|材料を混ぜて成形する|両面焼いて醤油ダレを絡める'),
+R('味噌汁','10分','和食','豆腐:1/2丁,油揚げ:1枚,ねぎ:1/2本,わかめ:ひとつかみ','味噌,だし','だしで具を煮る|火を弱めて味噌を溶く'),
+R('オムレツ','10分','洋食','卵:3個,牛乳:大さじ2,ハム:2枚,玉ねぎ:1/2個','塩,バター','具を炒める|卵と牛乳を混ぜてバターで焼く|具を包む'),
+R('ブロッコリーと卵のサラダ','10分','洋食','ブロッコリー:1株,卵:2個','マヨネーズ,塩','ブロッコリーをゆでる|ゆで卵を作ってつぶす|マヨネーズと塩で和える'),
+R('白菜とツナの煮びたし','12分','和食','白菜:1/6株,ツナ缶:1缶,油揚げ:1枚','めんつゆ','白菜と油揚げを切る|ツナと一緒にめんつゆで煮る')
+];
+const DEF_STORES=[
+{id:'s1',name:'キョーエイ沖洲市場店',addr:'徳島県徳島市北沖洲1丁目61-1',lat:34.06847,lng:134.58434,factor:0.98,hours:'9:00〜21:00',fav:true},
+{id:'s2',name:'イオンスタイル徳島',addr:'徳島県徳島市南末広町4-1（イオンモール徳島）',lat:34.06194,lng:134.57315,factor:1.00,hours:'食品売場 7:00〜23:00',fav:true},
+{id:'s3',name:'ハローズ万代店',addr:'徳島県徳島市万代町5丁目10-13',lat:34.06353,lng:134.56508,factor:0.92,hours:'24時間営業',fav:true},
+{id:'s4',name:'スーパーセブン安宅店',addr:'徳島県徳島市安宅2丁目4-17',lat:34.06892,lng:134.57393,factor:1.08,hours:'6:00〜24:00',fav:false},
+{id:'s5',name:'マルナカ昭和店',addr:'徳島県徳島市南昭和町2丁目20',lat:34.05789,lng:134.55570,factor:0.95,hours:'',fav:false},
+{id:'s6',name:'キョーエイ福島店',addr:'徳島県徳島市福島1丁目10-50',lat:34.07086,lng:134.56716,factor:0.98,hours:'9:00〜24:00',fav:false},
+{id:'s7',name:'マルナカ成長店',addr:'徳島県板野郡藍住町勝瑞字成長114-1',lat:34.12540,lng:134.51896,factor:0.95,hours:'9:00〜22:00',fav:true},
+{id:'s8',name:'マルナカ藍住店',addr:'徳島県板野郡藍住町笠木字西野48-1',lat:34.13582,lng:134.49782,factor:0.95,hours:'9:00〜23:00',fav:false},
+{id:'s9',name:'ゆめタウン徳島',addr:'徳島県板野郡藍住町奥野字東中須88-1',lat:34.11929,lng:134.50119,factor:1.00,hours:'9:30〜21:30',fav:false},
+{id:'s10',name:'キョーエイ藍住店',addr:'徳島県板野郡藍住町東中富字長江傍示42',lat:34.12913,lng:134.47808,factor:0.98,hours:'9:30〜24:00',fav:false}];
+let S;
+try{S=JSON.parse(localStorage.getItem(KEY))||null}catch(e){S=null}
+if(!S){S={fridge:[],seasonings:['醤油','味噌','塩','砂糖','みりん','酒','サラダ油'],stores:DEF_STORES,prices:{},shop:[],loc:{lat:34.063589,lng:134.595345,label:'徳島市東沖洲（最初の基準）',at:0}}}
+DEF_STORES.forEach(d=>{if(!S.stores.some(s=>s.id===d.id))S.stores.push(d)});
+function save(){localStorage.setItem(KEY,JSON.stringify(S))}
+function esc(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function uid(){return 'x'+Math.random().toString(36).slice(2,9)}
+function daysLeft(d){if(!d)return null;const t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(d+'T00:00:00')-t)/86400000)}
+function distKm(a,b,c,d){const R2=6371,to=x=>x*Math.PI/180;const x=(c-a)*Math.PI/180,y=(d-b)*Math.PI/180;const h=Math.sin(x/2)**2+Math.cos(to(a))*Math.cos(to(c))*Math.sin(y/2)**2;return 2*R2*Math.asin(Math.sqrt(h))}
+function showPage(p){document.querySelectorAll('.page').forEach(e=>e.classList.remove('on'));document.getElementById('page-'+p).classList.add('on');document.querySelectorAll('nav button').forEach(e=>e.classList.remove('on'));document.getElementById('nav-'+p).classList.add('on');if(p==='menu')renderRecipes();if(p==='shop'){renderShop();renderStores();autoLocate()}if(p==='setting'){renderSeason();renderStoreEdit()}window.scrollTo(0,0)}
+/* 冷蔵庫 */
+let photoSel=new Set();
+function renderPhotoChips(){document.getElementById('photoChips').innerHTML=ALL_ING.map(n=>'<button class="chip'+(photoSel.has(n)?' on':'')+'" onclick="togglePhoto(\''+n+'\')">'+n+'</button>').join('')}
+function togglePhoto(n){photoSel.has(n)?photoSel.delete(n):photoSel.add(n);renderPhotoChips()}
+document.getElementById('photoInput').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const img=document.getElementById('preview');img.src=URL.createObjectURL(f);img.style.display='block';document.getElementById('photoArea').style.display='block';photoSel=new Set();renderPhotoChips()});
+function addPhotoSelection(){if(!photoSel.size){alert('写真の中にある食材をタップで選んでください');return}photoSel.forEach(n=>{if(!S.fridge.some(f=>f.name===n))S.fridge.push({id:uid(),name:n,amount:'1つ',expiry:''})});save();photoSel=new Set();renderPhotoChips();renderFridge();alert('冷蔵庫に追加しました。「献立」タブで提案を見られます');showPage('menu')}
+function renderQuick(){document.getElementById('quickChips').innerHTML=ALL_ING.map(n=>'<button class="chip" onclick="quickAdd(\''+n+'\')">'+n+'</button>').join('')}
+function quickAdd(n){document.getElementById('newName').value=n}
+function addManual(){const n=document.getElementById('newName').value.trim();if(!n){alert('食材名を入れてください');return}S.fridge.push({id:uid(),name:n,amount:document.getElementById('newAmount').value.trim()||'1つ',expiry:document.getElementById('newExpiry').value});save();document.getElementById('newName').value='';document.getElementById('newAmount').value='';document.getElementById('newExpiry').value='';renderFridge()}
+function renderFridge(){document.getElementById('fridgeCount').textContent=S.fridge.length;const el=document.getElementById('fridgeList');if(!S.fridge.length){el.innerHTML='<p class="muted">まだ何も入っていません。写真を撮るか、下のチップから追加してください。</p>';return}el.innerHTML=S.fridge.map(f=>{const d=daysLeft(f.expiry);let b='';if(d!==null&&d<0)b=' <span class="badge urgent">期限切れ</span>';else if(d!==null&&d<=2)b=' <span class="badge urgent">あと'+d+'日</span>';else if(d!==null&&d<=5)b=' <span class="badge soon">あと'+d+'日</span>';return '<div class="item"><div style="flex:1"><b>'+esc(f.name)+'</b>'+b+'<div class="muted">'+esc(f.amount)+(f.expiry?' ／ 期限 '+f.expiry:'')+'</div></div><button class="btn small gray" onclick="editItem(\''+f.id+'\')">編集</button><button class="btn small gray" onclick="delItem(\''+f.id+'\')">使い切った</button></div>'}).join('')}
+function editItem(id){const f=S.fridge.find(x=>x.id===id);if(!f)return;const a=prompt('量を直してください',f.amount);if(a!==null)f.amount=a;const d=prompt('期限（例 2026-11-05、空欄でもOK）',f.expiry||'');if(d!==null)f.expiry=d.trim();save();renderFridge()}
+function delItem(id){S.fridge=S.fridge.filter(x=>x.id!==id);save();renderFridge()}
+/* 献立 */
+function haveSet(){return new Set(S.fridge.map(f=>f.name))}
+function recipeScore(r){const have=haveSet();const matched=r.ing.filter(i=>have.has(i.n));let urgent=0;matched.forEach(i=>{const f=S.fridge.find(x=>x.name===i.n);const d=f?daysLeft(f.expiry):null;if(d!==null&&d<=3)urgent++});return{matched:matched.length,total:r.ing.length,missing:r.ing.filter(i=>!have.has(i.n)),missSea:r.sea.filter(s=>!S.seasonings.includes(s)),urgent,score:matched.length/r.ing.length*100+urgent*8}}
+function renderRecipes(){const el=document.getElementById('recipeList');if(!S.fridge.length){el.innerHTML='<p class="muted">冷蔵庫が空です。先に「冷蔵庫」タブで食材を追加してください。</p>';return}const list=RECIPES.map(r=>({r,s:recipeScore(r)})).sort((a,b)=>b.s.score-a.s.score);el.innerHTML=list.slice(0,12).map(({r,s},idx)=>{const pct=Math.round(s.matched/s.total*100);return '<div class="card" style="box-shadow:none"><div class="total-row"><b style="font-size:16px">'+(idx===0?'⭐ ':'')+esc(r.n)+'</b><span class="badge '+(s.missing.length===0?'best':'soon')+'">'+(s.missing.length===0?'今すぐ作れる':'あと'+s.missing.length+'つ')+'</span></div><div class="muted">'+r.c+' ／ '+r.t+' ／ 材料の'+pct+'%が冷蔵庫にあります'+(s.urgent?' ／ 期限が近い食材'+s.urgent+'つ使用':'')+'</div><h3>ある食材</h3><div class="chips">'+r.ing.filter(i=>haveSet().has(i.n)).map(i=>'<span class="chip have">'+i.n+' '+i.q+'</span>').join('')+'</div>'+(s.missing.length?'<h3>足りない食材</h3><div class="chips">'+s.missing.map(i=>'<span class="chip miss">'+i.n+' '+i.q+'</span>').join('')+'</div>':'')+(s.missSea.length?'<h3>足りない調味料</h3><div class="chips">'+s.missSea.map(x=>'<span class="chip miss">'+x+'</span>').join('')+'</div>':'<p class="muted">調味料は家にあるもので足ります</p>')+'<details><summary>作り方を見る</summary><ol class="steps">'+r.steps.map(x=>'<li>'+x+'</li>').join('')+'</ol></details>'+(s.missing.length||s.missSea.length?'<button class="btn small green" onclick="addMissing(\''+esc(r.n)+'\')">🛒 足りないものを買い物リストへ</button>':'')+'</div>'}).join('')}
+function addMissing(name){const r=RECIPES.find(x=>x.n===name);const s=recipeScore(r);[...s.missing.map(i=>i.n),...s.missSea].forEach(n=>{if(!S.shop.includes(n))S.shop.push(n)});save();alert('買い物リストに追加しました。「買い物・店舗」タブで最安のお店を比べられます');showPage('shop')}
+/* 買い物・店舗 */
+function renderShop(){const el=document.getElementById('shopList');if(!S.shop.length){el.innerHTML='<p class="muted">買い物リストは空です。献立の「足りないものを買い物リストへ」から追加できます。</p>';return}el.innerHTML=S.shop.map(n=>'<div class="item"><div style="flex:1"><b>'+esc(n)+'</b></div><button class="btn small gray" onclick="delShop(\''+esc(n)+'\')">削除</button></div>').join('')}
+function delShop(n){S.shop=S.shop.filter(x=>x!==n);save();renderShop();renderStores()}
+function addShopManual(){const n=document.getElementById('shopNew').value.trim();if(!n)return;if(!S.shop.includes(n))S.shop.push(n);document.getElementById('shopNew').value='';save();renderShop();renderStores()}
+function priceFor(store,item){const o=S.prices[item]&&S.prices[item][store.id];if(o)return o;const base=BASE_PRICE[item]||200;let h=0;const key=store.id+item;for(let i=0;i<key.length;i++)h=(h*31+key.charCodeAt(i))%997;const jitter=0.92+(h%17)/100;return Math.round(base*store.factor*jitter/10)*10}
+function storeTotal(store){return S.shop.reduce((sum,n)=>sum+priceFor(store,n),0)}
+function renderStores(){renderLoc();let stores=S.stores.slice();if(document.getElementById('favOnly').checked)stores=stores.filter(s=>s.fav);const el=document.getElementById('storeList');if(!S.shop.length){el.innerHTML='<p class="muted">買い物リストに食材を入れると、店舗ごとの合計（目安）を比べます。</p>';document.getElementById('splitBox').innerHTML='';return}if(!stores.length){el.innerHTML='<p class="muted">お気に入りの店舗がありません。「設定」タブで⭐をつけてください。</p>';return}const rows=stores.map(s=>({s,total:storeTotal(s),km:(s.lat&&S.loc)?distKm(S.loc.lat,S.loc.lng,s.lat,s.lng):null})).sort((a,b)=>a.total-b.total);el.innerHTML=rows.map((row,idx)=>'<div class="card" style="box-shadow:none"><div class="total-row"><b>'+esc(row.s.name)+(row.s.fav?' <span class="badge fav">⭐お気に入り</span>':'')+'</b>'+(idx===0?'<span class="badge best">最安（目安）</span>':'')+'</div><div class="muted">'+esc(row.s.addr)+(row.s.hours?' ／ '+esc(row.s.hours):'')+(row.km!==null?' ／ 基準の場所から約'+row.km.toFixed(1)+'km（住所からの目安）':'')+'</div><div class="total-row"><span>買い物リスト合計</span><span class="price">¥'+row.total.toLocaleString()+'</span></div><a class="maplink" target="_blank" href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(row.s.name+' '+row.s.addr)+'">Googleマップで開く</a><details><summary>価格を直す（実際の店頭価格）</summary>'+S.shop.map(n=>'<label>'+esc(n)+'（円）</label><input type="number" value="'+priceFor(row.s,n)+'" onchange="setPrice(\''+row.s.id+'\',\''+esc(n)+'\',this.value)">').join('')+'</details></div>').join('');
+/* 分けて買うと */
+let splitHtml='<div class="card" style="box-shadow:none"><h3>🧺 品目ごとに最安で分けて買うと</h3>';let splitTotal=0;S.shop.forEach(n=>{let best=null;stores.forEach(s=>{const p=priceFor(s,n);if(!best||p<best.p)best={s,p}});splitTotal+=best.p;splitHtml+='<div class="item"><div style="flex:1"><b>'+esc(n)+'</b><div class="muted">'+esc(best.s.name)+'</div></div><b>¥'+best.p+'</b></div>'});const singleBest=rows[0].total;splitHtml+='<div class="total-row"><span>分けて買う合計</span><span class="price">¥'+splitTotal.toLocaleString()+'</span></div><p class="muted">1店舗で全部買う最安（¥'+singleBest.toLocaleString()+'）との差は ¥'+Math.max(0,singleBest-splitTotal).toLocaleString()+' です。移動の手間と比べて選んでください。</p></div>';document.getElementById('splitBox').innerHTML=splitHtml}
+function setPrice(sid,item,val){const v=parseInt(val,10);if(!v)return;if(!S.prices[item])S.prices[item]={};S.prices[item][sid]=v;save();renderStores()}
+let lastAutoLoc=0;
+function getLocation(auto){if(!navigator.geolocation){if(!auto)alert('この端末では現在地が取れませんでした');return}navigator.geolocation.getCurrentPosition(p=>{S.loc={lat:p.coords.latitude,lng:p.coords.longitude,label:'現在地（自動取得）',at:Date.now(),acc:p.coords.accuracy?Math.round(p.coords.accuracy):null};save();renderStores();if(!auto)alert('現在地を取り直しました')},()=>{if(!auto)alert('現在地が取れませんでした。位置情報の許可を確認してください')},{enableHighAccuracy:true,timeout:15000,maximumAge:60000})}
+function autoLocate(){const now=Date.now();if(now-lastAutoLoc<60000)return;lastAutoLoc=now;getLocation(true)}
+function applyCoord(){const c=document.getElementById('locCoord').value.trim();const p=c.split(',').map(x=>parseFloat(x));if(p.length!==2||isNaN(p[0])||isNaN(p[1])||p[0]<-90||p[0]>90||p[1]<-180||p[1]>180){alert('座標は「34.1267, 134.5225」の形で入れてください');return}S.loc={lat:p[0],lng:p[1],label:'座標で指定した場所',at:Date.now(),acc:null};save();renderStores();alert('基準の場所を座標の位置に直しました')}
+function renderLoc(){document.getElementById('locLabel').textContent=S.loc.label;const m=document.getElementById('locMeta');if(!m)return;let t='緯度 '+S.loc.lat.toFixed(4)+' ／ 経度 '+S.loc.lng.toFixed(4);if(S.loc.at){t+=' ／ 取得：'+new Date(S.loc.at).toLocaleString('ja-JP');if(S.loc.acc)t+=' ／ 精度 約'+S.loc.acc+'m'}else{t+=' ／ ⚠️ この位置は最初のままかもしれません。「現在地を取り直す」を押してください'}m.textContent=t}
+/* 設定 */
+function renderSeason(){document.getElementById('seasonChips').innerHTML=SEASONINGS.map(n=>'<button class="chip sea'+(S.seasonings.includes(n)?' on':'')+'" onclick="toggleSea(\''+n+'\')">'+n+'</button>').join('')}
+function toggleSea(n){S.seasonings=S.seasonings.includes(n)?S.seasonings.filter(x=>x!==n):[...S.seasonings,n];save();renderSeason()}
+function renderStoreEdit(){document.getElementById('storeEditList').innerHTML=S.stores.map(s=>'<div class="item"><div style="flex:1"><b>'+esc(s.name)+'</b><div class="muted">'+esc(s.addr)+'</div></div><button class="btn small '+(s.fav?'green':'gray')+'" onclick="toggleFav(\''+s.id+'\')">'+(s.fav?'⭐登録済み':'☆お気に入り')+'</button></div>').join('')}
+function toggleFav(id){const s=S.stores.find(x=>x.id===id);s.fav=!s.fav;save();renderStoreEdit()}
+function addStore(){const n=document.getElementById('stName').value.trim();if(!n){alert('店名を入れてください');return}let lat=null,lng=null;const c=document.getElementById('stCoord').value.trim();if(c){const p=c.split(',').map(x=>parseFloat(x));if(p.length===2&&!isNaN(p[0])&&!isNaN(p[1])){lat=p[0];lng=p[1]}}S.stores.push({id:uid(),name:n,addr:document.getElementById('stAddr').value.trim(),lat,lng,factor:1.0,hours:'',fav:true});save();renderStoreEdit();alert('お気に入りに追加しました')}
+renderQuick();renderFridge();renderSeason();
+</script>
+</body>
+</html>
