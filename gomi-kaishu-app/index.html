@@ -102,6 +102,9 @@ dialog{border:0;border-radius:14px;padding:18px;width:min(92vw,480px)}dialog::ba
 
 <script>
 const DAYS=[["mon","月"],["tue","火"],["wed","水"],["thu","木"],["fri","金"],["sat","土"]];
+const APP_VERSION=5;
+async function checkUpdate(){try{const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"});if(!r.ok)return;const t=await r.text();const m=t.match(/バージョン(\d+)/);if(m&&Number(m[1])>APP_VERSION){location.replace(location.pathname+"?v="+m[1]);}}catch(e){}}
+checkUpdate();
 const KEY="gomi-kaishu-home-v1";
 const SEED_NAMES=["中川歯科医院","ブレッエル","しんの","徳島石油　庄町店","りんりん薬局","かまど","そごう給食","バラ園","麺八","飛鳥","スコーン","徳島石油　出来島","盛眼科","宝タクシー","阿波ドール","第一ゼミ","おなじみや","味噌そばジャック","ペイサン","米と魚と","ステーキダイニング琥珀","ラーメン澤家","地鶏音","郵便局","はるちゃんと","酒仙","旬の味　福井","たけがみ","餃子屋","ラーメン招福","竹の瀬","布雪","焼肉　美美","盛岡医院","麺王　福島","延印刷","佳話辺","サンタイカフェ","バースキャパー","おやじの料理　海","くろしお"];
 function emptyEntries(){return {mon:[],tue:[],wed:[],thu:[],fri:[],sat:[]}}
