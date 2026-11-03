@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>かーくんのお店｜ホームページ</title>
+<meta name="description" content="かーくん（Kuro）のお店のホームページ。家族と暮らしに役立つアプリは無料コーナーで、デジタル商品はBOOTHとnoteで販売中です。">
+<style>
+  :root{--bg:#fdf6ec;--card:#fff;--ink:#2b2620;--sub:#6b6257;--line:#f0dfc2;--red:#d94f30;--orange:#e67e22;--green:#2e9e6b;--blue:#2f7fd1;--gold:#f5b921}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+  .wrap{max-width:860px;margin:0 auto;padding:0 16px 48px}
+  .sign{background:var(--red);color:#fff;text-align:center;padding:10px;font-weight:700;letter-spacing:.1em;font-size:13px}
+  header{text-align:center;padding:34px 20px 24px;background:linear-gradient(180deg,#fff3d6,#fdf6ec)}
+  .shopname{font-size:32px;margin:0;font-weight:800}
+  .shopname .icon{font-size:34px}
+  .catch{margin:8px auto 4px;font-size:16px;font-weight:700}
+  .sub{color:var(--sub);font-size:14px;margin:0 auto 16px;max-width:540px}
+  .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .btn{display:inline-block;padding:11px 18px;border-radius:999px;text-decoration:none;font-weight:700;font-size:15px;background:var(--ink);color:#fff}
+  .btn.red{background:var(--red)} .btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--ink)}
+  .news{background:#fff7d6;border:1px solid var(--gold);border-radius:12px;padding:12px 16px;margin:18px 0;font-size:14px}
+  .news b{color:var(--red)}
+  h2{font-size:21px;margin:36px 0 4px}
+  h2 .shelf{display:inline-block;background:var(--orange);color:#fff;border-radius:8px;padding:2px 12px;font-size:18px;margin-right:8px}
+  h2 .shelf.free{background:var(--green)} h2 .shelf.soon{background:#888}
+  .note{font-size:13px;color:var(--sub);margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:1fr;gap:12px}
+  @media(min-width:640px){.grid{grid-template-columns:1fr 1fr}}
+  .item{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;position:relative}
+  .item .icon{font-size:32px}
+  .item h3{margin:6px 0 4px;font-size:17px}
+  .item p{margin:0 0 12px;font-size:14px;color:var(--sub)}
+  .price{font-size:20px;font-weight:800;color:var(--red)}
+  .price small{font-size:12px;color:var(--sub);font-weight:400}
+  .price.free{color:var(--green)}
+  .buy{display:inline-block;padding:10px 18px;border-radius:999px;background:var(--red);color:#fff;text-decoration:none;font-weight:700;font-size:14px}
+  .buy.blue{background:var(--blue)} .buy.green{background:var(--green)}
+  .tag{position:absolute;top:12px;right:12px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:#ffe1d6;color:#a83c1c}
+  .tag.free{background:#dcf5e8;color:#14714a} .tag.trial{background:#fff1dd;color:#a85b12} .tag.soon{background:#eee;color:#666}
+  .owner{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;font-size:14px}
+  .links{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .linkcard{display:block;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;text-decoration:none;font-weight:700}
+  .linkcard small{display:block;font-weight:400;color:var(--sub);font-size:13px}
+  footer{margin-top:44px;text-align:center;font-size:12px;color:var(--sub)}
+</style>
+</head>
+<body>
+<div class="sign">🏪 かーくんのお店 ｜ アプリとデジタル商品のお店です</div>
+<header>
+  <p class="shopname"><span class="icon">🏪</span> かーくんのお店</p>
+  <p class="catch">いらっしゃいませ！</p>
+  <p class="sub">店主は、本業は会社員のかーくん（Kuro）。家族と暮らしの「あったら便利なのに」から作ったアプリとデジタル商品を並べています。アプリは無料コーナーでそのまま遊べます。</p>
+  <div class="btns">
+    <a class="btn red" href="https://pooulpi.booth.pm/" target="_blank" rel="noopener">BOOTH本店へ</a>
+    <a class="btn" href="https://x.com/pooulpi" target="_blank" rel="noopener">X @pooulpi</a>
+    <a class="btn ghost" href="https://kurokuro7903.github.io/okozukai-otetsudai-app/portal/" target="_blank" rel="noopener">ポータル（まとめ）</a>
+  </div>
+  <div class="news">📢 <b>お知らせ：</b>「2027年 防災カレンダー（A4印刷用PDF）」をBOOTHで販売中です（980円）。</div>
+</header>
+
+<div class="wrap">
+
+  <h2><span class="shelf">おすすめ</span>商品棚</h2>
+  <p class="note">ダウンロード商品です。お支払いと受け取りは、各販売ページ（BOOTH／note）でお願いします。</p>
+  <div class="grid">
+    <div class="item">
+      <span class="tag">おすすめ</span>
+      <div class="icon">🗓️</div>
+      <h3>2027年 防災カレンダー</h3>
+      <p>A4印刷用PDF・全14ページ。月ごとの防災チェックつきで、印刷して壁掛けで使えます。</p>
+      <p class="price">980円 <small>（税込）</small></p>
+      <a class="buy" href="https://pooulpi.booth.pm/items/9090928" target="_blank" rel="noopener">BOOTHで買う</a>
+    </div>
+    <div class="item">
+      <div class="icon">📝</div>
+      <h3>SNS・副業向けテンプレ集</h3>
+      <p>店主の最初のデジタル商品。noteの有料記事で販売中です。</p>
+      <p class="price">1,980円 <small>（税込）</small></p>
+      <a class="buy blue" href="https://note.com/modern_ruff2149/n/nf84fdbdee838" target="_blank" rel="noopener">noteで買う</a>
+    </div>
+  </div>
+
+  <h2><span class="shelf free">無料</span>アプリコーナー</h2>
+  <p class="note">全部、スマホでそのまま使えます。「お試し版」は入力が開いている間だけ保持される試用版で、家族用の実データは入っていません。</p>
+  <div class="grid">
+    <div class="item">
+      <span class="tag free">無料</span>
+      <div class="icon">🗑️</div>
+      <h3>ゴミ回収確認</h3>
+      <p>施設ごとに曜日別の袋数を記録。週間合計・1日平均・曜日別グラフで確認できます。</p>
+      <a class="buy green" href="https://kurokuro7903.github.io/okozukai-otetsudai-app/gomi-kaishu-app/" target="_blank" rel="noopener">使ってみる</a>
+    </div>
+    <div class="item">
+      <span class="tag free">無料</span>
+      <div class="icon">🥦</div>
+      <h3>冷蔵庫こんだて</h3>
+      <p>冷蔵庫の余りものから献立を提案。足りない食材は買い物リストに、店舗ごとの目安価格も比較できます。</p>
+      <a class="buy green" href="https://kurokuro7903.github.io/okozukai-otetsudai-app/reizouko-kondate-app/" target="_blank" rel="noopener">使ってみる</a>
+    </div>
+    <div class="item">
+      <span class="tag free">無料</span>
+      <div class="icon">🗺️</div>
+      <h3>マイマップ</h3>
+      <p>自分だけのピンを自由に追加できる地図。カテゴリ色分け、メモ・評価・訪問記録、道順リンクつき。</p>
+      <a class="buy green" href="https://kurokuro7903.github.io/okozukai-otetsudai-app/my-map/" target="_blank" rel="noopener">使ってみる</a>
+    </div>
+    <div class="item">
+      <span class="tag free">無料</span>
+      <div class="icon">🐉</div>
+      <h3>お小遣い・お手伝い</h3>
+      <p>お手伝いでポイントとお小遣いが貯まり、キャラクターが進化するRPG風アプリ。親画面はPINロックで安心です。</p>
+      <a class="buy green" href="https://kurokuro7903.github.io/okozukai-otetsudai-app/" target="_blank" rel="noopener">使ってみる</a>
+    </div>
+    <div class="item">
+      <span class="tag trial">お試し版</span>
+      <div class="icon">💊</div>
+      <h3>飲んだよチェック</h3>
+      <p>離れて暮らす家族の服薬を確認。飲む人は大きな「飲みました」ボタン、見守る人は済み／まだを一目で確認できます。</p>
+      <a class="buy green" href="https://muse.ai/s/space-4-bxr6xp3xyxpexixjxh/mYXizAmvQRYw3_sNCRv9oiBBRnFDusYwdCVnfyuNVjo" target="_blank" rel="noopener">使ってみる</a>
+    </div>
+    <div class="item">
+      <span class="tag free">無料</span>
+      <div class="icon">🧩</div>
+      <h3>絵合わせ＆パズルゲーム</h3>
+      <p>大きなカードの絵合わせと、タップで入れかえるパズル。時間制限・ペナルティなしで、高齢の方でも気軽に遊べます。</p>
+      <a class="buy green" href="https://kurokuro7903.github.io/okozukai-otetsudai-app/senior-game/" target="_blank" rel="noopener">使ってみる</a>
+    </div>
+    <div class="item">
+      <span class="tag trial">お試し版</span>
+      <div class="icon">🚐</div>
+      <h3>まごころスーパー</h3>
+      <p>「AIでつなぐ、未来の移動スーパー」の利用者向け注文アプリ。大きな文字とボタンで注文できます。</p>
+      <a class="buy green" href="https://muse.ai/s/space-6-kxz6xpxe8xbfvsxw/ieQlX0QLtYUSfednW8JlBkv6Ypi_T0jzCecKdMkjCi8" target="_blank" rel="noopener">使ってみる</a>
+    </div>
+  </div>
+
+  <h2><span class="shelf soon">準備中</span>これからの商品</h2>
+  <div class="grid">
+    <div class="item">
+      <span class="tag soon">準備中</span>
+      <div class="icon">📦</div>
+      <h3>家族で使えるミニアプリ3点セット</h3>
+      <p>お小遣い・お手伝い記録／くすりチェック／とうばん・週間チェックの3本セット。BOOTHでの出品準備中です。</p>
+      <p class="price">1,980円 <small>（予定）</small></p>
+    </div>
+  </div>
+
+  <h2>👤 店主について</h2>
+  <div class="owner">
+    <p style="margin:0">店主：かーくん（Kuro）<br>
+    本業は会社員をしながら、家族や身近な人の困りごとを小さく解決するアプリと、印刷して使えるデジタル商品を作っています。新作の告知はX（@pooulpi）で出しています。</p>
+  </div>
+
+  <h2>🔗 お店のリンク</h2>
+  <div class="links">
+    <a class="linkcard" href="https://pooulpi.booth.pm/" target="_blank" rel="noopener">BOOTH本店<small>Kuroのアプリ置き場</small></a>
+    <a class="linkcard" href="https://note.com/modern_ruff2149" target="_blank" rel="noopener">note<small>クロ｜記事とデジタル商品</small></a>
+    <a class="linkcard" href="https://x.com/pooulpi" target="_blank" rel="noopener">X<small>@pooulpi｜新作と告知</small></a>
+    <a class="linkcard" href="https://kurokuro7903.github.io/okozukai-otetsudai-app/portal/" target="_blank" rel="noopener">ポータル<small>アプリと商品のまとめページ</small></a>
+  </div>
+
+  <footer>
+    <p>かーくんのお店 バージョン1（GitHub Pages版）</p>
+    <p>© 2026 かーくん（Kuro）</p>
+  </footer>
+</div>
+</body>
+</html>
