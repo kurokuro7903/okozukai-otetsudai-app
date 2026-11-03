@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="冷蔵庫こんだて">
+<meta name="apple-mobile-web-app-title" content="冷蔵庫のミカタ">
 <meta name="theme-color" content="#e86a2c">
-<title>冷蔵庫こんだて｜あまりもの献立＋家計みまもり</title>
+<title>冷蔵庫のミカタ｜期限みまもり＋レシート家計簿＋余りもの献立</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;background:#fff7f0;color:#333}
 header{background:#e86a2c;color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
@@ -52,7 +52,7 @@ video#barcodeVideo{width:100%;border-radius:12px;display:none;margin-top:8px;bac
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.5/dist/tesseract.min.js"></script>
 </head>
 <body>
-<header><h1>🥕 冷蔵庫こんだて＋家計</h1><p>余りもの献立 ＋ 期限みまもり ＋ レシート家計簿</p></header>
+<header><h1>🥕 冷蔵庫のミカタ</h1><p>期限みまもり ＋ レシート家計簿 ＋ 余りもの献立</p></header>
 <main>
 <!-- 撮影・冷蔵庫 -->
 <section id="page-fridge" class="page on">
@@ -202,7 +202,7 @@ video#barcodeVideo{width:100%;border-radius:12px;display:none;margin-top:8px;bac
     <button class="btn gray" onclick="if(confirm('冷蔵庫・買い物リスト・家計の記録・直した価格を全部消しますか？')){localStorage.removeItem(KEY);location.reload()}">データを全部消す</button>
   </div>
 </section>
-<footer>冷蔵庫こんだて バージョン4（家計合体版＋便利機能7つ）<br>データはこの端末の中だけに保存されます</footer>
+<footer>冷蔵庫のミカタ バージョン5（旧・冷蔵庫こんだて）<br>データはこの端末の中だけに保存されます</footer>
 </main>
 <nav>
 <button id="nav-fridge" class="on" onclick="showPage('fridge')"><span>🧊</span>冷蔵庫</button>
@@ -652,7 +652,7 @@ renderShop=function(){
     if(inFridge[name]){const s=document.createElement('span');s.className='badge soon';s.textContent='🏠家にある';s.style.marginLeft='6px';b.after(s);}
   });
 };
-function shopListText(){return '買い物リスト（冷蔵庫こんだて）\n'+S.shop.map(n=>'・'+n+(S.fridge.some(f=>f.name===n)?'（家にもある）':'')).join('\n')}
+function shopListText(){return '買い物リスト（冷蔵庫のミカタ）\n'+S.shop.map(n=>'・'+n+(S.fridge.some(f=>f.name===n)?'（家にもある）':'')).join('\n')}
 function shareShopList(){
   if(!S.shop.length){alert('買い物リストが空です');return}
   const text=shopListText();
