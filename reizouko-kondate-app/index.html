@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="冷蔵庫こんだて">
 <meta name="theme-color" content="#e86a2c">
-<title>冷蔵庫こんだて｜あまりもの献立</title>
+<title>冷蔵庫こんだて｜あまりもの献立＋家計みまもり</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;background:#fff7f0;color:#333}
 header{background:#e86a2c;color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
@@ -35,13 +35,28 @@ footer{text-align:center;color:#bbb;font-size:11px;padding:10px}
 details{margin-top:8px}summary{cursor:pointer;font-weight:700;color:#e86a2c;font-size:14px}
 ol.steps{padding-left:20px;line-height:1.7;font-size:14px}
 .notice{background:#fff3cd;border-radius:10px;padding:10px;font-size:12px;line-height:1.6;margin:8px 0}
+
+.alertbox{border-radius:12px;padding:12px;margin-bottom:12px;font-size:14px;line-height:1.6}
+.alertbox.red{background:#fdecec;border:1.5px solid #d9534f}
+.alertbox.yellow{background:#fff3cd;border:1.5px solid #f5a623}
+.alertbox.green{background:#e6f6ec;border:1.5px solid #2e9e5b}
+.bar-row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:13px}
+.bar-row .blabel{width:38%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{flex:1;background:#f3e2d3;border-radius:999px;height:16px;overflow:hidden}
+.bar-fill{height:100%;background:#e86a2c;border-radius:999px}
+.bar-val{width:76px;text-align:right;font-weight:700}
+pre.ocrtext{white-space:pre-wrap;font-size:11px;background:#fafafa;border:1px solid #eee;border-radius:8px;padding:8px;max-height:180px;overflow:auto}
+video#barcodeVideo{width:100%;border-radius:12px;display:none;margin-top:8px;background:#000}
+.kakei-num{font-size:22px;font-weight:800;color:#e86a2c}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.5/dist/tesseract.min.js"></script>
 </head>
 <body>
-<header><h1>🥕 冷蔵庫こんだて</h1><p>余りものを撮る → 献立提案 → 足りないものは最安のお店へ</p></header>
+<header><h1>🥕 冷蔵庫こんだて＋家計</h1><p>余りもの献立 ＋ 期限みまもり ＋ レシート家計簿</p></header>
 <main>
 <!-- 撮影・冷蔵庫 -->
 <section id="page-fridge" class="page on">
+  <div id="expiryAlert"></div>
   <div class="card">
     <h2>📸 冷蔵庫を撮影する</h2>
     <p class="muted">冷蔵庫の中を撮ると下に写真が出ます。写真の中にある食材をタップで選んでください（自動で決めつけず、あなたが確認してから追加する方式です）。</p>
@@ -53,6 +68,38 @@ ol.steps{padding-left:20px;line-height:1.7;font-size:14px}
       <div class="chips" id="photoChips"></div>
       <button class="btn green" onclick="addPhotoSelection()">✅ 選んだ食材を冷蔵庫に追加</button>
     </div>
+  </div>
+
+  <div class="card">
+    <h2>📅 賞味期限を撮影して登録</h2>
+    <p class="muted">期限の印字部分を大きく、明るく撮ってください。読み取れた日付は<b>確認・修正してから登録</b>します（自動で決めつけません）。読み取れなかった場合は手入力で登録できます。文字の読み取りにはネット接続が必要です。</p>
+    <button class="btn" onclick="document.getElementById('expiryInput').click()">📷 期限を撮影する／写真を選ぶ</button>
+    <input type="file" id="expiryInput" accept="image/*" capture="environment" style="display:none">
+    <img id="expiryPreview" alt="期限の写真" style="width:100%;border-radius:12px;display:none;margin-top:8px">
+    <p class="muted" id="expiryStatus"></p>
+    <div id="expiryArea" style="display:none">
+      <h3>日付の候補（タップで選べます）</h3>
+      <div class="chips" id="expiryCandidates"></div>
+      <label>商品名</label><input type="text" id="ocrName" placeholder="例：牛乳">
+      <label>賞味・消費期限</label><input type="date" id="ocrExpiry">
+      <label>量</label><input type="text" id="ocrAmount" value="1つ">
+      <button class="btn green" onclick="addFromOcr()">✅ この内容で冷蔵庫に登録</button>
+      <details><summary>読み取った文字を見る</summary><pre class="ocrtext" id="ocrText"></pre></details>
+    </div>
+  </div>
+  <div class="card">
+    <h2>🏷️ バーコードで登録</h2>
+    <p class="muted">カメラでJANコードを読むか、コードを手入力してください。一度登録した商品は次回から自動で名前が出ます。内蔵辞書は代表例のみで、無い商品は名前を入れて登録すると覚えます。</p>
+    <button class="btn" onclick="startBarcode()">📷 バーコードを読み取る</button>
+    <video id="barcodeVideo" playsinline muted></video>
+    <button class="btn gray" id="barcodeStopBtn" style="display:none" onclick="stopBarcode()">読み取りを止める</button>
+    <p class="muted" id="barcodeStatus"></p>
+    <label>JANコード（13桁・手入力もOK）</label><input type="text" id="janCode" inputmode="numeric" placeholder="例：4901777018646">
+    <button class="btn sub" onclick="lookupJan(true)">JANで商品名を探す</button>
+    <label>商品名</label><input type="text" id="janName" placeholder="例：コカ・コーラ 500ml">
+    <label>価格（任意・円）</label><input type="number" id="janPrice" placeholder="例：150">
+    <label>賞味・消費期限（任意）</label><input type="date" id="janExpiry">
+    <button class="btn green" onclick="addFromJan()">✅ 冷蔵庫＋家計に登録</button>
   </div>
   <div class="card">
     <h2>🧊 冷蔵庫の中身（<span id="fridgeCount">0</span>件）</h2>
@@ -95,6 +142,46 @@ ol.steps{padding-left:20px;line-height:1.7;font-size:14px}
     <div id="splitBox"></div>
   </div>
 </section>
+
+<!-- 家計 -->
+<section id="page-kakei" class="page">
+  <div class="card">
+    <h2>🧾 レシートを撮影して登録</h2>
+    <p class="muted">レシート全体が入るように撮ってください。店名・日付・商品名・金額を読み取り候補として出します。<b>確認・修正してから登録</b>してください。読み取りにはネット接続が必要です。</p>
+    <button class="btn" onclick="document.getElementById('receiptInput').click()">📷 レシートを撮影する／写真を選ぶ</button>
+    <input type="file" id="receiptInput" accept="image/*" capture="environment" style="display:none">
+    <img id="receiptPreview" alt="レシートの写真" style="width:100%;border-radius:12px;display:none;margin-top:8px">
+    <p class="muted" id="receiptStatus"></p>
+    <div id="receiptArea" style="display:none">
+      <label>店名</label><input type="text" id="rcStore" placeholder="例：マルナカ藍住店">
+      <label>日付</label><input type="date" id="rcDate">
+      <h3>商品（名前と金額を直せます）</h3>
+      <div id="rcItems"></div>
+      <button class="btn small sub" onclick="addReceiptRow()">＋ 商品の行を追加</button>
+      <div class="total-row" style="margin-top:8px"><span>合計（自動計算）</span><span class="price" id="rcTotal">¥0</span></div>
+      <label style="display:block;margin-top:8px"><input type="checkbox" id="rcToFridge"> 食品は冷蔵庫にも入れる（期限は空欄・あとで編集）</label>
+      <button class="btn green" onclick="registerReceipt()">✅ この内容で家計に登録</button>
+      <details><summary>読み取った文字を見る</summary><pre class="ocrtext" id="rcText"></pre></details>
+    </div>
+  </div>
+  <div class="card">
+    <h2>✍️ 手で購入を登録</h2>
+    <label>店名</label><input type="text" id="mpStore" placeholder="例：キョーエイ藍住店">
+    <label>日付</label><input type="date" id="mpDate">
+    <label>商品名</label><input type="text" id="mpName" placeholder="例：洗剤">
+    <label>金額（円）</label><input type="number" id="mpPrice" placeholder="例：398">
+    <button class="btn sub" onclick="addManualPurchase()">＋ 家計に登録</button>
+  </div>
+  <div class="card">
+    <h2>📊 購入傾向</h2>
+    <div id="kakeiSummary"></div>
+    <div id="kakeiTrend"></div>
+  </div>
+  <div class="card">
+    <h2>🛍️ 購入履歴（<span id="purchaseCount">0</span>件）</h2>
+    <div id="purchaseList"></div>
+  </div>
+</section>
 <!-- 設定 -->
 <section id="page-setting" class="page">
   <div class="card">
@@ -112,15 +199,16 @@ ol.steps{padding-left:20px;line-height:1.7;font-size:14px}
     <button class="btn sub" onclick="addStore()">＋ 店舗を追加</button>
   </div>
   <div class="card">
-    <button class="btn gray" onclick="if(confirm('冷蔵庫・買い物リスト・直した価格を全部消しますか？')){localStorage.removeItem(KEY);location.reload()}">データを全部消す</button>
+    <button class="btn gray" onclick="if(confirm('冷蔵庫・買い物リスト・家計の記録・直した価格を全部消しますか？')){localStorage.removeItem(KEY);location.reload()}">データを全部消す</button>
   </div>
 </section>
-<footer>冷蔵庫こんだて バージョン2<br>データはこの端末の中だけに保存されます</footer>
+<footer>冷蔵庫こんだて バージョン4（家計合体版＋便利機能7つ）<br>データはこの端末の中だけに保存されます</footer>
 </main>
 <nav>
 <button id="nav-fridge" class="on" onclick="showPage('fridge')"><span>🧊</span>冷蔵庫</button>
 <button id="nav-menu" onclick="showPage('menu')"><span>🍳</span>献立</button>
 <button id="nav-shop" onclick="showPage('shop')"><span>🛒</span>買い物・店舗</button>
+<button id="nav-kakei" onclick="showPage('kakei')"><span>💰</span>家計</button>
 <button id="nav-setting" onclick="showPage('setting')"><span>⚙️</span>設定</button>
 </nav>
 <script>
@@ -220,5 +308,388 @@ function toggleFav(id){const s=S.stores.find(x=>x.id===id);s.fav=!s.fav;save();r
 function addStore(){const n=document.getElementById('stName').value.trim();if(!n){alert('店名を入れてください');return}let lat=null,lng=null;const c=document.getElementById('stCoord').value.trim();if(c){const p=c.split(',').map(x=>parseFloat(x));if(p.length===2&&!isNaN(p[0])&&!isNaN(p[1])){lat=p[0];lng=p[1]}}S.stores.push({id:uid(),name:n,addr:document.getElementById('stAddr').value.trim(),lat,lng,factor:1.0,hours:'',fav:true});save();renderStoreEdit();alert('お気に入りに追加しました')}
 renderQuick();renderFridge();renderSeason();
 </script>
+
+<script>
+/* ===== 家計合体 v3 追加機能 ===== */
+if(!S.purchases)S.purchases=[];
+if(!S.janDict)S.janDict={};
+if(!S.wasteLog)S.wasteLog=[];
+save();
+const JAN_DICT={'4901777018646':'コカ・コーラ 500ml','4987035338310':'ポカリスエット 500ml','4902011773798':'お〜いお茶 600ml'};
+function normDigits(t){return String(t||'').replace(/[０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0)).replace(/[／]/g,'/').replace(/[．]/g,'.')}
+function pad2(n){return String(n).padStart(2,'0')}
+function parseDateCandidates(text){
+  const t=normDigits(text);const out=[];const push=(y,m,d)=>{y=+y;m=+m;d=+d;if(m<1||m>12||d<1||d>31)return;if(y<100)y+=2000;const s=y+'-'+pad2(m)+'-'+pad2(d);if(!out.includes(s))out.push(s)};
+  let m;const re1=/(20\d{2})\s*[\/.\-年]\s*(\d{1,2})\s*[\/.\-月]\s*(\d{1,2})/g;while((m=re1.exec(t)))push(m[1],m[2],m[3]);
+  const re2=/(\d{2})\s*[\/.\-]\s*(\d{1,2})\s*[\/.\-]\s*(\d{1,2})/g;while((m=re2.exec(t)))push(m[1],m[2],m[3]);
+  const re3=/(20\d{2})(\d{2})(\d{2})/g;while((m=re3.exec(t)))push(m[1],m[2],m[3]);
+  return out;
+}
+async function runOcr(file,statusEl){
+  if(typeof Tesseract==='undefined')throw new Error('no-ocr');
+  statusEl.textContent='文字を読み取っています…（初回は少し時間がかかります）';
+  const res=await Tesseract.recognize(file,'jpn+eng',{logger:msg=>{if(msg.status==='recognizing text')statusEl.textContent='文字を読み取っています… '+Math.round(msg.progress*100)+'%'}});
+  return res.data.text||'';
+}
+/* 期限OCR */
+let expiryStreamDummy=null;
+document.getElementById('expiryInput').addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;
+  const img=document.getElementById('expiryPreview');img.src=URL.createObjectURL(f);img.style.display='block';
+  const st=document.getElementById('expiryStatus');document.getElementById('expiryArea').style.display='block';
+  try{
+    const text=await runOcr(f,st);
+    document.getElementById('ocrText').textContent=text;
+    const cands=parseDateCandidates(text);
+    const box=document.getElementById('expiryCandidates');
+    if(cands.length){box.innerHTML=cands.map(d=>'<button class="chip" onclick="document.getElementById(\'ocrExpiry\').value=\''+d+'\'">'+d+'</button>').join('');document.getElementById('ocrExpiry').value=cands[cands.length-1];st.textContent='日付の候補が '+cands.length+' 件見つかりました。合っているか確認してください。';}
+    else{st.textContent='日付が読み取れませんでした。期限欄に手で入れてください。';box.innerHTML='<span class="muted">候補なし</span>';}
+  }catch(err){st.textContent='読み取りできませんでした（ネット接続が必要です）。期限欄に手で入れて登録できます。';document.getElementById('ocrText').textContent='';}
+});
+function addFromOcr(){
+  const n=document.getElementById('ocrName').value.trim();if(!n){alert('商品名を入れてください');return}
+  S.fridge.push({id:uid(),name:n,amount:document.getElementById('ocrAmount').value.trim()||'1つ',expiry:document.getElementById('ocrExpiry').value});
+  save();renderFridge();alert('冷蔵庫に登録しました');
+}
+/* バーコード */
+let bcStream=null,bcTimer=null;
+async function startBarcode(){
+  const st=document.getElementById('barcodeStatus');const video=document.getElementById('barcodeVideo');
+  if(!('BarcodeDetector' in window)){st.textContent='このブラウザはカメラでのバーコード読み取りに対応していません。下のJANコード手入力を使ってください。';return}
+  try{
+    bcStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    video.srcObject=bcStream;video.style.display='block';document.getElementById('barcodeStopBtn').style.display='block';await video.play();
+    const det=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e']});
+    st.textContent='バーコードをカメラに写してください…';
+    bcTimer=setInterval(async()=>{try{const codes=await det.detect(video);if(codes&&codes.length){document.getElementById('janCode').value=codes[0].rawValue;stopBarcode();st.textContent='読み取りました：'+codes[0].rawValue;lookupJan(true);}}catch(e){}},400);
+  }catch(e){st.textContent='カメラを開けませんでした。JANコード手入力を使ってください。';}
+}
+function stopBarcode(){if(bcTimer){clearInterval(bcTimer);bcTimer=null}if(bcStream){bcStream.getTracks().forEach(t=>t.stop());bcStream=null}const v=document.getElementById('barcodeVideo');v.style.display='none';document.getElementById('barcodeStopBtn').style.display='none'}
+function lookupJan(announce){
+  const code=document.getElementById('janCode').value.trim();if(!code)return;
+  const name=S.janDict[code]||JAN_DICT[code]||'';
+  if(name){document.getElementById('janName').value=name;if(announce)document.getElementById('barcodeStatus').textContent='商品名が見つかりました：'+name;}
+  else if(announce){document.getElementById('barcodeStatus').textContent='辞書に無い商品です。商品名を入れて登録すると、次回から自動で出ます。';}
+}
+function addFromJan(){
+  const n=document.getElementById('janName').value.trim();if(!n){alert('商品名を入れてください');return}
+  const code=document.getElementById('janCode').value.trim();if(code)S.janDict[code]=n;
+  const price=parseInt(document.getElementById('janPrice').value,10)||0;
+  S.fridge.push({id:uid(),name:n,amount:'1つ',expiry:document.getElementById('janExpiry').value,price:price||undefined});
+  if(price>0){S.purchases.push({id:uid(),date:new Date().toISOString().slice(0,10),store:'バーコード登録',total:price,items:[{name:n,price:price,cat:categorize(n)}]});}
+  save();renderFridge();alert('冷蔵庫に登録しました'+(price>0?'（家計にも ¥'+price.toLocaleString()+' で登録）':''));
+}
+/* カテゴリ判定 */
+function categorize(name){
+  const n=String(name||'');
+  if(/洗剤|ティッシュ|トイレット|シャンプー|歯磨|石鹸|せっけん|ゴミ袋|ラップ|ホイル|スポンジ/.test(n))return '日用品';
+  if(/ビール|酒|ワイン|焼酎|チューハイ/.test(n))return '酒類';
+  if(/コーラ|お茶|コーヒー|ジュース|牛乳|水|ポカリ|カルピス|飲料|ドリンク/.test(n))return '飲料';
+  if(/チョコ|クッキー|アイス|ケーキ|菓子|グミ|ポテチ|スナック|プリン/.test(n))return 'お菓子';
+  if(/米|パン|うどん|そば|パスタ|麺|ごはん/.test(n))return '主食';
+  return '食品';
+}
+/* レシートOCR */
+let rcDraft=[];
+document.getElementById('receiptInput').addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;
+  const img=document.getElementById('receiptPreview');img.src=URL.createObjectURL(f);img.style.display='block';
+  const st=document.getElementById('receiptStatus');document.getElementById('receiptArea').style.display='block';
+  try{
+    const text=await runOcr(f,st);
+    document.getElementById('rcText').textContent=text;
+    const parsed=parseReceipt(text);
+    document.getElementById('rcStore').value=parsed.store;
+    document.getElementById('rcDate').value=parsed.date||new Date().toISOString().slice(0,10);
+    rcDraft=parsed.items;renderReceiptRows();
+    st.textContent=parsed.items.length?('商品が '+parsed.items.length+' 件見つかりました。名前と金額を確認してください。'):'商品の行が読み取れませんでした。「＋ 商品の行を追加」で手入力できます。';
+  }catch(err){st.textContent='読み取りできませんでした（ネット接続が必要です）。下の「手で購入を登録」も使えます。';rcDraft=[];renderReceiptRows();}
+});
+function parseReceipt(text){
+  const t=normDigits(text);const lines=t.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  let store='';const storeHints=['マルナカ','キョーエイ','ハローズ','イオン','ゆめタウン','セブン','ローソン','ファミリー','ダイソー','ドラッグ','スーパー','マート','ストア'];
+  for(const line of lines.slice(0,6)){if(storeHints.some(h=>line.includes(h))){store=line.replace(/\s+/g,' ').slice(0,30);break}}
+  if(!store&&lines.length)store=lines[0].slice(0,30);
+  const dates=parseDateCandidates(t);const date=dates.length?dates[0]:'';
+  const skip=/合計|小計|お釣|お預|預り|税|ポイント|レジ|電話|TEL|番号|領収|ありがとう|様|会員|割引|値引|クーポン|残高|クレジット|現金|PayPay|支払|釣銭|対象|内訳/;
+  const items=[];
+  lines.forEach(line=>{
+    if(skip.test(line))return;
+    const m=line.match(/^(.+?)[\s¥￥]*([0-9]{1,3}(?:,[0-9]{3})|[0-9]{2,6})\s*(?:円)?\s*$/);
+    if(!m)return;const name=m[1].replace(/[¥￥*＊×x]\s*$/,'').trim();const price=parseInt(m[2].replace(/,/g,''),10);
+    if(!name||name.length<2||!/[\u3040-\u30ff\u4e00-\u9fafA-Za-z]/.test(name))return;
+    if(!(price>=10&&price<=100000))return;
+    items.push({name:name.slice(0,40),price:price,cat:categorize(name)});
+  });
+  return {store:store,date:date,items:items.slice(0,40)};
+}
+function renderReceiptRows(){
+  const el=document.getElementById('rcItems');
+  if(!rcDraft.length){el.innerHTML='<p class="muted">商品がありません。下のボタンで追加できます。</p>';}
+  else{el.innerHTML=rcDraft.map((it,i)=>'<div class="item"><div style="flex:1"><input type="text" value="'+esc(it.name)+'" onchange="rcDraft['+i+'].name=this.value;rcDraft['+i+'].cat=categorize(this.value)"><div class="muted">'+esc(it.cat)+'</div></div><input type="number" style="width:110px" value="'+it.price+'" onchange="rcDraft['+i+'].price=parseInt(this.value,10)||0;renderRcTotal()"><button class="btn small gray" onclick="rcDraft.splice('+i+',1);renderReceiptRows()">削除</button></div>').join('');}
+  renderRcTotal();
+}
+function renderRcTotal(){const total=rcDraft.reduce((s,x)=>s+(+x.price||0),0);const el=document.getElementById('rcTotal');if(el)el.textContent='¥'+total.toLocaleString()}
+function addReceiptRow(){rcDraft.push({name:'',price:0,cat:'食品'});renderReceiptRows()}
+function registerReceipt(){
+  const items=rcDraft.filter(x=>x.name.trim()&&(+x.price||0)>0);if(!items.length){alert('商品（名前と金額）を1件以上入れてください');return}
+  const store=document.getElementById('rcStore').value.trim()||'不明な店';
+  const date=document.getElementById('rcDate').value||new Date().toISOString().slice(0,10);
+  const total=items.reduce((s,x)=>s+(+x.price||0),0);
+  S.purchases.push({id:uid(),date:date,store:store,total:total,items:items});
+  if(document.getElementById('rcToFridge').checked){items.forEach(it=>{if(it.cat==='食品'||it.cat==='飲料'||it.cat==='主食'){if(!S.fridge.some(f=>f.name===it.name))S.fridge.push({id:uid(),name:it.name,amount:'1つ',expiry:'',price:it.price});}});}
+  save();rcDraft=[];renderReceiptRows();renderFridge();renderKakei();
+  alert('家計に登録しました（合計 ¥'+total.toLocaleString()+'）');showPage('kakei');
+}
+function addManualPurchase(){
+  const n=document.getElementById('mpName').value.trim();const price=parseInt(document.getElementById('mpPrice').value,10)||0;
+  if(!n||price<=0){alert('商品名と金額を入れてください');return}
+  const date=document.getElementById('mpDate').value||new Date().toISOString().slice(0,10);
+  S.purchases.push({id:uid(),date:date,store:document.getElementById('mpStore').value.trim()||'不明な店',total:price,items:[{name:n,price:price,cat:categorize(n)}]});
+  save();document.getElementById('mpName').value='';document.getElementById('mpPrice').value='';renderKakei();alert('家計に登録しました');
+}
+/* 冷蔵庫表示（期限近い順＋捨てたボタン）で上書き */
+function renderFridge(){
+  document.getElementById('fridgeCount').textContent=S.fridge.length;renderExpiryAlert();
+  const el=document.getElementById('fridgeList');
+  if(!S.fridge.length){el.innerHTML='<p class="muted">まだ何も入っていません。写真を撮るか、下のチップから追加してください。</p>';return}
+  const sorted=S.fridge.slice().sort((a,b)=>{const da=daysLeft(a.expiry),db=daysLeft(b.expiry);if(da===null&&db===null)return 0;if(da===null)return 1;if(db===null)return -1;return da-db});
+  el.innerHTML=sorted.map(f=>{const d=daysLeft(f.expiry);let b='';if(d!==null&&d<0)b=' <span class="badge urgent">期限切れ</span>';else if(d!==null&&d<=2)b=' <span class="badge urgent">あと'+d+'日</span>';else if(d!==null&&d<=5)b=' <span class="badge soon">あと'+d+'日</span>';else if(d!==null&&d<=7)b=' <span class="badge soon">あと'+d+'日</span>';
+  return '<div class="item"><div style="flex:1"><b>'+esc(f.name)+'</b>'+b+'<div class="muted">'+esc(f.amount)+(f.expiry?' ／ 期限 '+f.expiry:'')+(f.price?' ／ ¥'+f.price.toLocaleString():'')+'</div></div><button class="btn small gray" onclick="editItem(\''+f.id+'\')">編集</button><button class="btn small gray" onclick="delItem(\''+f.id+'\')">使い切った</button><button class="btn small gray" onclick="wasteItem(\''+f.id+'\')">捨てた</button></div>'}).join('');
+}
+function wasteItem(id){
+  const f=S.fridge.find(x=>x.id===id);if(!f)return;
+  if(!confirm('「'+f.name+'」を捨てたものとして記録しますか？ムダ金額の目安に数えます。'))return;
+  const est=f.price||BASE_PRICE[f.name]||200;
+  S.wasteLog.push({id:uid(),name:f.name,date:new Date().toISOString().slice(0,10),est:est});
+  S.fridge=S.fridge.filter(x=>x.id!==id);save();renderFridge();alert('捨てた記録を付けました（目安 ¥'+est.toLocaleString()+'）。次は期限アラートを早めにチェックしてね');
+}
+function renderExpiryAlert(){
+  const el=document.getElementById('expiryAlert');if(!el)return;
+  const expired=[],soon=[],week=[];
+  S.fridge.forEach(f=>{const d=daysLeft(f.expiry);if(d===null)return;if(d<0)expired.push(f);else if(d<=3)soon.push(f);else if(d<=7)week.push(f)});
+  const ym=new Date().toISOString().slice(0,7);const monthTotal=S.purchases.filter(p=>String(p.date||'').startsWith(ym)).reduce((s,p)=>s+(p.total||0),0);
+  let h='';
+  if(expired.length)h+='<div class="alertbox red"><b>⚠️ 期限切れが '+expired.length+' 件あります</b><br>'+expired.map(f=>esc(f.name)).join('、')+'</div>';
+  if(soon.length)h+='<div class="alertbox red"><b>⏰ 期限まで3日以内が '+soon.length+' 件</b><br>'+soon.map(f=>esc(f.name)+'（あと'+daysLeft(f.expiry)+'日）').join('、')+'<br><span class="muted">「献立」タブで使う料理を提案します</span></div>';
+  else if(week.length)h+='<div class="alertbox yellow"><b>📅 期限まで7日以内が '+week.length+' 件</b><br>'+week.map(f=>esc(f.name)+'（あと'+daysLeft(f.expiry)+'日）').join('、')+'</div>';
+  else if(S.fridge.length)h+='<div class="alertbox green"><b>✅ 期限が近いものはありません</b><br>今月の買い物合計（家計登録分）：<b>¥'+monthTotal.toLocaleString()+'</b></div>';
+  el.innerHTML=h;
+}
+/* 家計表示 */
+function barsHtml(map){
+  const entries=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,8);if(!entries.length)return '<p class="muted">まだ記録がありません</p>';
+  const max=entries[0][1]||1;
+  return entries.map(([k,v])=>'<div class="bar-row"><span class="blabel">'+esc(k)+'</span><span class="bar-track"><span class="bar-fill" style="display:block;width:'+Math.max(4,Math.round(v/max*100))+'%"></span></span><span class="bar-val">¥'+v.toLocaleString()+'</span></div>').join('');
+}
+function renderKakei(){
+  document.getElementById('purchaseCount').textContent=S.purchases.length;
+  const now=new Date();const ym=now.toISOString().slice(0,7);
+  const prev=new Date(now.getFullYear(),now.getMonth()-1,1).toISOString().slice(0,7);
+  const cur=S.purchases.filter(p=>String(p.date||'').startsWith(ym));
+  const prv=S.purchases.filter(p=>String(p.date||'').startsWith(prev));
+  const curTotal=cur.reduce((s,p)=>s+(p.total||0),0),prvTotal=prv.reduce((s,p)=>s+(p.total||0),0);
+  const wasteTotal=S.wasteLog.reduce((s,w)=>s+(w.est||0),0);
+  document.getElementById('kakeiSummary').innerHTML=
+    '<div class="total-row"><span>今月の買い物合計</span><span class="kakei-num">¥'+curTotal.toLocaleString()+'</span></div>'+
+    '<p class="muted">前月：¥'+prvTotal.toLocaleString()+' ／ 差：'+(curTotal-prvTotal>=0?'+':'')+'¥'+(curTotal-prvTotal).toLocaleString()+'</p>'+
+    '<p class="muted">期限切れなどで捨てた目安：<b>¥'+wasteTotal.toLocaleString()+'</b>（'+S.wasteLog.length+'件）</p>';
+  const byStore={},byCat={},freq={};
+  S.purchases.forEach(p=>{byStore[p.store]=(byStore[p.store]||0)+(p.total||0);(p.items||[]).forEach(it=>{byCat[it.cat||categorize(it.name)]=(byCat[it.cat||categorize(it.name)]||0)+(+it.price||0);freq[it.name]=(freq[it.name]||0)+1})});
+  const inFridge=new Set(S.fridge.map(f=>f.name));
+  const dup=Object.keys(freq).filter(n=>inFridge.has(n)&&freq[n]>=2);
+  const freqHtml=Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([k,v])=>'<div class="bar-row"><span class="blabel">'+esc(k)+'</span><span class="bar-track"><span class="bar-fill" style="display:block;width:'+Math.max(6,v*18)+'%"></span></span><span class="bar-val">'+v+'回</span></div>').join('')||'<p class="muted">まだ記録がありません</p>';
+  document.getElementById('kakeiTrend').innerHTML=
+    '<h3>店ごとの合計</h3>'+barsHtml(byStore)+
+    '<h3>カテゴリごとの合計</h3>'+barsHtml(byCat)+
+    '<h3>よく買う商品</h3>'+freqHtml+
+    (dup.length?'<div class="alertbox yellow"><b>🧐 在庫があるのに繰り返し買っているかも</b><br>'+dup.map(esc).join('、')+'<br><span class="muted">冷蔵庫の中身を確認してから買うとムダが減ります</span></div>':'');
+  const el=document.getElementById('purchaseList');
+  if(!S.purchases.length){el.innerHTML='<p class="muted">まだ購入履歴がありません。レシート撮影か手入力で登録してください。</p>';return}
+  const sorted=S.purchases.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+  el.innerHTML=sorted.slice(0,50).map(p=>'<div class="item"><div style="flex:1"><b>'+esc(p.store)+'</b> <span class="muted">'+esc(p.date)+'</span><div class="muted">'+(p.items||[]).map(it=>esc(it.name)+' ¥'+(+it.price||0).toLocaleString()).join('、 ')+'</div></div><b>¥'+(p.total||0).toLocaleString()+'</b><button class="btn small gray" onclick="delPurchase(\''+p.id+'\')">削除</button></div>').join('');
+}
+function delPurchase(id){S.purchases=S.purchases.filter(p=>p.id!==id);save();renderKakei()}
+/* showPage 上書き（家計タブ対応） */
+const _origShowPage=showPage;
+showPage=function(p){
+  document.querySelectorAll('.page').forEach(e=>e.classList.remove('on'));document.getElementById('page-'+p).classList.add('on');
+  document.querySelectorAll('nav button').forEach(e=>e.classList.remove('on'));const nav=document.getElementById('nav-'+p);if(nav)nav.classList.add('on');
+  if(p==='menu')renderRecipes();if(p==='shop'){renderShop();renderStores();autoLocate()}if(p==='setting'){renderSeason();renderStoreEdit()}
+  if(p==='kakei'){const mp=document.getElementById('mpDate');if(mp&&!mp.value)mp.value=new Date().toISOString().slice(0,10);renderKakei()}
+  if(p==='fridge')renderFridge();
+  window.scrollTo(0,0);
+};
+renderFridge();
+</script>
+
+
+<script>
+/* ===== v4 便利機能7つ ===== */
+if(S.budget===undefined)S.budget=0;
+save();
+/* --- 純粋ヘルパー（検証用） --- */
+function priceStatsFrom(purchases){
+  const map={};
+  (purchases||[]).forEach(p=>{(p.items||[]).forEach(it=>{
+    const price=+it.price||0; if(price<=0)return;
+    if(!map[it.name])map[it.name]={name:it.name,count:0,min:price,minStore:p.store||'',sum:0,last:price,lastDate:p.date||''};
+    const m=map[it.name]; m.count++; m.sum+=price;
+    if(price<m.min){m.min=price;m.minStore=p.store||''}
+    if((p.date||'')>=(m.lastDate||'')){m.last=price;m.lastDate=p.date||''}
+  })});
+  Object.values(map).forEach(m=>{m.avg=Math.round(m.sum/m.count)});
+  return Object.values(map).sort((a,b)=>b.count-a.count);
+}
+function consumableForecastFrom(purchases,todayStr){
+  const re=/洗剤|ティッシュ|トイレット|シャンプー|リンス|歯磨|石鹸|せっけん|ゴミ袋|ラップ|ホイル|スポンジ|漂白|柔軟|電池|マスク|ウェット|おむつ|生理|綿棒|キッチンペーパー/;
+  const byName={};
+  (purchases||[]).forEach(p=>{(p.items||[]).forEach(it=>{
+    if((it.cat||'')==='日用品'||re.test(it.name)){ (byName[it.name]=byName[it.name]||[]).push(p.date) }
+  })});
+  const today=new Date(todayStr+'T00:00:00'); const out=[];
+  Object.entries(byName).forEach(([name,dates])=>{
+    const ds=dates.filter(Boolean).sort(); if(ds.length<2)return;
+    const gaps=[]; for(let i=1;i<ds.length;i++){gaps.push((new Date(ds[i]+'T00:00:00')-new Date(ds[i-1]+'T00:00:00'))/86400000)}
+    const avg=Math.round(gaps.reduce((a,b)=>a+b,0)/gaps.length);
+    const since=Math.round((today-new Date(ds[ds.length-1]+'T00:00:00'))/86400000);
+    if(avg>=7&&since>=avg-5)out.push({name:name,avgDays:avg,sinceDays:since,lastDate:ds[ds.length-1]});
+  });
+  return out.sort((a,b)=>(b.sinceDays-b.avgDays)-(a.sinceDays-a.avgDays));
+}
+/* --- UIカードを差し込む --- */
+(function insertCards(){
+  const kakei=document.getElementById('page-kakei');
+  const budget=document.createElement('div'); budget.className='card'; budget.id='budgetCard';
+  budget.innerHTML='<h2>💴 今月の予算と月末予測</h2><div id="budgetBody"></div><label>月の買い物予算（円）</label><input type="number" id="budgetInput" placeholder="例：40000"><button class="btn sub" onclick="saveBudget()">予算を保存</button>';
+  kakei.insertBefore(budget,kakei.firstChild);
+  const price=document.createElement('div'); price.className='card'; price.id='priceCard';
+  price.innerHTML='<h2>🏷️ 底値メモ（商品ごとの価格記録）</h2><div id="priceBody"></div>';
+  const _cards=kakei.querySelectorAll('.card'); const _hist=_cards[_cards.length-1];
+  kakei.insertBefore(price,_hist);
+  const cons=document.createElement('div'); cons.className='card'; cons.id='consCard';
+  cons.innerHTML='<h2>🔮 そろそろ無くなるかも（消耗品予測）</h2><div id="consBody"></div>';
+  kakei.insertBefore(cons,_hist);
+  const setting=document.getElementById('page-setting');
+  const bk=document.createElement('div'); bk.className='card';
+  bk.innerHTML='<h2>💾 バックアップ（書き出し／読み込み）</h2><p class="muted">記録をテキストにして保存できます。機種変更の前に書き出してください。読み込むと今の記録は上書きされます。</p><button class="btn sub" onclick="exportBackup()">書き出す（下の欄に出ます）</button><textarea id="backupText" style="width:100%;min-height:110px;border:1.5px solid #ddd;border-radius:10px;padding:10px;font-size:12px" placeholder="ここにバックアップが出ます／読み込む時はここに貼ります"></textarea><button class="btn small gray" onclick="copyBackup()">テキストをコピー</button> <button class="btn small gray" onclick="downloadBackup()">ファイルで保存</button><button class="btn gray" onclick="importBackup()">このテキストを読み込む</button>';
+  setting.appendChild(bk);
+  const shopList=document.getElementById('shopList');
+  const shareDiv=document.createElement('div'); shareDiv.style.marginTop='8px';
+  shareDiv.innerHTML='<button class="btn small green" onclick="shareShopList()">💬 買い物リストを送る（共有／LINE）</button> <button class="btn small gray" onclick="copyShopList()">リストをコピー</button><p class="muted">在庫がある商品には、買い物リストで「🏠家にある」と表示します（買う前チェック）。</p>';
+  shopList.parentNode.insertBefore(shareDiv,shopList.nextSibling);
+})();
+/* --- 5. 予算 --- */
+function saveBudget(){const v=parseInt(document.getElementById('budgetInput').value,10)||0;S.budget=v;save();renderBudget();alert(v>0?('予算を ¥'+v.toLocaleString()+' にしました'): '予算を解除しました')}
+function renderBudget(){
+  const el=document.getElementById('budgetBody'); if(!el)return;
+  const now=new Date(); const ym=now.toISOString().slice(0,7);
+  const spent=S.purchases.filter(p=>String(p.date||'').startsWith(ym)).reduce((s,p)=>s+(p.total||0),0);
+  const daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  const elapsed=now.getDate();
+  const projected=elapsed>0?Math.round(spent/elapsed*daysInMonth):0;
+  let h='<div class="total-row"><span>今月の支出</span><span class="kakei-num">¥'+spent.toLocaleString()+'</span></div>';
+  h+='<p class="muted">このペースだと月末は約 <b>¥'+projected.toLocaleString()+'</b> の見込みです（'+elapsed+'日経過／'+daysInMonth+'日）。</p>';
+  if(S.budget>0){
+    const pct=Math.min(100,Math.round(spent/S.budget*100));
+    const remain=S.budget-spent; const daysLeft=daysInMonth-elapsed;
+    h+='<div class="bar-row"><span class="blabel">予算 ¥'+S.budget.toLocaleString()+'</span><span class="bar-track"><span class="bar-fill" style="display:block;width:'+pct+'%"></span></span><span class="bar-val">'+pct+'%</span></div>';
+    h+= remain>=0? '<p class="muted">残り <b>¥'+remain.toLocaleString()+'</b>'+(daysLeft>0?'（1日あたり約 ¥'+Math.floor(remain/Math.max(1,daysLeft)).toLocaleString()+' まで）':'')+'</p>'
+                 : '<div class="alertbox red"><b>⚠️ 予算を ¥'+Math.abs(remain).toLocaleString()+' 超えています</b></div>';
+    document.getElementById('budgetInput').value=S.budget;
+  } else { h+='<p class="muted">予算は未設定です。下で金額を入れて保存すると、残りとペースが分かります。</p>'; }
+  el.innerHTML=h;
+}
+/* --- 1. 底値メモ --- */
+function renderPrice(){
+  const el=document.getElementById('priceBody'); if(!el)return;
+  const stats=priceStatsFrom(S.purchases);
+  if(!stats.length){el.innerHTML='<p class="muted">まだ価格の記録がありません。レシートやバーコードで登録すると、ここに最安値と平均が出ます。</p>';return}
+  el.innerHTML=stats.slice(0,15).map(m=>{
+    let judge=''; if(m.count>=2){ if(m.last<=m.min)judge=' <span class="badge best">前回は最安クラス</span>'; else if(m.last>m.avg)judge=' <span class="badge soon">前回は平均より高め</span>'; }
+    return '<div class="item"><div style="flex:1"><b>'+esc(m.name)+'</b>'+judge+'<div class="muted">最安 ¥'+m.min.toLocaleString()+'（'+esc(m.minStore||'不明')+'）／ 平均 ¥'+m.avg.toLocaleString()+' ／ 前回 ¥'+m.last.toLocaleString()+' ／ '+m.count+'回購入</div></div></div>';
+  }).join('');
+}
+/* --- 2. 消耗品予測 --- */
+function renderCons(){
+  const el=document.getElementById('consBody'); if(!el)return;
+  const fc=consumableForecastFrom(S.purchases,new Date().toISOString().slice(0,10));
+  if(!fc.length){el.innerHTML='<p class="muted">予測には日用品の購入記録が2回以上必要です。レシート登録がたまると自動で出ます。</p>';return}
+  el.innerHTML=fc.map(f=>'<div class="item"><div style="flex:1"><b>'+esc(f.name)+'</b><div class="muted">約'+f.avgDays+'日周期 ／ 前回 '+esc(f.lastDate)+'（'+f.sinceDays+'日前）</div></div><button class="btn small green" onclick="addForecastToShop(\''+esc(f.name)+'\')">買い物リストへ</button></div>').join('');
+}
+function addForecastToShop(n){if(!S.shop.includes(n))S.shop.push(n);save();alert('買い物リストに追加しました');showPage('shop')}
+/* --- renderKakei 拡張 --- */
+const _rkV3=renderKakei;
+renderKakei=function(){_rkV3();renderBudget();renderPrice();renderCons()};
+/* --- 4. 冷凍したボタン＋冷凍バッジ（冷蔵庫リストを後処理） --- */
+const _rfV3=renderFridge;
+renderFridge=function(){
+  _rfV3();
+  const sorted=S.fridge.slice().sort((a,b)=>{const da=daysLeft(a.expiry),db=daysLeft(b.expiry);if(da===null&&db===null)return 0;if(da===null)return 1;if(db===null)return -1;return da-db});
+  const nodes=document.querySelectorAll('#fridgeList .item');
+  nodes.forEach((node,i)=>{const f=sorted[i];if(!f)return;
+    if(f.frozen){const b=node.querySelector('b');if(b)b.textContent+=' ❄️冷凍中';}
+    const btn=document.createElement('button');btn.className='btn small gray';btn.textContent= f.frozen?'冷凍を延ばす':'冷凍した';
+    btn.onclick=function(){freezeItem(f.id)}; node.appendChild(btn);
+  });
+};
+function freezeItem(id){
+  const f=S.fridge.find(x=>x.id===id); if(!f)return;
+  const base=new Date(); base.setHours(0,0,0,0);
+  const cur=f.expiry?new Date(f.expiry+'T00:00:00'):base;
+  const from=(f.frozen&&cur>base)?cur:base;
+  const next=new Date(from.getTime()+30*86400000);
+  f.expiry=next.toISOString().slice(0,10); f.frozen=true; save(); renderFridge();
+  alert('冷凍として記録しました。新しい期限の目安は '+f.expiry+' です（冷凍のまま長く置きすぎには注意してね）');
+}
+/* --- 7. 買う前チェック＋6. 共有（買い物リスト後処理） --- */
+const _rsV3=renderShop;
+renderShop=function(){
+  _rsV3();
+  const inFridge={}; S.fridge.forEach(f=>{inFridge[f.name]=f});
+  document.querySelectorAll('#shopList .item').forEach(node=>{
+    const b=node.querySelector('b'); if(!b)return; const name=b.textContent.trim();
+    if(inFridge[name]){const s=document.createElement('span');s.className='badge soon';s.textContent='🏠家にある';s.style.marginLeft='6px';b.after(s);}
+  });
+};
+function shopListText(){return '買い物リスト（冷蔵庫こんだて）\n'+S.shop.map(n=>'・'+n+(S.fridge.some(f=>f.name===n)?'（家にもある）':'')).join('\n')}
+function shareShopList(){
+  if(!S.shop.length){alert('買い物リストが空です');return}
+  const text=shopListText();
+  if(navigator.share){navigator.share({text:text}).catch(()=>{})}
+  else{window.open('https://line.me/R/msg/text/?'+encodeURIComponent(text),'_blank')}
+}
+function copyShopList(){
+  if(!S.shop.length){alert('買い物リストが空です');return}
+  const text=shopListText();
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(()=>alert('買い物リストをコピーしました'))}
+  else{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();alert('買い物リストをコピーしました')}
+}
+/* --- 3. バックアップ --- */
+function exportBackup(){
+  const data=localStorage.getItem(KEY)||'{}';
+  document.getElementById('backupText').value=data;
+  alert('下の欄に書き出しました。「テキストをコピー」か「ファイルで保存」で保管してください');
+}
+function copyBackup(){
+  const ta=document.getElementById('backupText'); if(!ta.value){alert('先に「書き出す」を押してください');return}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(ta.value).then(()=>alert('コピーしました'))}
+  else{ta.select();document.execCommand('copy');alert('コピーしました')}
+}
+function downloadBackup(){
+  const ta=document.getElementById('backupText'); if(!ta.value){alert('先に「書き出す」を押してください');return}
+  const blob=new Blob([ta.value],{type:'application/json'}); const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download='reizouko-kondate-backup.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+function importBackup(){
+  const ta=document.getElementById('backupText'); const t=ta.value.trim(); if(!t){alert('読み込むテキストを貼ってください');return}
+  try{const obj=JSON.parse(t); if(!obj||!Array.isArray(obj.fridge)||!Array.isArray(obj.stores))throw new Error('bad');
+    if(!confirm('今の記録を上書きして読み込みますか？'))return;
+    localStorage.setItem(KEY,JSON.stringify(obj)); location.reload();
+  }catch(e){alert('読み込めませんでした。バックアップのテキストが正しいか確認してください')}
+}
+renderFridge();
+</script>
+
 </body>
 </html>
