@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>かーくんのアプリ置き場</title>
+    <meta name="description" content="身近な困りごとをラクにする手作りアプリ集。仕事、暮らし、家族、遊びに使える7つのアプリを紹介します。" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
+    <style>
+      :root{
+        --bg:#f6f5ef;
+        --bg-dots:#e3e1d3;
+        --surface:#ffffff;
+        --surface-2:#fbfaf6;
+        --ink:#1e2b22;
+        --ink-2:#43544a;
+        --muted:#6b7d70;
+        --line:#dde2d8;
+        --line-strong:#c9d2c4;
+        --brand:#175c3a;
+        --brand-ink:#ffffff;
+        --brand-hover:#0f452b;
+        --accent:#e86a2c;
+        --shadow:0 1px 2px rgba(23,60,40,.06), 0 10px 28px rgba(23,60,40,.07);
+        --shadow-hover:0 2px 4px rgba(23,60,40,.08), 0 16px 36px rgba(23,60,40,.12);
+        --radius:20px;
+      }
+      @media (prefers-color-scheme: dark){
+        :root{
+          --bg:#111713;
+          --bg-dots:#1c2620;
+          --surface:#1a231d;
+          --surface-2:#202a23;
+          --ink:#eef3ee;
+          --ink-2:#c3d0c6;
+          --muted:#93a699;
+          --line:#2d3a31;
+          --line-strong:#3b4c40;
+          --brand:#3ecf82;
+          --brand-ink:#0c1a11;
+          --brand-hover:#5ce096;
+          --accent:#ff9a5c;
+          --shadow:0 1px 2px rgba(0,0,0,.35), 0 10px 28px rgba(0,0,0,.28);
+          --shadow-hover:0 2px 4px rgba(0,0,0,.4), 0 16px 36px rgba(0,0,0,.35);
+        }
+      }
+      *{box-sizing:border-box}
+      html{scroll-behavior:smooth}
+      @media (prefers-reduced-motion: reduce){
+        html{scroll-behavior:auto}
+        *{transition:none !important; animation:none !important}
+      }
+      body{
+        margin:0;
+        background:
+          radial-gradient(var(--bg-dots) 1.15px, transparent 1.15px);
+        background-size:22px 22px;
+        background-color:var(--bg);
+        color:var(--ink);
+        font-family:"Noto Sans JP", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", sans-serif;
+        font-size:17px;
+        line-height:1.75;
+        -webkit-font-smoothing:antialiased;
+      }
+      a{color:inherit}
+      .wrap{max-width:1060px;margin:0 auto;padding:0 20px}
+
+      /* ---------- Hero ---------- */
+      .hero{padding:52px 0 8px}
+      .hero h1{
+        font-family:"Zen Maru Gothic","Noto Sans JP",sans-serif;
+        font-weight:900;
+        font-size:clamp(2.35rem, 7vw, 3.6rem);
+        line-height:1.18;
+        letter-spacing:.01em;
+        margin:0 0 18px;
+      }
+      .hero h1 .accent-word{color:var(--accent);white-space:nowrap}
+      .lead{
+        font-size:clamp(1.06rem, 2.6vw, 1.25rem);
+        line-height:1.85;
+        color:var(--ink-2);
+        max-width:640px;
+        margin:0 0 22px;
+        font-weight:500;
+      }
+      .lead strong{color:var(--ink);font-weight:700}
+      .hero-facts{
+        display:flex;flex-wrap:wrap;gap:10px 22px;
+        padding:16px 0 4px;
+        border-top:2px solid var(--ink);
+        max-width:640px;
+      }
+      .hero-facts span{font-size:.98rem;font-weight:700;display:inline-flex;align-items:center;gap:8px}
+      .hero-facts .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);flex:none}
+      .jump{
+        display:flex;flex-wrap:wrap;gap:10px;
+        margin:26px 0 6px;
+      }
+      .jump a{
+        text-decoration:none;
+        font-weight:700;font-size:1rem;
+        background:var(--surface);
+        border:1.5px solid var(--line-strong);
+        border-radius:999px;
+        padding:10px 18px;
+        min-height:48px;
+        display:inline-flex;align-items:center;gap:8px;
+        transition:border-color .15s ease, background .15s ease;
+      }
+      .jump a:hover{border-color:var(--brand)}
+      .jump a:focus-visible, .btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+      .jump .n{font-size:.82rem;color:var(--muted);font-weight:700}
+
+      /* ---------- Sections ---------- */
+      section{padding:38px 0 6px;scroll-margin-top:16px}
+      .section-head{
+        display:flex;align-items:flex-start;gap:16px;
+        margin-bottom:20px;
+      }
+      .section-num{
+        font-family:"Zen Maru Gothic",sans-serif;
+        font-weight:900;font-size:1rem;
+        color:var(--brand-ink);background:var(--brand);
+        border-radius:12px;
+        width:46px;height:46px;flex:none;
+        display:flex;align-items:center;justify-content:center;
+        margin-top:4px;
+      }
+      @media (prefers-color-scheme: dark){.section-num{color:var(--brand-ink)}}
+      .section-head h2{
+        font-family:"Zen Maru Gothic","Noto Sans JP",sans-serif;
+        font-weight:900;font-size:clamp(1.5rem,4.5vw,1.9rem);
+        line-height:1.3;margin:0;
+      }
+      .section-head p{margin:2px 0 0;color:var(--muted);font-size:1rem;line-height:1.65}
+      .section-count{
+        margin-left:auto;flex:none;
+        font-size:.9rem;font-weight:700;color:var(--muted);
+        border:1.5px solid var(--line-strong);border-radius:999px;
+        padding:4px 13px;margin-top:8px;background:var(--surface);
+      }
+
+      /* ---------- Cards ---------- */
+      .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+      .grid.single{grid-template-columns:1fr}
+      .card{
+        background:var(--surface);
+        border:1px solid var(--line);
+        border-radius:var(--radius);
+        box-shadow:var(--shadow);
+        padding:24px 24px 22px;
+        display:flex;flex-direction:column;
+        transition:box-shadow .18s ease, transform .18s ease;
+      }
+      .card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px)}
+      .grid.single .card{flex-direction:row;gap:26px;align-items:stretch}
+      .grid.single .card-main{flex:1;display:flex;flex-direction:column}
+      .grid.single .card-side{
+        width:250px;flex:none;display:flex;flex-direction:column;justify-content:flex-end;
+      }
+      .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+      .icon{
+        width:58px;height:58px;border-radius:16px;flex:none;
+        display:flex;align-items:center;justify-content:center;
+      }
+      .icon svg{width:30px;height:30px}
+      .icon--teal{background:#dff2e7;color:#14663f}
+      .icon--sky{background:#ddeef8;color:#1d5f86}
+      .icon--green{background:#e2f0d8;color:#3d7016}
+      .icon--amber{background:#fdeecd;color:#96650a}
+      .icon--rose{background:#fde3e1;color:#a03a2e}
+      .icon--coral{background:#ffe7d6;color:#a34d0d}
+      .icon--orange{background:#ffedd9;color:#9a5a08}
+      @media (prefers-color-scheme: dark){
+        .icon--teal{background:#173d2a;color:#7fe0ac}
+        .icon--sky{background:#173447;color:#8ecdf2}
+        .icon--green{background:#243d15;color:#a9df7e}
+        .icon--amber{background:#453612;color:#ffd97a}
+        .icon--rose{background:#47211d;color:#ffab9e}
+        .icon--coral{background:#472a14;color:#ffb98a}
+        .icon--orange{background:#453212;color:#ffc978}
+      }
+      .badges{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+      .tag{
+        font-size:.82rem;font-weight:700;line-height:1.4;
+        border-radius:999px;padding:4px 11px;
+        background:var(--surface-2);border:1px solid var(--line-strong);color:var(--ink-2);
+        white-space:nowrap;
+      }
+      .tag--trial{background:var(--accent);border-color:var(--accent);color:#fff}
+      @media (prefers-color-scheme: dark){.tag--trial{color:#241203}}
+      .card h3{
+        font-family:"Zen Maru Gothic","Noto Sans JP",sans-serif;
+        font-weight:900;font-size:1.38rem;line-height:1.4;
+        margin:0 0 8px;
+      }
+      .card-desc{margin:0 0 14px;color:var(--ink-2);font-size:1.02rem;line-height:1.8}
+      .points{list-style:none;margin:0 0 20px;padding:0;display:grid;gap:7px}
+      .points li{
+        position:relative;padding-left:24px;
+        font-size:.98rem;line-height:1.65;color:var(--ink-2);
+      }
+      .points li::before{
+        content:"";position:absolute;left:2px;top:.62em;
+        width:8px;height:8px;border-radius:2px;background:var(--accent);
+      }
+      .note{
+        margin:0 0 16px;font-size:.9rem;line-height:1.65;color:var(--muted);
+        background:var(--surface-2);border:1px dashed var(--line-strong);
+        border-radius:12px;padding:10px 13px;
+      }
+      .btn{
+        margin-top:auto;
+        display:flex;align-items:center;justify-content:center;gap:10px;
+        background:var(--brand);color:var(--brand-ink);
+        text-decoration:none;font-weight:900;font-size:1.12rem;
+        border-radius:14px;padding:16px 20px;min-height:60px;
+        transition:background .15s ease;
+        text-align:center;
+      }
+      .btn:hover{background:var(--brand-hover)}
+      .btn .arrow{font-weight:900;transition:transform .15s ease}
+      .btn:hover .arrow{transform:translateX(3px)}
+      .grid.single .card-side .btn{width:100%}
+
+      /* ---------- Footer ---------- */
+      footer{padding:52px 0 44px}
+      .foot-box{
+        border-top:2px solid var(--ink);
+        padding-top:20px;
+        display:flex;flex-wrap:wrap;gap:8px 20px;align-items:baseline;justify-content:space-between;
+      }
+      .foot-box .name{font-family:"Zen Maru Gothic",sans-serif;font-weight:900;font-size:1.05rem}
+      .foot-box .ver{color:var(--muted);font-size:.92rem}
+
+      @media (max-width:760px){
+        body{font-size:16.5px}
+        .hero{padding:38px 0 4px}
+        .grid{grid-template-columns:1fr}
+        .grid.single .card{flex-direction:column;gap:0}
+        .grid.single .card-side{width:auto}
+        .card{padding:22px 20px 20px}
+        .card h3{font-size:1.3rem}
+        .section-count{display:none}
+        .btn{font-size:1.08rem;min-height:62px}
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+
+      <header class="hero">
+        <h1>かーくんの<br /><span class="accent-word">アプリ置き場</span></h1>
+        <p class="lead">身近な困りごとをラクにする、<strong>手作りアプリ集</strong>です。仕事の確認、冷蔵庫の献立、家族の見守り、ちょっとした遊びまで。気になるものをタップすれば、そのまま使えます。</p>
+        <div class="hero-facts" aria-label="ページの概要">
+          <span><span class="dot"></span>アプリ 7つ</span>
+          <span><span class="dot"></span>スマホでそのまま使える</span>
+          <span><span class="dot"></span>大きな文字・大きなボタン</span>
+        </div>
+        <nav class="jump" aria-label="カテゴリへ移動">
+          <a href="#kurashi">暮らしの道具 <span class="n">3つ</span></a>
+          <a href="#kazoku">家族と子ども <span class="n">2つ</span></a>
+          <a href="#asobi">遊び <span class="n">1つ</span></a>
+          <a href="#kaimono">お買い物支援 <span class="n">1つ</span></a>
+        </nav>
+      </header>
+
+      <main>
+        <!-- 暮らしの道具 -->
+        <section id="kurashi" aria-labelledby="h-kurashi">
+          <div class="section-head">
+            <span class="section-num">01</span>
+            <div>
+              <h2 id="h-kurashi">暮らしの道具</h2>
+              <p>毎日の仕事と家事を、少しだけラクにするアプリです。</p>
+            </div>
+            <span class="section-count">3つ</span>
+          </div>
+          <div class="grid">
+
+            <article class="card">
+              <div class="card-top">
+                <div class="icon icon--teal" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 5v2"/><path d="M6.5 7l1 12.2A1.8 1.8 0 0 0 9.3 21h5.4a1.8 1.8 0 0 0 1.8-1.8L17.5 7"/><path d="M10 11v6M14 11v6"/></svg>
+                </div>
+                <div class="badges"><span class="tag">仕事用</span></div>
+              </div>
+              <h3>ゴミ回収確認アプリ</h3>
+              <p class="card-desc">施設ごとに、曜日別のゴミ袋の数を入力して確認できるアプリです。</p>
+              <ul class="points">
+                <li>施設ごとに曜日別の袋数を入力</li>
+                <li>月〜土6日間の週間合計と1日平均を表示</li>
+                <li>曜日別・施設別のグラフでひと目で確認</li>
+              </ul>
+              <a class="btn" href="https://kurokuro7903.github.io/okozukai-otetsudai-app/gomi-kaishu-app/" target="_blank" rel="noopener">使ってみる <span class="arrow" aria-hidden="true">→</span></a>
+            </article>
+
+            <article class="card">
+              <div class="card-top">
+                <div class="icon icon--sky" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2"/><path d="M6 10h12"/><path d="M9.5 5.5v2M9.5 13.5v3"/></svg>
+                </div>
+                <div class="badges"><span class="tag">献立・買い物</span></div>
+              </div>
+              <h3>冷蔵庫のミカタ</h3>
+              <p class="card-desc">冷蔵庫の余りものを撮影して食材を確認・追加すると、献立を提案してくれるアプリです。</p>
+              <ul class="points">
+                <li>写真を見て食材をタップで確認・追加</li>
+                <li>足りない食材・調味料を買い物リストに</li>
+                <li>近くの店の目安価格で、最安の買い方を比較</li>
+              </ul>
+              <p class="note">※ 店の価格は目安です。実際の店頭価格と違う場合があります。</p>
+              <a class="btn" href="https://kurokuro7903.github.io/okozukai-otetsudai-app/reizouko-kondate-app/" target="_blank" rel="noopener">使ってみる <span class="arrow" aria-hidden="true">→</span></a>
+            </article>
+
+            <article class="card">
+              <div class="card-top">
+                <div class="icon icon--green" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.3-6.5-10.4A6.5 6.5 0 0 1 12 4a6.5 6.5 0 0 1 6.5 6.6C18.5 15.7 12 21 12 21Z"/><circle cx="12" cy="10.4" r="2.3"/></svg>
+                </div>
+                <div class="badges"><span class="tag">地図</span></div>
+              </div>
+              <h3>マイマップ</h3>
+              <p class="card-desc">行きたい場所やお店を自由にピンで追加できる、自分だけのオリジナル地図です。</p>
+              <ul class="points">
+                <li>名前・住所の検索、現在地などからピンを追加</li>
+                <li>カテゴリの色分け、メモ、★評価つき</li>
+                <li>現在地の表示に対応</li>
+              </ul>
+              <a class="btn" href="https://kurokuro7903.github.io/okozukai-otetsudai-app/my-map/" target="_blank" rel="noopener">使ってみる <span class="arrow" aria-hidden="true">→</span></a>
+            </article>
+
+          </div>
+        </section>
+
+        <!-- 家族と子ども -->
+        <section id="kazoku" aria-labelledby="h-kazoku">
+          <div class="section-head">
+            <span class="section-num">02</span>
+            <div>
+              <h2 id="h-kazoku">家族と子ども</h2>
+              <p>子どものお手伝いと、離れて暮らす家族の見守りに。</p>
+            </div>
+            <span class="section-count">2つ</span>
+          </div>
+          <div class="grid">
+
+            <article class="card">
+              <div class="card-top">
+                <div class="icon icon--amber" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v10M15.2 9.2c-.6-1-1.8-1.5-3.2-1.5-1.9 0-3.2 1-3.2 2.4 0 3.3 6.6 1.8 6.6 4.4 0 1.4-1.5 2.3-3.4 2.3-1.5 0-2.8-.6-3.4-1.6"/></svg>
+                </div>
+                <div class="badges"><span class="tag">小学生〜中学生向け</span></div>
+              </div>
+              <h3>お小遣い・お手伝いアプリ</h3>
+              <p class="card-desc">お手伝いがクエストになるRPG風アプリ。がんばるほどキャラクターが育ちます。</p>
+              <ul class="points">
+                <li>クエストをクリアするとEXPとお小遣いが貯まる</li>
+                <li>レベルが上がるとキャラが進化</li>
+                <li>親画面はPINロックで安心</li>
+              </ul>
+              <a class="btn" href="https://kurokuro7903.github.io/okozukai-otetsudai-app/" target="_blank" rel="noopener">使ってみる <span class="arrow" aria-hidden="true">→</span></a>
+            </article>
+
+            <article class="card">
+              <div class="card-top">
+                <div class="icon icon--rose" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="8.5" width="17" height="7" rx="3.5" transform="rotate(-30 12 12)"/><path d="M9.2 6.4l5.6 9.7"/></svg>
+                </div>
+                <div class="badges"><span class="tag tag--trial">お試し版</span><span class="tag">見守り</span></div>
+              </div>
+              <h3>飲んだよチェック</h3>
+              <p class="card-desc">離れて暮らす家族の服薬を、遠くから確認できる見守りアプリです。</p>
+              <ul class="points">
+                <li>大きな「飲みました」ボタンで時刻を記録</li>
+                <li>見守る人は今日の「済み／まだ」を確認できる</li>
+              </ul>
+              <p class="note">※ こちらはお試し版です。実物の家族用アプリのURLではありません。</p>
+              <a class="btn" href="https://muse.ai/s/space-4-bxr6xp3xyxpexixjxh/mYXizAmvQRYw3_sNCRv9oiBBRnFDusYwdCVnfyuNVjo" target="_blank" rel="noopener">使ってみる <span class="arrow" aria-hidden="true">→</span></a>
+            </article>
+
+          </div>
+        </section>
+
+        <!-- 遊び -->
+        <section id="asobi" aria-labelledby="h-asobi">
+          <div class="section-head">
+            <span class="section-num">03</span>
+            <div>
+              <h2 id="h-asobi">遊び</h2>
+              <p>むずかしい操作なしで、気軽に遊べるゲームです。</p>
+            </div>
+            <span class="section-count">1つ</span>
+          </div>
+          <div class="grid single">
+            <article class="card">
+              <div class="card-main">
+                <div class="card-top">
+                  <div class="icon icon--coral" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4.5H6.8A2.8 2.8 0 0 0 4 7.3V9h3.2a2.3 2.3 0 1 0 0 4.6H4V17a2.8 2.8 0 0 0 2.8 2.8H9v-3.2a2.3 2.3 0 1 1 4.6 0H17a2.8 2.8 0 0 0 2.8-2.8v-2.2h-3.2a2.3 2.3 0 1 1 0-4.6h3.2V7.3A2.8 2.8 0 0 0 17 4.5h-3.4v3.1a2.3 2.3 0 1 1-4.6 0V4.5Z"/></svg>
+                  </div>
+                  <div class="badges"><span class="tag">高齢者向け</span><span class="tag">タップだけ</span></div>
+                </div>
+                <h3>絵合わせ＆パズルゲーム</h3>
+                <p class="card-desc">大きなカードの「絵合わせ」と、タップでピースを入れかえる「パズル」の2種類が遊べるゲームセットです。</p>
+                <ul class="points">
+                  <li>大きなカードとマスで、見やすく押しやすい</li>
+                  <li>時間制限・ペナルティなし</li>
+                  <li>操作はタップだけ</li>
+                </ul>
+              </div>
+              <div class="card-side">
+                <a class="btn" href="https://kurokuro7903.github.io/okozukai-otetsudai-app/senior-game/" target="_blank" rel="noopener">使ってみる <span class="arrow" aria-hidden="true">→</span></a>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- お買い物支援 -->
+        <section id="kaimono" aria-labelledby="h-kaimono">
+          <div class="section-head">
+            <span class="section-num">04</span>
+            <div>
+              <h2 id="h-kaimono">お買い物支援</h2>
+              <p>近くまで来てくれる移動スーパーへの注文を、かんたんに。</p>
+            </div>
+            <span class="section-count">1つ</span>
+          </div>
+          <div class="grid single">
+            <article class="card">
+              <div class="card-main">
+                <div class="card-top">
+                  <div class="icon icon--orange" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2.2l2.3 11.2A1.8 1.8 0 0 0 9.3 16.5h7.9a1.8 1.8 0 0 0 1.8-1.4L20.5 8H6"/><circle cx="9.8" cy="20.4" r="1.4"/><circle cx="17.2" cy="20.4" r="1.4"/></svg>
+                  </div>
+                  <div class="badges"><span class="tag tag--trial">お試し版</span><span class="tag">移動スーパー</span></div>
+                </div>
+                <h3>まごころスーパー</h3>
+                <p class="card-desc">移動スーパーの注文アプリです。大きな文字と大きなボタンで、商品を選んで注文できます。</p>
+                <ul class="points">
+                  <li>大きな文字・大きなボタンで見やすい画面</li>
+                  <li>商品を選んで、カゴからそのまま注文</li>
+                </ul>
+              </div>
+              <div class="card-side">
+                <a class="btn" href="https://muse.ai/s/space-6-kxz6xpxe8xbfvsxw/ieQlX0QLtYUSfednW8JlBkv6Ypi_T0jzCecKdMkjCi8" target="_blank" rel="noopener">使ってみる <span class="arrow" aria-hidden="true">→</span></a>
+              </div>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <div class="foot-box">
+          <span class="name">かーくんのアプリ置き場</span>
+          <span class="ver">バージョン1（GitHub Pages版）</span>
+        </div>
+      </footer>
+
+    </div>
+  </body>
+</html>
