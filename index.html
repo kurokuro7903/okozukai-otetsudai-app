@@ -259,6 +259,91 @@ color:var(--amber-deep);margin-top:14px;font-size:1.02rem;
 }
 .levelup-banner.show{display:block}
 
+/* ---------- swordsman (full-body) ---------- */
+.sw-avatar{display:inline-block;flex:none;line-height:0}
+.sw-avatar svg{display:block;width:100%;height:auto}
+.sw-sm{width:46px}
+.sw-md{width:92px}
+.sw-lg{width:148px}
+.sw-xl{width:172px}
+.sw-hero{width:min(236px,72vw)}
+.evo-swords{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between}
+.evo-stage{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1 1 100px;max-width:150px;text-align:center}
+.evo-stage .nm{font-size:.78rem;font-weight:900;color:var(--ink)}
+.evo-stage .eq{font-size:.66rem;color:var(--ink-soft);font-weight:700;line-height:1.45}
+.hero-card-sw{
+background:linear-gradient(180deg,#24402f 0%,#17291e 58%,#101d15 100%);
+border:2px solid #0d1710;border-radius:var(--radius);
+padding:20px 16px 18px;text-align:center;box-shadow:var(--shadow);color:#f2f7ee;
+position:relative;overflow:hidden;
+}
+.hero-card-sw .hero-name{color:#fff}
+.hero-rank{font-size:.82rem;font-weight:800;color:#a7d7b4;letter-spacing:.02em}
+.hero-stage-name{font-family:"Zen Maru Gothic",sans-serif;font-weight:900;font-size:1.55rem;color:#fff;line-height:1.3;margin-top:2px}
+.hero-lv-badge{display:inline-block;background:var(--amber);color:#4a3200;font-weight:900;border-radius:999px;padding:2px 14px;font-size:.88rem;margin-top:8px}
+.hero-avatar-stage{position:relative;width:fit-content;max-width:100%;margin:6px auto 0;padding:10px 22px 2px}
+.hero-avatar-stage::before{
+content:"";position:absolute;left:6px;right:6px;top:26px;bottom:2px;border-radius:50%;
+background:rgba(255,255,255,.06);
+}
+.hero-avatar-stage.legend::before{background:rgba(245,197,66,.18);box-shadow:0 0 44px rgba(255,176,32,.35)}
+.hero-avatar-stage .sw-avatar{position:relative}
+.hero-caption{position:relative;font-size:.74rem;font-weight:800;color:#cfe8d2;margin-top:2px}
+.equip-box{background:rgba(255,255,255,.10);border-radius:14px;padding:12px;margin-top:14px;text-align:left}
+.equip-box .equip-title{font-size:.74rem;font-weight:900;color:#cfe8d2;letter-spacing:.04em}
+.equip-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.equip-chip{background:rgba(255,255,255,.92);color:#22301f;border-radius:999px;padding:4px 11px;font-size:.76rem;font-weight:800}
+.equip-chip.legend{background:var(--gold);color:#4a3200}
+.equip-next{font-size:.78rem;color:#d9ecdc;margin-top:9px;line-height:1.6}
+.equip-next.legend-done{color:#fcd34d;font-weight:800}
+.rank-row{display:flex;gap:5px;margin-top:12px}
+.rank-pill{flex:1;height:28px;display:flex;align-items:center;justify-content:center;border-radius:999px;font-size:.72rem;font-weight:900;background:rgba(255,255,255,.15);color:rgba(255,255,255,.7)}
+.rank-pill.done{background:rgba(255,255,255,.85);color:#22301f}
+.rank-pill.current{background:var(--amber);color:#4a3200}
+.rank-labels{font-size:.68rem;color:rgba(207,232,210,.85);margin-top:5px;text-align:center}
+.hero-card-sw .expbar{background:rgba(255,255,255,.20);border-color:rgba(255,255,255,.25)}
+.hero-card-sw .exp-note{color:#e7f3e4}
+.hero-card-sw .stat{background:rgba(255,255,255,.10);color:#cfe8d2}
+.hero-card-sw .stat b{color:#fff}
+.hero-card-sw .lv-row{color:#fff}
+.hero-card-sw .lv-row .coin{color:#fcd34d}
+.hero-card-sw .lv-row .pay{color:#7dd3c8}
+.parent-sw-preview{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;background:var(--surface-2);border-radius:14px;padding:12px}
+.parent-sw-preview .evo-stage{flex:1 1 72px;max-width:110px}
+.celebration-overlay{
+position:fixed;inset:0;z-index:60;background:rgba(10,10,8,.62);
+display:flex;align-items:center;justify-content:center;padding:16px;
+}
+.celebration-card{
+background:var(--surface);border-radius:24px;padding:22px 20px;text-align:center;
+max-width:400px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow);
+position:relative;
+}
+.celebration-card .cel-title{color:var(--amber-deep);font-weight:900;font-size:.92rem;letter-spacing:.03em}
+.celebration-card .cel-stage{font-family:"Zen Maru Gothic",sans-serif;font-size:1.45rem;font-weight:900;margin-top:4px}
+.cel-vs{display:flex;align-items:flex-end;justify-content:center;gap:4px;margin:12px 0 4px}
+.cel-vs .cel-side{text-align:center}
+.cel-vs .cel-side.dim{opacity:.78}
+.cel-vs .cel-cap{font-size:.68rem;font-weight:800;color:var(--ink-soft);margin-top:4px}
+.cel-vs .cel-cap.new{color:var(--ink);font-weight:900}
+.cel-arrow{font-size:1.4rem;font-weight:900;color:var(--amber);padding-bottom:44px}
+.cel-equip{border-radius:14px;padding:10px 12px;text-align:left;margin-top:10px}
+.cel-equip.prev{background:var(--surface-2)}
+.cel-equip.next{background:var(--amber-soft)}
+.cel-equip .cel-eq-label{font-size:.72rem;font-weight:900;color:var(--ink-soft)}
+.cel-equip.next .cel-eq-label{color:var(--amber-deep)}
+.cel-equip .cel-eq-text{font-weight:900;font-size:.95rem}
+.cel-confetti{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.cel-confetti span{position:absolute;top:-30px;animation:confetti-fall 2.6s ease-in both}
+@keyframes confetti-fall{to{transform:translateY(105vh) rotate(300deg);opacity:.85}}
+@keyframes sw-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.sw-float{animation:sw-float 3.2s ease-in-out infinite}
+@keyframes cel-pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+.cel-pop{animation:cel-pop .35s ease both}
+@media (prefers-reduced-motion: reduce){
+.sw-float,.cel-pop,.cel-confetti span{animation:none}
+}
+
 /* share texts */
 .share-card{
 background:var(--surface);border:2px solid var(--line);border-radius:var(--radius);
@@ -286,7 +371,7 @@ footer{margin-top:44px;text-align:center;color:var(--ink-soft);font-size:.82rem}
 <h1>お手伝いが<span class="hl">冒険</span>になる！<br />お小遣い・お手伝いRPG</h1>
 <p class="lead">
 お皿洗いやお風呂掃除などのお手伝いが、ゲームの「クエスト」に変わる小学生〜中学生向けアプリです。
-クエストをクリアすると経験値（EXP）とお小遣いが貯まって、レベルが上がるごとに相棒キャラクターが進化していきます。
+クエストをクリアすると経験値（EXP）とお小遣いが貯まって、レベルが上がるごとに黒の剣士の装備が強化されていきます。
 このページを開けば、どのご家庭でもそのまま使い始められます。
 </p>
 <div class="intro-cta">
@@ -294,14 +379,9 @@ footer{margin-top:44px;text-align:center;color:var(--ink-soft);font-size:.82rem}
 <a class="btn btn-ghost" href="#howto"><i data-lucide="book-open"></i> 使い方を見る</a>
 </div>
 
-<div class="char-strip" aria-label="キャラクターの進化">
-<h3>相棒キャラは3種類・全5段階に進化します</h3>
-<div class="evo-label">ドラゴン</div>
-<div class="evo-row" data-evo="dragon"></div>
-<div class="evo-label">ネコ</div>
-<div class="evo-row" data-evo="cat"></div>
-<div class="evo-label">ロボット</div>
-<div class="evo-row" data-evo="robot"></div>
+<div class="char-strip" aria-label="剣士の装備強化">
+<h3>キャラは黒の剣士 ― レベルが上がると装備が5段階に強化されます</h3>
+<div class="evo-swords" id="evo-swords"></div>
 </div>
 </div>
 
@@ -314,7 +394,7 @@ footer{margin-top:44px;text-align:center;color:var(--ink-soft);font-size:.82rem}
 <h3>親が準備する</h3>
 <ul>
 <li>下のアプリで「親画面」を開き、4桁のPIN（暗証番号）を設定</li>
-<li>お子さんの名前と相棒キャラ（ドラゴン／ネコ／ロボット）を登録 ※きょうだいなど複数人OK</li>
+<li>お子さんの名前を登録（キャラは黒の剣士で統一） ※きょうだいなど複数人OK</li>
 <li>お手伝いクエストを登録（内容・EXP・お小遣いの金額）</li>
 </ul>
 <p style="margin-top:8px">例：お皿洗い ＋10EXP・20円／お風呂掃除 ＋20EXP・50円</p>
@@ -327,7 +407,7 @@ footer{margin-top:44px;text-align:center;color:var(--ink-soft);font-size:.82rem}
 <li>終わったら「できた！」を押す（親の承認待ちになります）</li>
 <li>承認されるとEXPとお小遣いが反映されます</li>
 </ul>
-<p style="margin-top:8px">EXPが貯まるとレベルアップ＆進化！「次の進化まであと○○EXP」も見えるので目標を持って続けられます。</p>
+<p style="margin-top:8px">EXPが貯まるとレベルアップ＆装備が強化！「次の装備強化まであと○○EXP」も見えるので目標を持って続けられます。</p>
 </div>
 <div class="step">
 <span class="num">3</span>
@@ -380,10 +460,10 @@ footer{margin-top:44px;text-align:center;color:var(--ink-soft);font-size:.82rem}
 <pre id="share-long">お手伝いが冒険になる！お小遣い・お手伝いRPG
 
 お手伝いをゲームの「クエスト」に変える、小学生〜中学生向けのお小遣いアプリです。
-クエストをクリアすると経験値（EXP）とお小遣いが貯まって、レベルが上がるごとに相棒キャラクターが進化していきます。
+クエストをクリアすると経験値（EXP）とお小遣いが貯まって、レベルが上がるごとに黒の剣士の装備が強化されていきます。
 
 
-クエストボードからお手伝いを選んで、終わったら「できた！」を押すだけ。親が承認するとEXPとお小遣いが反映されます。キャラはドラゴン／ネコ／ロボットの3種類から選べて、全5段階に進化。「次の進化まであと○○EXP」が見えるので、目標を持って続けられます。
+クエストボードからお手伝いを選んで、終わったら「できた！」を押すだけ。親が承認するとEXPとお小遣いが反映されます。キャラは黒髪・黒いロングコートの黒の剣士で、全5段階に装備が強化（木の剣・布の服 → 銅の剣・革のよろい → 鉄の剣・鉄のよろい・木の盾 → 鋼の剣・鋼のよろい・鉄の盾・かぶと → 光る伝説の剣・黄金のよろい・伝説の盾・マント）。「次の装備強化まであと○○EXP」が見えるので、目標を持って続けられます。
 
 
 親画面は4桁PINでロック。子どもの登録、クエストの追加・編集、承認、未払いのお小遣い確認と「渡した」記録ができます。
@@ -393,7 +473,7 @@ footer{margin-top:44px;text-align:center;color:var(--ink-soft);font-size:.82rem}
 ・広告・課金・外部とのやり取りはなし
 ・きょうだいなど複数人の登録もできます
 
-お手伝いが「やらされるもの」から「進化させたいからやるもの」に。家族で冒険を始めてみてください！</pre>
+お手伝いが「やらされるもの」から「装備を強くしたいからやるもの」に。家族で冒険を始めてみてください！</pre>
 </div>
 
 <div class="share-card">
@@ -403,7 +483,7 @@ footer{margin-top:44px;text-align:center;color:var(--ink-soft);font-size:.82rem}
 <pre id="share-a">お手伝いが「冒険」になるアプリを作りました⚔️
 
 お皿洗いなどのお手伝いがクエストに！
-クリアでEXPとお小遣いが貯まり、レベルアップで相棒キャラが5段階に進化🐉
+クリアでEXPとお小遣いが貯まり、レベルアップで黒の剣士の装備が5段階に強化⚔️
 
 承認と金額設定は親だけ（PINロック）、広告・課金なしで家庭内で安全に使えます
 
@@ -416,9 +496,9 @@ footer{margin-top:44px;text-align:center;color:var(--ink-soft);font-size:.82rem}
 </h3>
 <pre id="share-b">「お手伝いして」って言わなくてよくなるかも？
 
-お手伝い＝クエスト、お小遣い＝報酬、レベルアップでキャラが進化するRPGアプリを作りました🎮
+お手伝い＝クエスト、お小遣い＝報酬、レベルアップで黒の剣士の装備が強くなるRPGアプリを作りました🎮
 
-「進化させたいからやる！」が狙いです
+「装備を強くしたいからやる！」が狙いです
 
 #子育て #お小遣い</pre>
 </div>
@@ -427,33 +507,148 @@ footer{margin-top:44px;text-align:center;color:var(--ink-soft);font-size:.82rem}
 <footer>お小遣い・お手伝いRPG ― 家族みんなの冒険を応援します</footer>
 </div>
 
+<div id="celebration-root"></div>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
 /* ============ データ定義 ============ */
-var CHARACTERS = {
-dragon: { label: "ドラゴン", stages: [
-{ face: "🥚", name: "たまご"},
-{ face: "🦎", name: "ベビードラゴン"},
-{ face: "🐲", name: "こどもドラゴン"},
-{ face: "🐉", name: "ドラゴン"},
-{ face: "👑🐉", name: "ドラゴンロード"}
-]},
-cat: { label: "ネコ", stages: [
-{ face: "🥚", name: "たまご"},
-{ face: "🐱", name: "こねこ"},
-{ face: "🐈", name: "ねこ"},
-{ face: "😼", name: "かっこいいねこ"},
-{ face: "🦁", name: "ライオンキング"}
-]},
-robot: { label: "ロボット", stages: [
-{ face: "📦", name: "ナゾのはこ"},
-{ face: "🤖", name: "ちびロボ"},
-{ face: "🦾🤖", name: "パワーロボ"},
-{ face: "🚀🤖", name: "ロケットロボ"},
-{ face: "👑🤖", name: "ロボキング"}
-]}
-};
+/* キャラは剣士に一本化。レベルで決まる5段階の装備強化 */
+var SWORDSMAN = { label: "剣士", stages: [
+{ name: "見習い剣士", equipment: "木の剣・布の服", caption: "黒の布服＋木の剣 ― ここから育っていくよ",
+  equipmentItems: [{ icon: "🗡️", label: "木の剣"}, { icon: "👕", label: "布の服"}]},
+{ name: "若手剣士", equipment: "銅の剣・革のよろい", caption: "黒の革コート＋銅の剣 ― 剣士らしくなってきた！",
+  equipmentItems: [{ icon: "🗡️", label: "銅の剣"}, { icon: "🦺", label: "革のよろい"}]},
+{ name: "熟練剣士", equipment: "鉄の剣・鉄のよろい・木の盾", caption: "黒鉄の剣と盾 ― ベテランの風格",
+  equipmentItems: [{ icon: "⚔️", label: "鉄の剣"}, { icon: "🧥", label: "鉄のよろい"}, { icon: "🛡️", label: "木の盾"}]},
+{ name: "騎士剣士", equipment: "鋼の剣・鋼のよろい・鉄の盾・かぶと", caption: "黒鋼の剣＋かぶと ― 騎士の装い",
+  equipmentItems: [{ icon: "⚔️", label: "鋼の剣"}, { icon: "🥋", label: "鋼のよろい"}, { icon: "🛡️", label: "鉄の盾"}, { icon: "🪖", label: "かぶと"}]},
+{ name: "伝説の勇者剣士", equipment: "光る伝説の剣・黄金のよろい・伝説の盾・マント", caption: "二刀流＋光る黒の剣 ― 伝説の黒の剣士！",
+  equipmentItems: [{ icon: "✨", label: "光る伝説の剣"}, { icon: "👑", label: "黄金のよろい"}, { icon: "🛡️", label: "伝説の盾"}, { icon: "🦸", label: "マント"}]}
+]};
+function stageInfoByNumber(stage){
+var s = Math.min(5, Math.max(1, stage || 1));
+return SWORDSMAN.stages[s - 1];
+}
+var swUid = 0;
+/* 全身の黒の剣士SVG（頭から足まで）。段階ごとに剣・よろい・コートが育つ */
+function swordsmanAvatar(stage, sizeCls){
+var s = Math.min(5, Math.max(1, stage || 1));
+var info = stageInfoByNumber(s);
+var gid = "sw" + s + "-" + (++swUid);
+var bladeFill = s === 1? "#b07a3f": s === 2? "#c97b3d": s === 3? "#565e68": "#101216";
+var bladeEdge = s === 1? "#8a5a24": s === 2? "#8f4f1d": s === 3? "#c3cad2": s === 4? "#d7dee8": "#a5f3fc";
+var armourFill = s === 1? "#3d3833": s === 2? "#33241a": s === 3? "#2e343c": s === 4? "#1d232c": "#14100a";
+var trim = s === 1? "#8a6f4d": s === 2? "#d08a4a": s === 3? "#9aa5b1": s === 4? "#c7d2e0": "#f5c542";
+var coatBottom = [208, 226, 240, 252, 270][s - 1];
+var showShield = s === 3 || s === 4;
+var dualWield = s >= 5;
+function sword(glowColor){
+var h = "";
+if (glowColor){
+h += '<g opacity="0.55"><polygon points="103,4 112,26 94,26" fill="' + glowColor + '" />' +
+'<rect x="94" y="24" width="18" height="92" rx="6" fill="' + glowColor + '" /></g>';
+}
+h += '<polygon points="110,10 116,30 100,30" fill="' + bladeFill + '" stroke="' + bladeEdge + '" stroke-width="1.6" />' +
+'<rect x="100" y="28" width="16" height="86" rx="3" fill="' + bladeFill + '" stroke="' + bladeEdge + '" stroke-width="1.6" />' +
+'<line x1="108" y1="34" x2="108" y2="106" stroke="' + bladeEdge + '" stroke-width="1.6" opacity="0.8" />';
+if (s === 1) h += '<line x1="104" y1="40" x2="105" y2="100" stroke="#8a5a24" stroke-width="1.4" opacity="0.7" />';
+h += '<rect x="92" y="113" width="32" height="8" rx="3" fill="' + trim + '" stroke="#0c0c0e" stroke-width="1.4" />' +
+'<rect x="103" y="121" width="10" height="24" rx="4" fill="#17130f" stroke="#000" stroke-width="1.2" />' +
+'<circle cx="108" cy="150" r="5.5" fill="' + trim + '" stroke="#0c0c0e" stroke-width="1.2" />';
+return "<g>" + h + "</g>";
+}
+var svg = '<svg viewBox="0 0 220 300" aria-hidden="true">' +
+'<defs>' +
+'<linearGradient id="' + gid + '-coat" x1="0" y1="0" x2="0" y2="1">' +
+'<stop offset="0%" stop-color="#2c2c31" /><stop offset="55%" stop-color="#17171a" /><stop offset="100%" stop-color="#0b0b0d" />' +
+'</linearGradient>' +
+'<linearGradient id="' + gid + '-gold" x1="0" y1="0" x2="1" y2="1">' +
+'<stop offset="0%" stop-color="#ffe98a" /><stop offset="55%" stop-color="#f5c542" /><stop offset="100%" stop-color="#b97e10" />' +
+'</linearGradient></defs>';
+if (s >= 5) svg += '<ellipse cx="110" cy="278" rx="86" ry="16" fill="#f5c542" opacity="0.22" />';
+svg += '<ellipse cx="110" cy="282" rx="60" ry="9" fill="#000" opacity="0.28" />';
+if (s >= 5){
+svg += '<g fill="#fde68a">' +
+'<path d="M28 60 l2.4 6.2 6.2 2.4 -6.2 2.4 -2.4 6.2 -2.4 -6.2 -6.2 -2.4 6.2 -2.4 Z" />' +
+'<path d="M192 96 l1.8 4.8 4.8 1.8 -4.8 1.8 -1.8 4.8 -1.8 -4.8 -4.8 -1.8 4.8 -1.8 Z" />' +
+'<path d="M182 210 l1.6 4.2 4.2 1.6 -4.2 1.6 -1.6 4.2 -1.6 -4.2 -4.2 -1.6 4.2 -1.6 Z" /></g>';
+}
+if (dualWield){
+svg += '<g transform="rotate(-14 34 118)">' +
+'<path d="M34 78 L60 88 V118 Q60 146 34 160 Q8 146 8 118 V88 Z" fill="#241b08" stroke="url(#' + gid + '-gold)" stroke-width="4" />' +
+'<circle cx="34" cy="118" r="7" fill="#e11d48" stroke="#f5c542" stroke-width="2" /></g>';
+}
+/* long-coat tails behind the legs */
+svg += '<path d="M66 108 L' + (s >= 5? 38: 56) + ' ' + coatBottom + ' Q110 ' + (coatBottom + 14) + ' ' + (s >= 5? 182: 164) + ' ' + coatBottom + ' L154 108 Z" fill="url(#' + gid + '-coat)" stroke="#000" stroke-width="2" />';
+if (dualWield) svg += '<path d="M104 150 L110 282 L118 150 Z" fill="#050506" opacity="0.85" />';
+if (s >= 4){
+svg += '<path d="M66 108 L' + (s >= 5? 38: 56) + ' ' + coatBottom + ' Q110 ' + (coatBottom + 14) + ' ' + (s >= 5? 182: 164) + ' ' + coatBottom + '" fill="none" stroke="' + trim + '" stroke-width="2.4" opacity="0.85" />';
+}
+/* legs & boots */
+svg += '<g>' +
+'<rect x="86" y="182" width="17" height="66" rx="6" fill="#1c1c20" stroke="#000" stroke-width="1.6" />' +
+'<rect x="117" y="182" width="17" height="66" rx="6" fill="#1c1c20" stroke="#000" stroke-width="1.6" />' +
+'<path d="M80 246 h26 v10 q0 8 -8 8 h-22 q-6 0 -4 -7 l4 -7 q1 -4 4 -4 Z" fill="#101013" stroke="#000" stroke-width="1.6" />' +
+'<path d="M114 246 h26 q3 0 4 4 l4 7 q2 7 -4 7 h-22 q-8 0 -8 -8 Z" fill="#101013" stroke="#000" stroke-width="1.6" />' +
+'<rect x="80" y="244" width="26" height="5" fill="' + trim + '" opacity="' + (s >= 3? 0.9: 0.35) + '" />' +
+'<rect x="114" y="244" width="26" height="5" fill="' + trim + '" opacity="' + (s >= 3? 0.9: 0.35) + '" /></g>';
+/* right arm + main sword */
+svg += '<path d="M150 94 L176 136" stroke="#17171a" stroke-width="19" stroke-linecap="round" />' +
+'<g transform="translate(58 8) rotate(36 108 140)">' + sword(s >= 5? "#67e8f9": null) + '</g>' +
+'<circle cx="178" cy="140" r="8" fill="#ffd9b3" stroke="#d99e66" stroke-width="1.4" />' +
+'<path d="M70 94 L46 136" stroke="#17171a" stroke-width="19" stroke-linecap="round" />';
+if (dualWield){
+svg += '<g transform="translate(-46 12) rotate(-36 108 140)">' + sword("#c4b5fd") + '</g>';
+}
+svg += '<circle cx="44" cy="140" r="8" fill="#ffd9b3" stroke="#d99e66" stroke-width="1.4" />';
+if (showShield){
+svg += '<g><path d="M40 106 L68 116 V148 Q68 178 40 194 Q12 178 12 148 V116 Z" fill="' + (s === 3? "#7c4f22": "#252c36") + '" stroke="' + (s === 3? "#4e2f10": "#aab6c4") + '" stroke-width="3.4" />';
+if (s === 3) svg += '<path d="M40 118 V180 M22 140 H58" stroke="#a9743a" stroke-width="5" />';
+else svg += '<path d="M40 118 V180 M22 140 H58" stroke="#46536a" stroke-width="5" /><circle cx="40" cy="140" r="7" fill="#7dd3fc" stroke="#e2e8f0" stroke-width="2" />';
+svg += '</g>';
+}
+/* torso: black long coat over the armour */
+svg += '<path d="M68 76 Q110 62 152 76 L158 196 Q110 208 62 196 Z" fill="url(#' + gid + '-coat)" stroke="#000" stroke-width="2.2" />' +
+'<path d="M93 74 L110 128 L127 74 L130 172 L90 172 Z" fill="' + armourFill + '" stroke="' + trim + '" stroke-width="' + (s >= 2? 2: 1.2) + '" />';
+if (s === 1) svg += '<path d="M96 92 H124 M96 112 H124 M96 148 H124" stroke="#6b5f4c" stroke-width="2" stroke-dasharray="5 4" />';
+if (s >= 2) svg += '<path d="M90 88 L130 150 M130 88 L90 150" stroke="' + trim + '" stroke-width="3" opacity="0.55" />';
+if (s >= 3) svg += '<g fill="' + trim + '"><circle cx="110" cy="96" r="3.4" /><circle cx="110" cy="122" r="3.4" /><circle cx="110" cy="148" r="3.4" /></g>';
+svg += '<path d="M93 74 L90 172 M127 74 L130 172" stroke="' + trim + '" stroke-width="' + (s >= 4? 2.6: 1.2) + '" opacity="' + (s >= 4? 0.95: 0.4) + '" fill="none" />' +
+'<path d="M76 82 L88 56 L104 70 H116 L132 56 L144 82 L132 92 L110 84 L88 92 Z" fill="#0d0d10" stroke="#000" stroke-width="1.8" />';
+if (s >= 3){
+var shoulderFill = s >= 5? "url(#" + gid + "-gold)": s === 4? "#39424e": "#3a4048";
+svg += '<g fill="' + shoulderFill + '" stroke="#000" stroke-width="1.6">' +
+'<path d="M52 84 Q66 68 84 76 L80 96 Q62 100 52 84 Z" />' +
+'<path d="M168 84 Q154 68 136 76 L140 96 Q158 100 168 84 Z" /></g>';
+}
+if (s >= 5) svg += '<g stroke="#b97e10" stroke-width="2.4"><path d="M58 78 L50 62" /><path d="M162 78 L170 62" /></g>';
+svg += '<rect x="74" y="170" width="72" height="13" rx="4" fill="#0a0a0c" stroke="#000" stroke-width="1.4" />' +
+'<rect x="99" y="171.5" width="22" height="10" rx="2.5" fill="' + (s >= 5? "url(#" + gid + "-gold)": trim) + '" stroke="#000" stroke-width="1.2" />' +
+/* head */
+'<circle cx="83" cy="48" r="6" fill="#ffd9b3" stroke="#d99e66" stroke-width="1.2" />' +
+'<circle cx="137" cy="48" r="6" fill="#ffd9b3" stroke="#d99e66" stroke-width="1.2" />' +
+'<circle cx="110" cy="47" r="28" fill="#ffd9b3" stroke="#d99e66" stroke-width="1.6" />' +
+'<path d="M81 50 Q76 12 96 17 Q99 4 109 15 Q118 2 124 15 Q140 8 141 28 Q147 34 139 50 Q136 32 128 38 Q125 23 117 35 Q111 21 103 35 Q93 24 89 39 Q83 33 81 50 Z" fill="#101014" stroke="#000" stroke-width="1.6" />' +
+'<path d="M91 43 L105 46 M115 46 L129 43" stroke="#101014" stroke-width="2.8" stroke-linecap="round" />' +
+'<ellipse cx="99" cy="53" rx="3.4" ry="5" fill="#14100e" />' +
+'<ellipse cx="121" cy="53" rx="3.4" ry="5" fill="#14100e" />' +
+'<circle cx="100.2" cy="51" r="1.2" fill="#fff" />' +
+'<circle cx="122.2" cy="51" r="1.2" fill="#fff" />' +
+'<path d="M104 66 Q110 68.5 116 66" stroke="#a3622d" stroke-width="2.2" fill="none" stroke-linecap="round" />' +
+'<ellipse cx="90" cy="61" rx="4.6" ry="2.8" fill="#fda4af" opacity="0.55" />' +
+'<ellipse cx="130" cy="61" rx="4.6" ry="2.8" fill="#fda4af" opacity="0.55" />';
+if (s === 4){
+svg += '<g><path d="M80 38 Q110 2 140 38 L140 46 Q110 32 80 46 Z" fill="#272d36" stroke="#aab6c4" stroke-width="2.2" />' +
+'<path d="M110 6 V30" stroke="#aab6c4" stroke-width="3" />' +
+'<path d="M106 34 h8 l-1.4 16 h-5.2 Z" fill="#39424e" stroke="#aab6c4" stroke-width="1.4" /></g>';
+}
+if (s >= 5){
+svg += '<g><path d="M86 30 L92 14 L102 25 L110 10 L118 25 L128 14 L134 30 Q110 38 86 30 Z" fill="url(#' + gid + '-gold)" stroke="#8a5f06" stroke-width="1.6" />' +
+'<circle cx="110" cy="29" r="4" fill="#e11d48" stroke="#fff1f2" stroke-width="1.4" /></g>';
+}
+svg += '</svg>';
+return '<span class="sw-avatar ' + (sizeCls || "sw-lg") + '" role="img" aria-label="全身の剣士：' + info.name + '（' + info.equipment + '）">' + svg + '</span>';
+}
 /* レベル到達に必要な累計EXP（Lv1=0） */
 var LEVEL_EXP = [0, 30, 70, 120, 180, 250, 330, 420, 520, 630, 750, 880];
 var MAX_LEVEL = LEVEL_EXP.length;
@@ -484,7 +679,7 @@ var RECOMMENDED = [
 var state = {
 pin: null,
 parentUnlocked: false,
-children: [], /* {id,name,chara,exp,earned(total coins),unpaid,streak,lastClear,clears,log:[{quest,exp,coins,when}]} */
+children: [], /* {id,name,exp,earned(total coins),unpaid,streak,lastClear,clears,log:[{quest,exp,coins,when}]} */
 quests: [], /* {id,name,exp,coins} */
 pending: [], /* {id,childId,questId,questName,exp,coins,when} */
 payments: [], /* {childName,amount,when} */
@@ -518,15 +713,15 @@ return null;
 }
 function refreshIcons(){ if (window.lucide) lucide.createIcons();}
 
-/* ============ 進化ストリップ（紹介） ============ */
-Object.keys(CHARACTERS).forEach(function(key){
-var row = document.querySelector('[data-evo="' + key + '"]');
+/* ============ 装備ストリップ（紹介） ============ */
+(function(){
+var row = document.getElementById("evo-swords");
 if (!row) return;
-row.innerHTML = CHARACTERS[key].stages.map(function(s, i){
-return (i > 0? '<span class="evo-arrow">→</span>': '') +
-'<span class="evo-cell"><span class="face">' + s.face + '</span><span class="nm">' + s.name + '</span></span>';
+row.innerHTML = SWORDSMAN.stages.map(function(s, i){
+return '<span class="evo-stage">' + swordsmanAvatar(i + 1, "sw-md") +
+'<span class="nm">' + (i + 1) + '. ' + s.name + '</span><span class="eq">' + s.equipment + '</span></span>';
 }).join("");
-});
+})();
 
 /* ============ 子ども画面 ============ */
 var viewChild = document.getElementById("view-child");
@@ -535,15 +730,16 @@ var viewParent = document.getElementById("view-parent");
 function renderChild(){
 if (state.children.length === 0){
 viewChild.innerHTML =
-'<div class="empty-note"><span class="big">🥚</span>' +
-'まだ冒険者が登録されていません。<br>最初に「親画面」でPINを設定して、お子さんを登録してください。</div>';
+'<div class="empty-note"><span class="big">⚔️</span>' +
+'まだ剣士が登録されていません。<br>最初に「親画面」でPINを設定して、お子さんを登録してください。剣士はレベルが上がると装備が強くなります。</div>';
 refreshIcons(); return;
 }
 if (!childById(state.activeChildId)) state.activeChildId = state.children[0].id;
 var c = childById(state.activeChildId);
 var lv = levelOf(c.exp);
 var st = stageOf(lv);
-var stage = CHARACTERS[c.chara].stages[st - 1];
+var stage = stageInfoByNumber(st);
+var nextStage = st < 5? stageInfoByNumber(st + 1): null;
 var nextLvExp = lv < MAX_LEVEL? LEVEL_EXP[lv]: null;
 var curBase = LEVEL_EXP[lv - 1];
 var pct = nextLvExp? Math.min(100, Math.round((c.exp - curBase) / (nextLvExp - curBase) * 100)): 100;
@@ -551,8 +747,9 @@ var nextStageLv = st === 1? 3: st === 2? 5: st === 3? 8: st === 4? 12: null;
 var toEvolve = nextStageLv? (LEVEL_EXP[nextStageLv - 1] - c.exp): 0;
 
 var chips = state.children.map(function(k){
-return '<button class="child-chip' + (k.id === c.id? ' active': '') + '" data-switch="' + k.id + '">' +
-CHARACTERS[k.chara].stages[stageOf(levelOf(k.exp)) - 1].face + ' ' + esc(k.name) + '</button>';
+var kst = stageOf(levelOf(k.exp));
+return '<button class="child-chip' + (k.id === c.id? ' active': '') + '" data-switch="' + k.id + '">⚔️ ' +
+esc(k.name) + '（' + stageInfoByNumber(kst).name + '）</button>';
 }).join("");
 
 var questsHtml;
@@ -578,16 +775,36 @@ return '<li><span>⚔️ ' + esc(l.quest) + '（＋' + l.exp + 'EXP・' + l.coin
 }).join("") + '</ul>';
 }
 
+var equipChips = stage.equipmentItems.map(function(it){
+return '<span class="equip-chip' + (st >= 5? ' legend': '') + '">' + it.icon + ' ' + it.label + '</span>';
+}).join("");
+var rankPills = SWORDSMAN.stages.map(function(s2, i){
+var n = i + 1;
+var cls = n === st? ' current': n < st? ' done': '';
+return '<span class="rank-pill' + cls + '" title="' + s2.name + '">' + n + '</span>';
+}).join("");
+
 viewChild.innerHTML =
 '<div class="child-switch">' + chips + '</div>' +
-'<div class="hero-card">' +
-'<div class="hero-face">' + stage.face + '</div>' +
-'<div class="hero-name">' + esc(c.name) + '</div>' +
-'<div class="hero-stage">' + CHARACTERS[c.chara].label + '「' + stage.name + '」（進化 ' + st + ' / 5）</div>' +
+'<div class="hero-card-sw">' +
+'<p class="hero-rank">黒の剣士 ・ そうびランク ' + st + ' / 5</p>' +
+'<div class="hero-stage-name">' + stage.name + '</div>' +
+'<div class="hero-name">' + esc(c.name) + ' の剣士</div>' +
+'<div><span class="hero-lv-badge">Lv.' + lv + '</span></div>' +
+'<div class="hero-avatar-stage' + (st >= 5? ' legend': '') + '"><span class="sw-float" style="display:inline-block">' + swordsmanAvatar(st, "sw-hero") + '</span>' +
+'<p class="hero-caption">' + stage.caption + '</p></div>' +
+'<div class="equip-box"><p class="equip-title">⚔️ いまの装備</p>' +
+'<div class="equip-chips">' + equipChips + '</div>' +
+(nextStage
+? '<p class="equip-next">つぎは ' + nextStage.name + '：' + nextStage.equipment + '</p>'
+: '<p class="equip-next legend-done">👑 伝説の装備が完成！いちばん強い剣士だよ</p>') +
+'<div class="rank-row" role="img" aria-label="装備ランク ' + st + ' / 5">' + rankPills + '</div>' +
+'<p class="rank-labels">見習い → 若手 → 熟練 → 騎士 → 伝説の勇者</p>' +
+'</div>' +
 '<div class="lv-row"><span>⭐ Lv.' + lv + '</span><span class="coin">💰 未払い ' + c.unpaid + '円</span><span class="pay">🏦 もらった合計 ' + (c.earned - c.unpaid) + '円</span></div>' +
 '<div class="expbar"><div style="width:' + pct + '%"></div></div>' +
 '<p class="exp-note">' + (nextLvExp
-? '次のレベルまで あと ' + (nextLvExp - c.exp) + ' EXP' + (nextStageLv? ' ／ 次の進化まで あと ' + toEvolve + ' EXP': '')
+? '次のレベルまで あと ' + (nextLvExp - c.exp) + ' EXP' + (nextStageLv? ' ／ そうび強化まで あと ' + toEvolve + ' EXP': ' ／ 🎉 伝説の装備 たっせい！')
 : '最高レベル到達！すごい！') + '</p>' +
 '<div class="stat-row">' +
 '<span class="stat">🔥 連続がんばり <b>' + c.streak + '日</b></span>' +
@@ -683,12 +900,14 @@ return '<div class="quest"><h3><i data-lucide="hourglass"></i> ' + esc(p.questNa
 
 var childrenHtml;
 if (state.children.length === 0){
-childrenHtml = '<div class="empty-note"><span class="big">🥚</span>まだ登録がありません。下のフォームから登録してください。</div>';
+childrenHtml = '<div class="empty-note"><span class="big">⚔️</span>まだ登録がありません。下のフォームから登録してください。</div>';
 } else {
 childrenHtml = state.children.map(function(c){
-return '<div class="parent-child-card"><div><span class="who">' +
-CHARACTERS[c.chara].stages[stageOf(levelOf(c.exp)) - 1].face + ' ' + esc(c.name) + '</span>' +
-'<div class="meta">Lv.' + levelOf(c.exp) + ' ／ 累計 ' + c.earned + '円 ／ クリア ' + c.clears + '回</div></div>' +
+var cst = stageOf(levelOf(c.exp));
+var cinfo = stageInfoByNumber(cst);
+return '<div class="parent-child-card"><div style="display:flex;align-items:center;gap:10px"><span>' + swordsmanAvatar(cst, "sw-sm") + '</span><span><span class="who">' +
+esc(c.name) + '</span>' +
+'<div class="meta">Lv.' + levelOf(c.exp) + ' ・ ' + cinfo.name + ' ・ ' + cinfo.equipment + ' ／ 累計 ' + c.earned + '円 ／ クリア ' + c.clears + '回</div></span></div>' +
 '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span class="due">未払い ' + c.unpaid + '円</span>' +
 (c.unpaid > 0? '<button class="qbtn qbtn-pay" data-pay="' + c.id + '"><i data-lucide="hand-coins"></i> 渡した</button>': '') +
 '<button class="qbtn qbtn-del qbtn-small" data-delchild="' + c.id + '">削除</button></div></div>';
@@ -727,11 +946,14 @@ viewParent.innerHTML =
 '<div class="form-card"><h3 style="font-size:.98rem;margin-bottom:10px">子どもを追加</h3>' +
 '<div class="form-grid">' +
 '<div class="field"><label>名前</label><input id="f-child-name" type="text" placeholder="例：はると" maxlength="12" /></div>' +
-'<div class="field"><label>相棒キャラ</label><div class="chara-pick" id="f-child-chara">' +
-Object.keys(CHARACTERS).map(function(key, i){
-return '<button class="chara-opt' + (i === 0? ' active': '') + '" data-chara="' + key + '">' + CHARACTERS[key].stages[2].face + ' ' + CHARACTERS[key].label + '</button>';
+'<div class="field"><label>キャラ（剣士）</label>' +
+'<p style="font-size:.85rem;font-weight:800;margin-bottom:8px">⚔️ 剣士 ― レベルが上がると装備が強化されます</p>' +
+'<div class="parent-sw-preview" role="img" aria-label="剣士の装備の進み方">' +
+SWORDSMAN.stages.map(function(s, i){
+return '<span class="evo-stage">' + swordsmanAvatar(i + 1, "sw-sm") + '<span class="nm" style="font-size:.68rem">' + s.name + '</span></span>';
 }).join("") +
-'</div></div>' +
+'</div>' +
+'<p style="font-size:.78rem;color:var(--ink-soft);margin-top:8px">キャラは剣士に統一されています。</p></div>' +
 '<div><button class="qbtn qbtn-approve" id="btn-add-child"><i data-lucide="user-plus"></i> 登録する</button></div>' +
 '</div></div>' +
 
@@ -750,25 +972,14 @@ refreshIcons();
 bindParentMain();
 }
 
-var newChildChara = "dragon";
 function bindParentMain(){
 document.getElementById("btn-lock").addEventListener("click", function(){
 state.parentUnlocked = false; pinEntry = ""; renderParent(); toast("親画面をロックしました");
 });
-var pick = document.getElementById("f-child-chara");
-if (pick){
-newChildChara = "dragon";
-pick.addEventListener("click", function(e){
-var b = e.target.closest("[data-chara]");
-if (!b) return;
-newChildChara = b.getAttribute("data-chara");
-pick.querySelectorAll(".chara-opt").forEach(function(o){ o.classList.toggle("active", o === b);});
-});
-}
 document.getElementById("btn-add-child").addEventListener("click", function(){
 var name = document.getElementById("f-child-name").value.trim();
 if (!name){ toast("名前を入力してください"); return;}
-var c = { id: nextId(), name: name, chara: newChildChara, exp: 0, earned: 0, unpaid: 0, streak: 0, lastClear: null, clears: 0, log: []};
+var c = { id: nextId(), name: name, exp: 0, earned: 0, unpaid: 0, streak: 0, lastClear: null, clears: 0, log: []};
 state.children.push(c);
 if (!state.activeChildId) state.activeChildId = c.id;
 toast(name + " さんを登録しました"); renderParent(); renderChild();
@@ -783,6 +994,56 @@ if (!(coins >= 0)){ toast("お小遣いは0円以上にしてください"); ret
 state.quests.push({ id: nextId(), name: name, exp: exp, coins: coins});
 toast("クエストを追加しました"); renderParent(); renderChild();
 });
+}
+
+/* ============ お祝い表示 ============ */
+var CONFETTI = ["🎉", "⭐", "✨", "🎊", "💫"];
+function showCelebration(kind, kidName, beforeStage, afterStage, afterLv){
+var root = document.getElementById("celebration-root");
+if (!root) return;
+var stage = stageInfoByNumber(afterStage);
+var prev = beforeStage && beforeStage < afterStage? stageInfoByNumber(beforeStage): null;
+var confetti = "";
+for (var i = 0; i < 18; i++){
+confetti += '<span style="left:' + ((i * 41) % 100) + '%;font-size:' + (18 + ((i * 7) % 18)) + 'px;animation-delay:' + ((i % 8) * 0.18) + 's">' + CONFETTI[i % CONFETTI.length] + '</span>';
+}
+var body = "";
+if (kind === "evolution" && prev){
+body =
+'<div class="cel-vs">' +
+'<div class="cel-side dim">' + swordsmanAvatar(beforeStage, "sw-md") + '<p class="cel-cap">まえ：' + prev.name + '</p></div>' +
+'<span class="cel-arrow" aria-hidden="true">▶</span>' +
+'<div class="cel-side cel-pop">' + swordsmanAvatar(afterStage, "sw-lg") + '<p class="cel-cap new">あたらしい：' + stage.name + '</p></div>' +
+'</div>' +
+'<p class="cel-stage">' + stage.name + 'に なった！</p>' +
+'<div class="cel-equip prev"><p class="cel-eq-label">まえの そうび</p><p class="cel-eq-text">' + prev.name + '：' + prev.equipment + '</p></div>' +
+'<div class="cel-equip next"><p class="cel-eq-label">✨ 新しい そうび</p><p class="cel-eq-text">' + stage.equipment + '</p>' +
+'<div class="equip-chips">' + stage.equipmentItems.map(function(it){ return '<span class="equip-chip">' + it.icon + ' ' + it.label + '</span>';}).join("") + '</div></div>' +
+'<p style="font-size:.86rem;color:var(--ink-soft);margin-top:12px">' + esc(kidName) + 'の剣とよろいが 強くなったよ！' +
+(afterStage >= 5? '伝説の装備が完成したね！': '次の装備を目指してクエストをクリアしよう！') + '</p>';
+} else {
+body =
+'<div style="margin:10px auto;width:fit-content">' + swordsmanAvatar(afterStage, "sw-xl") + '</div>' +
+'<p class="cel-stage">Lv.' + afterLv + 'に あがった！</p>' +
+'<p style="font-size:.86rem;color:var(--ink-soft);margin-top:8px">' + esc(kidName) + 'の がんばりが たまったよ。この調子で クエストを クリアしよう！</p>';
+}
+root.innerHTML =
+'<div class="celebration-overlay" id="celebration-overlay">' +
+'<div class="cel-confetti">' + confetti + '</div>' +
+'<div class="celebration-card cel-pop" role="dialog" aria-modal="true" aria-label="お祝い">' +
+'<p class="cel-title">' + (kind === "evolution"? '⚔️ そうびが きょうかされた！': 'レベルアップ！') + '</p>' +
+body +
+'<button class="qbtn qbtn-approve" id="btn-celebration-close" style="margin-top:16px;padding:12px 28px;font-size:1rem">やったー！</button>' +
+'</div></div>';
+var closeBtn = document.getElementById("btn-celebration-close");
+if (closeBtn) closeBtn.addEventListener("click", closeCelebration);
+var ov = document.getElementById("celebration-overlay");
+if (ov) ov.addEventListener("click", function(e){ if (e.target === ov) closeCelebration();});
+refreshIcons();
+}
+function closeCelebration(){
+var root = document.getElementById("celebration-root");
+if (root) root.innerHTML = "";
 }
 
 /* ============ イベント（委任） ============ */
@@ -830,11 +1091,13 @@ var afterLv = levelOf(kid.exp);
 var afterStage = stageOf(afterLv);
 renderParent(); renderChild();
 if (afterStage > beforeStage){
-toast("🎉 " + kid.name + " さんのキャラが進化しました！");
+state.activeChildId = kid.id;
+renderChild();
+showCelebration("evolution", kid.name, beforeStage, afterStage, afterLv);
 var b = document.getElementById("levelup-banner");
-if (b){ b.textContent = "🎉 進化！ " + CHARACTERS[kid.chara].stages[afterStage - 1].face + "「" + CHARACTERS[kid.chara].stages[afterStage - 1].name + "」になりました！"; b.classList.add("show");}
+if (b){ b.textContent = "🎉 そうびが きょうかされた！ 「" + stageInfoByNumber(afterStage).name + "」になりました！"; b.classList.add("show");}
 } else if (afterLv > beforeLv){
-toast("⭐ " + kid.name + " さんが Lv." + afterLv + " にレベルアップ！");
+showCelebration("level", kid.name, beforeStage, afterStage, afterLv);
 } else {
 toast("承認しました（＋" + p.exp + "EXP・" + p.coins + "円）");
 }
