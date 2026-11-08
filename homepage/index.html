@@ -275,7 +275,7 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
   </section>
 
   <footer>
-    <p>かーくんのお店 バージョン13（GitHub Pages版）</p>
+    <p>かーくんのお店 バージョン14（GitHub Pages版）</p>
     <p>© 2026 かーくん（Kuro）</p>
   </footer>
 </div>
@@ -491,7 +491,7 @@ document.querySelectorAll(".num[data-count]").forEach(el=>cio.observe(el));
 /* ===== analytics: A=Abacus counters (display), B=GoatCounter (accurate counting) ===== */
 const AB_NS="kakun-no-omise-8f3k2x7";
 const AB_BASE="https://abacus.jasoncameron.dev";
-const GOAT_CODE=""; /* GoatCounter site code goes here after signup */
+const GOAT_CODE="pooulpi"; /* GoatCounter site code */
 const counts={};
 function keyFor(x){return (PRODUCTS.includes(x)?"view-":"try-")+x.id}
 function labelFor(x,n){return PRODUCTS.includes(x)?`👀 ${n}回 見られました`:`▶ ${n}回 試されました`}
@@ -524,7 +524,7 @@ function countTry(id){
 }
 function initAnalytics(){
   loadCounts();
-  if(GOAT_CODE){
+  if(GOAT_CODE&&!document.querySelector("script[data-goatcounter]")){
     const s=document.createElement("script");
     s.async=true; s.src="//gc.zgo.at/count.js";
     s.setAttribute("data-goatcounter",`https://${GOAT_CODE}.goatcounter.com/count`);
@@ -533,5 +533,6 @@ function initAnalytics(){
 }
 renderPills(); renderDiags(); renderPicks(); renderProducts(); renderSoon(); renderApps(); saveFavs(); observeCards(); initAnalytics();
 </script>
+<script data-goatcounter="https://pooulpi.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
