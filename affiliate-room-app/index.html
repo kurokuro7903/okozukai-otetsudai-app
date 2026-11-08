@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="運営室">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>アフィリエイト運営室</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;background:#f6f4ef;color:#222;line-height:1.6;padding-bottom:56px}
+header{background:#1f3a5f;color:#fff;padding:20px 16px 14px}
+header h1{margin:0 0 4px;font-size:22px}
+header p{margin:0;font-size:13px;opacity:.9}
+.tabs{display:flex;gap:8px;padding:10px 12px 0;position:sticky;top:0;background:#f6f4ef;z-index:10}
+.tabs button{flex:1;padding:12px;border:1px solid #c9d2de;background:#fff;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer}
+.tabs button.active{background:#1f3a5f;color:#fff;border-color:#1f3a5f}
+main{padding:12px;max-width:760px;margin:0 auto}
+section.card{background:#fff;border:1px solid #e2ddd2;border-radius:12px;padding:14px;margin:0 0 12px}
+h2{font-size:17px;margin:0 0 10px;border-left:4px solid #1f3a5f;padding-left:8px}
+h3{font-size:15px;margin:14px 0 8px}
+.media-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:480px){.media-grid{grid-template-columns:1fr}}
+.media{border:1px solid #e2ddd2;border-radius:10px;padding:10px;display:block;text-decoration:none;color:#222;background:#fcfaf5}
+.media b{display:block}
+.media span{font-size:12px;color:#555;word-break:break-all}
+.media .open{color:#1f3a5f;font-weight:700;font-size:12px}
+.cat{border-left:4px solid #c98a2d;background:#fcfaf5;padding:8px 10px;margin:0 0 8px;border-radius:0 8px 8px 0}
+.small{font-size:12px;color:#555}
+label{display:block;font-size:13px;font-weight:700;margin:8px 0 2px}
+input,select,textarea{width:100%;padding:10px;border:1px solid #bbb;border-radius:8px;font-size:16px;background:#fff}
+textarea{min-height:70px}
+button.btn{width:100%;padding:11px;margin-top:10px;border:0;border-radius:9px;background:#1f3a5f;color:#fff;font-size:15px;font-weight:700;cursor:pointer}
+button.sub{background:#66788f}
+button.danger{background:#a33}
+.item{border:1px solid #e2ddd2;border-radius:10px;padding:10px;margin:10px 0;background:#fcfaf5;word-break:break-word}
+.item .meta{font-size:12px;color:#555}
+.row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.row button{flex:1;min-width:70px;padding:8px;border:1px solid #c9d2de;border-radius:8px;background:#fff;cursor:pointer;font-size:13px}
+.row a{flex:1;min-width:70px;text-align:center;padding:8px;border:1px solid #c9d2de;border-radius:8px;background:#fff;color:#1f3a5f;text-decoration:none;font-size:13px;font-weight:700}
+.badge{display:inline-block;background:#eef2f7;border:1px solid #c9d2de;border-radius:999px;padding:1px 8px;font-size:12px;margin-right:4px}
+.progress{height:18px;background:#e8e2d4;border-radius:999px;overflow:hidden}
+.progress>div{height:100%;background:#2e7d4f;width:0%}
+.hidden{display:none!important}
+footer{position:fixed;left:0;right:0;bottom:0;background:#1f3a5f;color:#fff;text-align:center;font-size:12px;padding:9px 6px calc(9px + env(safe-area-inset-bottom));z-index:20}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:64px;background:#222;color:#fff;padding:8px 14px;border-radius:999px;font-size:13px;display:none;z-index:30}
+</style>
+</head>
+<body>
+<header>
+<h1>アフィリエイト運営室</h1>
+<p>会社員のかーくん（表示名：クロ）の副業拠点｜目標：月3万円</p>
+</header>
+
+<div class="tabs" role="tablist">
+<button id="tabPublic" class="active" onclick="showTab('public')">表サイト</button>
+<button id="tabAdmin" onclick="showTab('admin')">管理</button>
+</div>
+
+<main>
+<!-- ============ 表サイト ============ -->
+<div id="viewPublic">
+<section class="card">
+<h2>運営者紹介</h2>
+<p>本業は会社員のかーくん（表示名「クロ」）が、副業で月3万円を目指して運営しています。毎朝のリサーチをもとに、楽天ROOMとYahoo!ショッピングを中心に、日用品・食品ストック・季節の暮らしものなどを紹介しています。自作アプリやデジタル商品づくりも行っています。</p>
+</section>
+
+<section class="card">
+<h2>運営メディア</h2>
+<div class="media-grid">
+<a class="media" href="https://room.rakuten.co.jp/room_c16d13639a/items" target="_blank" rel="noopener"><b>楽天ROOM</b><span>おすすめ商品のコレクション</span><br><span class="open">開く →</span></a>
+<div class="media"><b>Yahoo!ショッピング</b><span>アフィリエイト登録済み。Xなどで商品を紹介しています</span></div>
+<a class="media" href="https://x.com/pooulpi" target="_blank" rel="noopener"><b>X</b><span>@pooulpi</span><br><span class="open">開く →</span></a>
+<a class="media" href="https://www.instagram.com/potin0106/" target="_blank" rel="noopener"><b>Instagram</b><span>@potin0106</span><br><span class="open">開く →</span></a>
+<a class="media" href="https://www.threads.com/@potin0106" target="_blank" rel="noopener"><b>Threads</b><span>@potin0106</span><br><span class="open">開く →</span></a>
+<a class="media" href="https://note.com/modern_ruff2149" target="_blank" rel="noopener"><b>note</b><span>表示名「クロ」／modern_ruff2149</span><br><span class="open">開く →</span></a>
+<a class="media" href="https://pooulpi.booth.pm/" target="_blank" rel="noopener"><b>BOOTH</b><span>デジタル商品・素材の販売</span><br><span class="open">開く →</span></a>
+<a class="media" href="https://kurokuro7903.github.io/okozukai-otetsudai-app/homepage/" target="_blank" rel="noopener"><b>かーくんのお店</b><span>自作アプリと商品のショップ</span><br><span class="open">開く →</span></a>
+<a class="media" href="https://kurokuro7903.github.io/okozukai-otetsudai-app/portal/" target="_blank" rel="noopener"><b>ポータル</b><span>自作アプリ・リンク集</span><br><span class="open">開く →</span></a>
+</div>
+</section>
+
+<section class="card">
+<h2>おすすめカテゴリ</h2>
+<div class="cat"><b>日用品まとめ買い</b><br><span class="small">トイレットペーパー・ティッシュ・洗剤など、なくなる前にストックできるもの。</span></div>
+<div class="cat"><b>食品・飲料ストック</b><br><span class="small">炭酸水・米・レトルトなど、まとめ買いでお得になりやすい食品・飲料。</span></div>
+<div class="cat"><b>季節・冬支度</b><br><span class="small">季節の変わり目に必要になる暮らしのアイテム。</span></div>
+<div class="cat"><b>暮らしの自作アプリ・デジタル商品</b><br><span class="small">暮らしの「あったら便利」を形にした自作アプリと、BOOTH・noteのデジタル商品。</span></div>
+</section>
+
+<section class="card">
+<h2>運営者情報</h2>
+<p class="small">運営者：かーくん（表示名：クロ）／本業：会社員／活動内容：アフィリエイト紹介、自作アプリ・デジタル商品の制作・販売／連絡先：各SNSのプロフィールからお願いします。</p>
+<h3>PR・アフィリエイト表記</h3>
+<p class="small">当サイトおよび運営メディアの投稿には、楽天アフィリエイト、Yahoo!ショッピングアフィリエイト等のプログラムを利用した広告・PRリンクが含まれます。リンク先で商品が購入された場合、運営者に紹介料が支払われることがあります。広告を含む投稿には「PR」「#PR」等の表記を行い、景品表示法（ステルスマーケティング規制）に配慮して運営します。商品情報・価格は紹介時点のもので、最新の情報は各販売ページでご確認ください。</p>
+</section>
+<p class="small">※管理画面のデータ（候補・リンク・投稿・収益）はこの表サイトには表示されません。</p>
+</div>
+
+<!-- ============ 管理 ============ -->
+<div id="viewAdmin" class="hidden">
+
+<section class="card">
+<h2>1. 候補置き場</h2>
+<p>未投稿：<b id="candUnposted">0</b> 件 ／ 全 <span id="candTotal">0</span> 件</p>
+<input type="hidden" id="candId">
+<label>日付</label><input type="date" id="candDate">
+<label>媒体</label>
+<select id="candMedium"><option>楽天ROOM</option><option>Yahoo!ショッピング</option><option>X</option><option>Instagram</option><option>Threads</option><option>note</option><option>BOOTH</option><option>その他</option></select>
+<label>商品名</label><input type="text" id="candProduct" placeholder="商品名">
+<label>キーワード</label><input type="text" id="candKeyword" placeholder="検索キーワード">
+<label>投稿文ドラフト</label><textarea id="candDraft" placeholder="投稿文の下書き"></textarea>
+<label>ステータス</label>
+<select id="candStatus"><option>未投稿</option><option>下書き</option><option>投稿済み</option></select>
+<button class="btn" onclick="saveCandidate()">候補を保存</button>
+<button class="btn sub" onclick="clearCandidate()">入力をクリア</button>
+<div id="candList"></div>
+</section>
+
+<section class="card">
+<h2>2. リンク保管庫</h2>
+<input type="hidden" id="linkId">
+<label>媒体</label>
+<select id="linkMedium"><option>楽天ROOM</option><option>Yahoo!ショッピング</option><option>X</option><option>Instagram</option><option>Threads</option><option>note</option><option>BOOTH</option><option>その他</option></select>
+<label>商品名</label><input type="text" id="linkProduct" placeholder="商品名">
+<label>URL（発行済みアフィリエイトリンク）</label><input type="url" id="linkUrl" placeholder="https://...">
+<label>メモ</label><input type="text" id="linkMemo" placeholder="メモ">
+<button class="btn" onclick="saveLink()">リンクを保存</button>
+<button class="btn sub" onclick="clearLink()">入力をクリア</button>
+<label>検索</label><input type="search" id="linkSearch" placeholder="商品名・媒体・メモで検索" oninput="renderLinks()">
+<div id="linkList"></div>
+</section>
+
+<section class="card">
+<h2>3. 投稿管理</h2>
+<input type="hidden" id="postId">
+<label>日付</label><input type="date" id="postDate">
+<label>媒体</label>
+<select id="postMedium"><option>楽天ROOM</option><option>Yahoo!ショッピング</option><option>X</option><option>Instagram</option><option>Threads</option><option>note</option><option>BOOTH</option><option>その他</option></select>
+<label>内容</label><textarea id="postContent" placeholder="投稿内容"></textarea>
+<label>インプレッション</label><input type="number" id="postImp" min="0" inputmode="numeric" placeholder="0">
+<label>いいね数</label><input type="number" id="postLikes" min="0" inputmode="numeric" placeholder="0">
+<button class="btn" onclick="savePost()">投稿を保存</button>
+<button class="btn sub" onclick="clearPost()">入力をクリア</button>
+<div id="postList"></div>
+</section>
+
+<section class="card">
+<h2>4. 収益メモ</h2>
+<label>対象月</label><input type="month" id="revMonth" onchange="renderRevenues()">
+<p>今月（選択月）合計：<b id="revTotal">¥0</b> ／ 目標 ¥30,000</p>
+<div class="progress"><div id="revBar"></div></div>
+<p class="small" id="revProgressText">達成率 0%・あと ¥30,000</p>
+<p class="small" id="revByMedium"></p>
+<input type="hidden" id="revId">
+<label>日付</label><input type="date" id="revDate">
+<label>媒体</label>
+<select id="revMedium"><option>楽天</option><option>Yahoo</option><option>BOOTH</option><option>note</option><option>その他</option></select>
+<label>金額（円）</label><input type="number" id="revAmount" min="0" inputmode="numeric" placeholder="0">
+<label>メモ</label><input type="text" id="revMemo" placeholder="メモ">
+<button class="btn" onclick="saveRevenue()">収益を保存</button>
+<button class="btn sub" onclick="clearRevenue()">入力をクリア</button>
+<div id="revList"></div>
+</section>
+
+<section class="card">
+<h2>5. バックアップ</h2>
+<p class="small">データはこの端末のブラウザ内（localStorage）にだけ保存されます。機種変更やブラウザのデータ消去に備えて、JSONで書き出しておいてください。</p>
+<button class="btn" onclick="exportJson()">JSONを書き出す（ダウンロード）</button>
+<label>JSONを読み込む（現在のデータと置き換えます）</label>
+<input type="file" id="importFile" accept=".json,application/json" onchange="importJson(event)">
+</section>
+
+</div>
+</main>
+
+<footer>アフィリエイト運営室 ホーム画面版 バージョン1</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+var KEY='affiliateRoomHomeV1';
+var GOAL=30000;
+var data=loadData();
+function emptyData(){return{candidates:[],links:[],posts:[],revenues:[]};}
+function loadData(){try{var raw=localStorage.getItem(KEY);if(!raw)return emptyData();var d=JSON.parse(raw);if(!d||typeof d!=='object')return emptyData();['candidates','links','posts','revenues'].forEach(function(k){if(!Array.isArray(d[k]))d[k]=[];});return d;}catch(e){return emptyData();}}
+function saveData(){localStorage.setItem(KEY,JSON.stringify(data));}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function yen(n){return '¥'+Number(n||0).toLocaleString('ja-JP');}
+function todayStr(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function monthStr(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(function(){t.style.display='none';},1800);}
+function copyText(text){if(!text){toast('コピーする内容がありません');return;}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){toast('コピーしました');},function(){fallbackCopy(text);});}else{fallbackCopy(text);}}
+function fallbackCopy(text){var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('コピーしました');}catch(e){toast('コピーできませんでした');}document.body.removeChild(ta);}
+
+function showTab(which){document.getElementById('viewPublic').classList.toggle('hidden',which!=='public');document.getElementById('viewAdmin').classList.toggle('hidden',which!=='admin');document.getElementById('tabPublic').classList.toggle('active',which==='public');document.getElementById('tabAdmin').classList.toggle('active',which==='admin');window.scrollTo(0,0);}
+
+/* ---- 候補 ---- */
+function clearCandidate(){document.getElementById('candId').value='';document.getElementById('candDate').value=todayStr();document.getElementById('candMedium').selectedIndex=0;document.getElementById('candProduct').value='';document.getElementById('candKeyword').value='';document.getElementById('candDraft').value='';document.getElementById('candStatus').value='未投稿';}
+function saveCandidate(){var id=document.getElementById('candId').value;var rec={id:id||uid(),date:document.getElementById('candDate').value,medium:document.getElementById('candMedium').value,product:document.getElementById('candProduct').value.trim(),keyword:document.getElementById('candKeyword').value.trim(),draft:document.getElementById('candDraft').value,status:document.getElementById('candStatus').value};if(!rec.product&&!rec.draft){toast('商品名か投稿文を入れてください');return;}if(id){var i=data.candidates.findIndex(function(x){return x.id===id;});if(i>=0)data.candidates[i]=rec;}else{data.candidates.unshift(rec);}saveData();clearCandidate();renderCandidates();toast('保存しました');}
+function editCandidate(id){var r=data.candidates.find(function(x){return x.id===id;});if(!r)return;document.getElementById('candId').value=r.id;document.getElementById('candDate').value=r.date||'';document.getElementById('candMedium').value=r.medium;document.getElementById('candProduct').value=r.product||'';document.getElementById('candKeyword').value=r.keyword||'';document.getElementById('candDraft').value=r.draft||'';document.getElementById('candStatus').value=r.status||'未投稿';window.scrollTo(0,0);}
+function delCandidate(id){if(!confirm('この候補を削除しますか？'))return;data.candidates=data.candidates.filter(function(x){return x.id!==id;});saveData();renderCandidates();}
+function renderCandidates(){var un=data.candidates.filter(function(x){return x.status==='未投稿';}).length;document.getElementById('candUnposted').textContent=un;document.getElementById('candTotal').textContent=data.candidates.length;var el=document.getElementById('candList');if(!data.candidates.length){el.innerHTML='<p class="small">まだ候補はありません。</p>';return;}el.innerHTML=data.candidates.map(function(r){return '<div class="item"><b>'+esc(r.product||'(商品名なし)')+'</b><div class="meta">'+esc(r.date||'')+' ｜ '+esc(r.medium||'')+(r.keyword?' ｜ KW: '+esc(r.keyword):'')+'</div><span class="badge">'+esc(r.status||'')+'</span>'+(r.draft?'<div style="white-space:pre-wrap;margin-top:6px">'+esc(r.draft)+'</div>':'')+'<div class="row"><button onclick="copyText(data.candidates.find(function(x){return x.id===\''+r.id+'\'}).draft)">投稿文コピー</button><button onclick="editCandidate(\''+r.id+'\')">編集</button><button onclick="delCandidate(\''+r.id+'\')">削除</button></div></div>';}).join('');}
+
+/* ---- リンク ---- */
+function clearLink(){document.getElementById('linkId').value='';document.getElementById('linkMedium').selectedIndex=0;document.getElementById('linkProduct').value='';document.getElementById('linkUrl').value='';document.getElementById('linkMemo').value='';}
+function saveLink(){var id=document.getElementById('linkId').value;var rec={id:id||uid(),medium:document.getElementById('linkMedium').value,product:document.getElementById('linkProduct').value.trim(),url:document.getElementById('linkUrl').value.trim(),memo:document.getElementById('linkMemo').value.trim()};if(!rec.url){toast('URLを入れてください');return;}if(id){var i=data.links.findIndex(function(x){return x.id===id;});if(i>=0)data.links[i]=rec;}else{data.links.unshift(rec);}saveData();clearLink();renderLinks();toast('保存しました');}
+function editLink(id){var r=data.links.find(function(x){return x.id===id;});if(!r)return;document.getElementById('linkId').value=r.id;document.getElementById('linkMedium').value=r.medium;document.getElementById('linkProduct').value=r.product||'';document.getElementById('linkUrl').value=r.url||'';document.getElementById('linkMemo').value=r.memo||'';window.scrollTo(0,0);}
+function delLink(id){if(!confirm('このリンクを削除しますか？'))return;data.links=data.links.filter(function(x){return x.id!==id;});saveData();renderLinks();}
+function renderLinks(){var q=(document.getElementById('linkSearch').value||'').toLowerCase();var list=data.links.filter(function(r){return !q||((r.product||'')+' '+(r.medium||'')+' '+(r.memo||'')+' '+(r.url||'')).toLowerCase().indexOf(q)>=0;});var el=document.getElementById('linkList');if(!list.length){el.innerHTML='<p class="small">'+(data.links.length?'検索に一致するリンクはありません。':'まだリンクはありません。')+'</p>';return;}el.innerHTML=list.map(function(r){return '<div class="item"><b>'+esc(r.product||'(商品名なし)')+'</b><div class="meta">'+esc(r.medium||'')+(r.memo?' ｜ '+esc(r.memo):'')+'</div><div class="small" style="word-break:break-all">'+esc(r.url)+'</div><div class="row"><button onclick="copyText(data.links.find(function(x){return x.id===\''+r.id+'\'}).url)">URLコピー</button><a href="'+esc(r.url)+'" target="_blank" rel="noopener">開く</a><button onclick="editLink(\''+r.id+'\')">編集</button><button onclick="delLink(\''+r.id+'\')">削除</button></div></div>';}).join('');}
+
+/* ---- 投稿 ---- */
+function clearPost(){document.getElementById('postId').value='';document.getElementById('postDate').value=todayStr();document.getElementById('postMedium').selectedIndex=0;document.getElementById('postContent').value='';document.getElementById('postImp').value='';document.getElementById('postLikes').value='';}
+function savePost(){var id=document.getElementById('postId').value;var rec={id:id||uid(),date:document.getElementById('postDate').value,medium:document.getElementById('postMedium').value,content:document.getElementById('postContent').value.trim(),imp:Number(document.getElementById('postImp').value||0),likes:Number(document.getElementById('postLikes').value||0)};if(!rec.content){toast('内容を入れてください');return;}if(id){var i=data.posts.findIndex(function(x){return x.id===id;});if(i>=0)data.posts[i]=rec;}else{data.posts.unshift(rec);}saveData();clearPost();renderPosts();toast('保存しました');}
+function editPost(id){var r=data.posts.find(function(x){return x.id===id;});if(!r)return;document.getElementById('postId').value=r.id;document.getElementById('postDate').value=r.date||'';document.getElementById('postMedium').value=r.medium;document.getElementById('postContent').value=r.content||'';document.getElementById('postImp').value=r.imp||0;document.getElementById('postLikes').value=r.likes||0;window.scrollTo(0,0);}
+function delPost(id){if(!confirm('この投稿記録を削除しますか？'))return;data.posts=data.posts.filter(function(x){return x.id!==id;});saveData();renderPosts();}
+function renderPosts(){var el=document.getElementById('postList');if(!data.posts.length){el.innerHTML='<p class="small">まだ投稿記録はありません。</p>';return;}el.innerHTML=data.posts.map(function(r){return '<div class="item"><div style="white-space:pre-wrap"><b>'+esc(r.content)+'</b></div><div class="meta">'+esc(r.date||'')+' ｜ '+esc(r.medium||'')+' ｜ imp '+Number(r.imp||0).toLocaleString('ja-JP')+' ｜ いいね '+Number(r.likes||0).toLocaleString('ja-JP')+'</div><div class="row"><button onclick="editPost(\''+r.id+'\')">編集</button><button onclick="delPost(\''+r.id+'\')">削除</button></div></div>';}).join('');}
+
+/* ---- 収益 ---- */
+function clearRevenue(){document.getElementById('revId').value='';document.getElementById('revDate').value=todayStr();document.getElementById('revMedium').selectedIndex=0;document.getElementById('revAmount').value='';document.getElementById('revMemo').value='';}
+function saveRevenue(){var id=document.getElementById('revId').value;var rec={id:id||uid(),date:document.getElementById('revDate').value,medium:document.getElementById('revMedium').value,amount:Number(document.getElementById('revAmount').value||0),memo:document.getElementById('revMemo').value.trim()};if(id){var i=data.revenues.findIndex(function(x){return x.id===id;});if(i>=0)data.revenues[i]=rec;}else{data.revenues.unshift(rec);}saveData();clearRevenue();renderRevenues();toast('保存しました');}
+function editRevenue(id){var r=data.revenues.find(function(x){return x.id===id;});if(!r)return;document.getElementById('revId').value=r.id;document.getElementById('revDate').value=r.date||'';document.getElementById('revMedium').value=r.medium;document.getElementById('revAmount').value=r.amount||0;document.getElementById('revMemo').value=r.memo||'';}
+function delRevenue(id){if(!confirm('この収益メモを削除しますか？'))return;data.revenues=data.revenues.filter(function(x){return x.id!==id;});saveData();renderRevenues();}
+function renderRevenues(){var m=document.getElementById('revMonth').value||monthStr();var list=data.revenues.filter(function(r){return (r.date||'').slice(0,7)===m;});var total=list.reduce(function(s,r){return s+Number(r.amount||0);},0);document.getElementById('revTotal').textContent=yen(total);var pct=Math.min(100,Math.floor(total/GOAL*100));document.getElementById('revBar').style.width=pct+'%';document.getElementById('revProgressText').textContent='達成率 '+pct+'%・あと '+yen(Math.max(0,GOAL-total));var by={};list.forEach(function(r){by[r.medium]=(by[r.medium]||0)+Number(r.amount||0);});var keys=Object.keys(by);document.getElementById('revByMedium').textContent=keys.length?('媒体別合計：'+keys.map(function(k){return k+' '+yen(by[k]);}).join(' ／ ')):'媒体別合計：まだありません';var el=document.getElementById('revList');if(!list.length){el.innerHTML='<p class="small">選択した月の収益メモはありません。</p>';return;}el.innerHTML=list.map(function(r){return '<div class="item"><b>'+yen(r.amount)+'</b> <span class="badge">'+esc(r.medium||'')+'</span><div class="meta">'+esc(r.date||'')+(r.memo?' ｜ '+esc(r.memo):'')+'</div><div class="row"><button onclick="editRevenue(\''+r.id+'\')">編集</button><button onclick="delRevenue(\''+r.id+'\')">削除</button></div></div>';}).join('');}
+
+/* ---- バックアップ ---- */
+function exportJson(){var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='affiliate-room-backup-'+todayStr()+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(url);},1000);toast('書き出しました');}
+function importJson(ev){var file=ev.target.files&&ev.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(){try{var d=JSON.parse(reader.result);if(!d||typeof d!=='object')throw new Error('bad');['candidates','links','posts','revenues'].forEach(function(k){if(!Array.isArray(d[k]))d[k]=[];});if(!confirm('現在のデータをこのJSONで置き換えますか？'))return;data=d;saveData();renderAll();toast('読み込みました');}catch(e){alert('JSONの読み込みに失敗しました。ファイルを確認してください。');}ev.target.value='';};reader.readAsText(file);}
+
+function renderAll(){renderCandidates();renderLinks();renderPosts();renderRevenues();}
+document.getElementById('candDate').value=todayStr();
+document.getElementById('postDate').value=todayStr();
+document.getElementById('revDate').value=todayStr();
+document.getElementById('revMonth').value=monthStr();
+renderAll();
+</script>
+</body>
+</html>
