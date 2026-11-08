@@ -117,7 +117,7 @@ select.sort{border:2px solid var(--line);background:#fff;border-radius:999px;pad
 .ico-badge{width:62px;height:62px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:33px;flex-shrink:0}
 .card h3{margin:2px 0 4px;font-size:17.5px;line-height:1.35;padding-right:34px}
 .card .desc{margin:0;font-size:13.8px;color:var(--sub);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.card-foot{display:flex;align-items:center;gap:10px;margin-top:14px}
+.card-foot{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap}
 .price{font-size:21px;font-weight:900;color:var(--red)}
 .price small{font-size:12px;color:var(--sub);font-weight:500}
 .price.free{color:var(--green);font-size:17px}
@@ -168,6 +168,9 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
 /* toast */
 .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,80px);background:var(--ink);color:#fff;font-weight:800;font-size:14px;padding:12px 22px;border-radius:999px;z-index:200;transition:.3s;box-shadow:var(--shadow-lg);max-width:88vw;text-align:center}
 .toast.show{transform:translate(-50%,0)}
+.try-count{font-size:12px;font-weight:800;color:#a85b12;background:#fff7e8;border:1px solid var(--line);border-radius:999px;padding:3px 10px;white-space:nowrap}
+.try-count:empty{display:none}
+.m-count{display:inline-block;margin-top:8px}
 </style>
 </head>
 <body>
@@ -193,6 +196,7 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
     <div class="stat"><div class="num" data-count="13">0</div><div class="lbl">無料アプリ</div></div>
     <div class="stat"><div class="num" data-count="3">0</div><div class="lbl">販売中の商品</div></div>
     <div class="stat"><div class="num" data-count="100">0</div><div class="lbl">% スマホ対応</div></div>
+    <div class="stat"><div class="num" id="visitCount">…</div><div class="lbl">👣 来店数（累計）</div></div>
   </div>
   <div class="hero-btns">
     <a class="btn red" href="#shelf-apps">🧭 アプリをさがす</a>
@@ -201,7 +205,7 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
   </div>
 </header>
 
-<div class="ticker" aria-hidden="true"><span class="ticker-track">📢 新作「ギャンブル収支手帳」（お試し版）が入荷しました！　／　「ブログ・SNSアイキャッチ背景素材 24枚セット」BOOTHで販売中（1,480円）　／　2027年 防災カレンダーは300円です　／　アプリは全部スマホでそのまま試せます　／　新作の告知はX（@pooulpi）で出しています　📢 新作「ギャンブル収支手帳」（お試し版）が入荷しました！</span></div>
+<div class="ticker" aria-hidden="true"><span class="ticker-track">📢 来店カウンターが付きました！各アプリの「試された回数」が分かるようになりました！　／　「ブログ・SNSアイキャッチ背景素材 24枚セット」BOOTHで販売中（1,480円）　／　2027年 防災カレンダーは300円です　／　アプリは全部スマホでそのまま試せます　／　新作の告知はX（@pooulpi）で出しています　📢 新作「ギャンブル収支手帳」（お試し版）が入荷しました！</span></div>
 
 <div class="wrap">
 
@@ -271,7 +275,7 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
   </section>
 
   <footer>
-    <p>かーくんのお店 バージョン12（GitHub Pages版）</p>
+    <p>かーくんのお店 バージョン13（GitHub Pages版）</p>
     <p>© 2026 かーくん（Kuro）</p>
   </footer>
 </div>
@@ -389,14 +393,14 @@ function cardHTML(x,isProduct){
  const chips=(x.feats||[]).slice(0,2).map(f=>`<span class="chip">${f.length>22?f.slice(0,22)+"…":f}</span>`).join("");
  const ctaTxt=isProduct?x.cta:(x.type==="free"?"使ってみる":"お試しで使う");
  const ctaCls=isProduct?(x.ctaCls||"red"):"green";
- const foot=x.url?`<a class="cta ${ctaCls}" href="${x.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${ctaTxt} →</a>`:`<span class="detail-hint">BOOTHで準備中</span>`;
+ const foot=x.url?`<a class="cta ${ctaCls}" href="${x.url}" target="_blank" rel="noopener" data-try="${x.id}">${ctaTxt} →</a>`:`<span class="detail-hint">BOOTHで準備中</span>`;
  return `<article class="card${spot}" data-id="${x.id}" tabindex="0" role="button" aria-label="${x.title}の詳細">
   <button class="fav-btn ${fav?"on":""}" data-fav="${x.id}" aria-label="お気に入り">${fav?"⭐":"☆"}</button>
   ${x.tag?`<span class="tag ${x.tagCls||""}">${x.tag}</span>`:""}
   <div class="card-top"><div class="ico-badge" style="background:${x.bg}">${x.icon}</div>
   <div style="flex:1;min-width:0"><h3>${x.title}</h3><p class="desc">${x.desc}</p></div></div>
   <div class="chips">${chips}</div>
-  <div class="card-foot">${priceHTML(x)}<span class="detail-hint">タップで詳細</span>${foot}</div></article>`;
+  <div class="card-foot">${priceHTML(x)}<span class="try-count" data-count-for="${x.id}"></span><span class="detail-hint">タップで詳細</span>${foot}</div></article>`;
 }
 function renderProducts(){$("#productGrid").innerHTML=PRODUCTS.map(x=>cardHTML(x,true)).join("")}
 function renderSoon(){$("#soonGrid").innerHTML=SOON.map(x=>cardHTML(x,true)).join("")}
@@ -413,6 +417,7 @@ function renderApps(){
  $("#appGrid").innerHTML=list.map(x=>cardHTML(x,false)).join("");
  $("#resultCount").textContent=list.length+"本 表示中";
  $("#emptyBox").style.display=list.length?"none":"block";
+ paintCounts();
  observeCards();
 }
 function renderPicks(){
@@ -440,16 +445,16 @@ function openModal(id){
   <div class="m-ico" style="background:${x.bg}">${x.icon}</div>
   ${x.tag?`<span class="tag ${x.tagCls||""}" style="position:static">${x.tag}</span>`:""}
   <h3>${x.title}</h3>
-  ${priceHTML(x)}
+  ${priceHTML(x)}<br><span class="try-count m-count" data-count-for="${x.id}"></span>
   <p class="m-desc">${x.desc}</p>
   <h4>✨ ここがポイント</h4><ul>${(x.feats||[]).map(f=>`<li>${f}</li>`).join("")}</ul>
   <h4>👥 こんな人におすすめ</h4><p class="m-desc" style="margin:0">${x.forWho||""}</p>
   <div class="m-foot">
-    ${x.url?`<a class="cta ${ctaCls}" href="${x.url}" target="_blank" rel="noopener">${ctaTxt} →</a>`:`<span class="detail-hint" style="align-self:center">BOOTHでの出品準備中です</span>`}
+    ${x.url?`<a class="cta ${ctaCls}" href="${x.url}" target="_blank" rel="noopener" data-try="${x.id}">${ctaTxt} →</a>`:`<span class="detail-hint" style="align-self:center">BOOTHでの出品準備中です</span>`}
     <button class="mini-btn" data-fav="${x.id}">${fav?"⭐ お気に入り済み":"☆ お気に入り"}</button>
     <button class="mini-btn" id="shareBtn">🔗 共有</button>
   </div>`;
- $("#modalBg").classList.add("open"); document.body.style.overflow="hidden";
+ $("#modalBg").classList.add("open"); document.body.style.overflow="hidden"; paintCounts();
  const sb=$("#shareBtn");
  if(sb)sb.onclick=async()=>{const data={title:x.title,text:x.title+"｜かーくんのお店",url:x.url||location.href}; try{if(navigator.share){await navigator.share(data)}else{await navigator.clipboard.writeText(data.url);toast("リンクをコピーしました🔗")}}catch(e){}};
 }
@@ -460,6 +465,7 @@ function toggleFav(id,btn){
  if($("#modalBg").classList.contains("open"))openModal(id);
 }
 document.addEventListener("click",e=>{
+ const tr=e.target.closest("[data-try]"); if(tr){countTry(tr.dataset.try);return}
  const fb=e.target.closest("[data-fav]"); if(fb){e.stopPropagation();toggleFav(fb.dataset.fav,fb);return}
  const pill=e.target.closest("[data-cat]"); if(pill){curCat=pill.dataset.cat;renderPills();renderApps();return}
  const dg=e.target.closest("[data-diag]"); if(dg){
@@ -481,8 +487,51 @@ $("#gachaBtn").addEventListener("click",()=>{
 });
 /* count up */
 const cio=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;cio.unobserve(e.target);const end=+e.target.dataset.count;let n=0;const step=Math.max(1,Math.round(end/30));const t=setInterval(()=>{n+=step;if(n>=end){n=end;clearInterval(t)}e.target.textContent=n+(end===100?"%":"")},28)}),{threshold:.4});
-document.querySelectorAll(".num").forEach(el=>cio.observe(el));
-renderPills(); renderDiags(); renderPicks(); renderProducts(); renderSoon(); renderApps(); saveFavs(); observeCards();
+document.querySelectorAll(".num[data-count]").forEach(el=>cio.observe(el));
+/* ===== analytics: A=Abacus counters (display), B=GoatCounter (accurate counting) ===== */
+const AB_NS="kakun-no-omise-8f3k2x7";
+const AB_BASE="https://abacus.jasoncameron.dev";
+const GOAT_CODE=""; /* GoatCounter site code goes here after signup */
+const counts={};
+function keyFor(x){return (PRODUCTS.includes(x)?"view-":"try-")+x.id}
+function labelFor(x,n){return PRODUCTS.includes(x)?`👀 ${n}回 見られました`:`▶ ${n}回 試されました`}
+function paintCounts(){
+  document.querySelectorAll("[data-count-for]").forEach(el=>{
+    const x=byId(el.dataset.countFor); if(!x||!x.url){el.textContent="";return}
+    const n=counts[keyFor(x)];
+    el.textContent=(typeof n==="number"&&n>=1)?labelFor(x,n):"";
+  });
+}
+async function abGet(key){try{const r=await fetch(`${AB_BASE}/get/${AB_NS}/${key}`);if(!r.ok)return null;const j=await r.json();return typeof j.value==="number"?j.value:null}catch(e){return null}}
+async function abHit(key){try{const r=await fetch(`${AB_BASE}/hit/${AB_NS}/${key}`);if(!r.ok)return null;const j=await r.json();return typeof j.value==="number"?j.value:null}catch(e){return null}}
+async function loadCounts(){
+  const items=ALL.filter(x=>x.url);
+  items.forEach((x,i)=>{const k=keyFor(x);setTimeout(async()=>{const v=await abGet(k);if(v!=null){counts[k]=v;paintCounts()}},i*130)});
+  const vc=$("#visitCount");
+  try{
+    let v=null;
+    if(!sessionStorage.getItem("kakun-visited-v13")){v=await abHit("visits");sessionStorage.setItem("kakun-visited-v13","1")}
+    if(v==null)v=await abGet("visits");
+    if(vc)vc.textContent=(v!=null)?v.toLocaleString():"-";
+  }catch(e){if(vc)vc.textContent="-"}
+}
+function countTry(id){
+  const x=byId(id); if(!x||!x.url)return;
+  const k=keyFor(x);
+  if(typeof counts[k]==="number"){counts[k]++;paintCounts()}
+  abHit(k).then(v=>{if(v!=null){counts[k]=v;paintCounts()}});
+  if(GOAT_CODE&&window.goatcounter&&window.goatcounter.count){try{window.goatcounter.count({path:"/try/"+id})}catch(e){}}
+}
+function initAnalytics(){
+  loadCounts();
+  if(GOAT_CODE){
+    const s=document.createElement("script");
+    s.async=true; s.src="//gc.zgo.at/count.js";
+    s.setAttribute("data-goatcounter",`https://${GOAT_CODE}.goatcounter.com/count`);
+    document.body.appendChild(s);
+  }
+}
+renderPills(); renderDiags(); renderPicks(); renderProducts(); renderSoon(); renderApps(); saveFavs(); observeCards(); initAnalytics();
 </script>
 </body>
 </html>
