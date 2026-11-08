@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>かーくんのお店｜触って楽しいアプリとデジタル商品のお店</title>
-<meta name="description" content="かーくん（Kuro）のお店。家族と暮らしに役立つ無料アプリ13本と、BOOTH・noteで販売中のデジタル商品が触って探せるお店です。">
+<meta name="description" content="かーくん（Kuro）のお店。家族と暮らしに役立つ無料アプリ14本と、BOOTH・noteで販売中のデジタル商品が触って探せるお店です。">
 <meta property="og:title" content="かーくんのお店">
-<meta property="og:description" content="暮らしの自作アプリ13本＋デジタル商品。検索・診断・お気に入りで、あなたに合う1本が見つかります。">
+<meta property="og:description" content="暮らしの自作アプリ14本＋デジタル商品。検索・診断・お気に入りで、あなたに合う1本が見つかります。">
 <meta property="og:type" content="website">
 <style>
 :root{
@@ -193,7 +193,7 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
   <p class="catch">いらっしゃいませ！触って、試せるお店になりました。</p>
   <p class="sub">家族と暮らしの「あったら便利なのに」から生まれたアプリとデジタル商品のお店です。気になるカードをタップすると詳しく見られます。まずは触ってみてください。</p>
   <div class="stats">
-    <div class="stat"><div class="num" data-count="13">0</div><div class="lbl">無料アプリ</div></div>
+    <div class="stat"><div class="num" data-count="14">0</div><div class="lbl">無料アプリ</div></div>
     <div class="stat"><div class="num" data-count="3">0</div><div class="lbl">販売中の商品</div></div>
     <div class="stat"><div class="num" data-count="100">0</div><div class="lbl">% スマホ対応</div></div>
     <div class="stat"><div class="num" id="visitCount">…</div><div class="lbl">👣 来店数（累計）</div></div>
@@ -205,7 +205,7 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
   </div>
 </header>
 
-<div class="ticker" aria-hidden="true"><span class="ticker-track">📢 来店カウンターが付きました！各アプリの「試された回数」が分かるようになりました！　／　「ブログ・SNSアイキャッチ背景素材 24枚セット」BOOTHで販売中（500円）　／　2027年 防災カレンダーは300円です　／　アプリは全部スマホでそのまま試せます　／　新作の告知はX（@pooulpi）で出しています　📢 新作「ギャンブル収支手帳」（お試し版）が入荷しました！</span></div>
+<div class="ticker" aria-hidden="true"><span class="ticker-track">📢 来店カウンターが付きました！各アプリの「試された回数」が分かるようになりました！　／　「ブログ・SNSアイキャッチ背景素材 24枚セット」BOOTHで販売中（500円）　／　2027年 防災カレンダーは300円です　／　アプリは全部スマホでそのまま試せます　／　新作の告知はX（@pooulpi）で出しています　📢 新作「マイほけん手帳」（お試し版）が入荷しました！証券を撮影して保険を登録できます</span></div>
 
 <div class="wrap">
 
@@ -275,7 +275,7 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
   </section>
 
   <footer>
-    <p>かーくんのお店 バージョン15（GitHub Pages版）</p>
+    <p>かーくんのお店 バージョン16（GitHub Pages版）</p>
     <p>© 2026 かーくん（Kuro）</p>
   </footer>
 </div>
@@ -301,6 +301,10 @@ const PRODUCTS=[
   feats:["店主の最初のデジタル商品","SNS・副業の投稿づくりに使えるテンプレ集","noteの有料記事でそのまま読める"],forWho:"副業の発信を始めたいけど、文面で止まってしまう人"}
 ];
 const APPS=[
+ {id:"hoken",icon:"🛡️",bg:"#dcf5e8",title:"マイほけん手帳",tag:"お試し版",tagCls:"trial",type:"trial",order:14,cats:["okane","kurashi"],kw:"保険 生命保険 医療保険 自動車保険 火災 地震 ペット 保険料 更新 証券 撮影",
+  desc:"生命・医療・自動車など各種保険の管理アプリ。月額・年間の保険料合計と種類別グラフ、更新・満期アラートで見直し忘れを防ぎます。保険証券を撮影すると、保険会社や保険料などを読み取って登録できます。",
+  url:"https://muse.ai/s/maihokenshou-zhang-oshi-siban-vy6xumxd2tdxoxj/z8-nUouhRTzWMOBBN676nC729JdcjSJLr1_18dVk7PQ",
+  feats:["月額・年間の保険料合計と種類別ドーナツグラフ","証券を撮影して読み取り→確認して登録","更新・満期アラート（タイミング変更可）","家族別絞り込みと保障額合計の見える化"],forWho:"保険料の合計や更新日をまとめて把握したい人"},
  {id:"gambling",icon:"🎰",bg:"#ffe9f2",title:"ギャンブル収支手帳",tag:"お試し版",tagCls:"trial",type:"trial",order:13,cats:["okane"],kw:"ギャンブル パチンコ パチスロ 競馬 競艇 競輪 オートレース 宝くじ 収支 回収率 予算",
   desc:"ギャンブルの収支管理アプリ。投資と回収を入れるだけで収支と回収率を自動計算し、今月・累計・勝率が一目で分かります。種目別・お店別の集計やカレンダー表示、月の予算の残り表示つき。パチンコ・パチスロから競馬・宝くじまで対応。",
   url:"https://muse.ai/s/giyanburushou-zhi-shou-zhang-oshi-xhs6xu6i7a4xfv/oYXnqGLCf3DhBSuqoMH-FZ6gY9vwOH7BfJENgkhcvYw",
@@ -362,7 +366,7 @@ const SOON=[
 const CATS=[["all","すべて"],["kurashi","🏠 暮らし"],["okane","💰 お金・仕事"],["kazoku","👨‍👩‍👧 家族・見守り"],["chiiki","🏘️ 地域"],["asobi","🎮 遊び"]];
 const DIAGS=[
  {ico:"🥦",label:"ごはん・買い物を楽に",sub:"献立と食費の悩みに",ids:["reizouko","gomi"]},
- {ico:"💸",label:"お金のムダを見直したい",sub:"サブスク・収支の管理に",ids:["subsc","gambling","reizouko"]},
+ {ico:"💸",label:"お金のムダを見直したい",sub:"サブスク・収支の管理に",ids:["subsc","gambling","hoken","reizouko"]},
  {ico:"🚗",label:"車・バイクを大事にしたい",sub:"整備の記録に",ids:["car","bike"]},
  {ico:"💊",label:"家族を見守りたい",sub:"服薬と子どもの習慣に",ids:["nondayo","okozukai","game"]},
  {ico:"📅",label:"仕事のシフトで困っている",sub:"交代勤務の表作りに",ids:["shift"]},
@@ -370,7 +374,8 @@ const DIAGS=[
 ];
 const PICKS=[
  {id:"bg24",grad:"linear-gradient(135deg,#f07f13,#d94f30)",tag:"新作・販売中"},
- {id:"gambling",grad:"linear-gradient(135deg,#7c5cd6,#e85d8a)",tag:"最新アプリ"},
+ {id:"hoken",grad:"linear-gradient(135deg,#14714a,#2f7fd1)",tag:"最新アプリ"},
+ {id:"gambling",grad:"linear-gradient(135deg,#7c5cd6,#e85d8a)",tag:"収支管理"},
  {id:"reizouko",grad:"linear-gradient(135deg,#1f9d63,#2f7fd1)",tag:"暮らしの人気者"},
  {id:"shift",grad:"linear-gradient(135deg,#2f7fd1,#1f9d63)",tag:"仕事の味方"},
  {id:"bousai2027",grad:"linear-gradient(135deg,#e85d8a,#f07f13)",tag:"300円で防災"}
