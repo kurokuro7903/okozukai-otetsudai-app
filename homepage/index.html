@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>かーくんのお店｜触って楽しいアプリとデジタル商品のお店</title>
-<meta name="description" content="かーくん（Kuro）のお店。家族と暮らしに役立つ無料アプリ18本と、BOOTH・noteで販売中のデジタル商品が触って探せるお店です。">
+<meta name="description" content="かーくん（Kuro）のお店。家族と暮らしに役立つ無料アプリ19本と、BOOTH・noteで販売中のデジタル商品が触って探せるお店です。">
 <meta property="og:title" content="かーくんのお店">
-<meta property="og:description" content="暮らしの自作アプリ18本＋デジタル商品。検索・診断・お気に入りで、あなたに合う1本が見つかります。">
+<meta property="og:description" content="暮らしの自作アプリ19本＋デジタル商品。検索・診断・お気に入りで、あなたに合う1本が見つかります。">
 <meta property="og:type" content="website">
 <style>
 :root{
@@ -193,7 +193,7 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
   <p class="catch">いらっしゃいませ！触って、試せるお店になりました。</p>
   <p class="sub">家族と暮らしの「あったら便利なのに」から生まれたアプリとデジタル商品のお店です。気になるカードをタップすると詳しく見られます。まずは触ってみてください。</p>
   <div class="stats">
-    <div class="stat"><div class="num" data-count="18">0</div><div class="lbl">無料アプリ</div></div>
+    <div class="stat"><div class="num" data-count="19">0</div><div class="lbl">無料アプリ</div></div>
     <div class="stat"><div class="num" data-count="3">0</div><div class="lbl">販売中の商品</div></div>
     <div class="stat"><div class="num" data-count="100">0</div><div class="lbl">% スマホ対応</div></div>
     <div class="stat"><div class="num" id="visitCount">…</div><div class="lbl">👣 来店数（累計）</div></div>
@@ -205,7 +205,7 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
   </div>
 </header>
 
-<div class="ticker" aria-hidden="true"><span class="ticker-track">📢 来店カウンターが付きました！各アプリの「試された回数」が分かるようになりました！　／　「ブログ・SNSアイキャッチ背景素材 24枚セット」BOOTHで販売中（500円）　／　2027年 防災カレンダーは300円です　／　アプリは全部スマホでそのまま試せます　／　新作の告知はX（@pooulpi）で出しています　📢 新作「マイほけん手帳」（お試し版）が入荷しました！証券を撮影して保険を登録できます　／　📢 新作「QC活動サポートツール」（お試し版）が入荷しました！なぜなぜ分析と特性要因図（FB図）が初心者でも作れます　／　📢 企業向け新作3本（お試し版）が入荷しました！改善提案・カイゼン管理／ヒヤリハット報告・集計／5S・安全点検パトロールが試せます</span></div>
+<div class="ticker" aria-hidden="true"><span class="ticker-track">📢 来店カウンターが付きました！各アプリの「試された回数」が分かるようになりました！　／　「ブログ・SNSアイキャッチ背景素材 24枚セット」BOOTHで販売中（500円）　／　2027年 防災カレンダーは300円です　／　アプリは全部スマホでそのまま試せます　／　新作の告知はX（@pooulpi）で出しています　📢 新作「マイほけん手帳」（お試し版）が入荷しました！証券を撮影して保険を登録できます　／　📢 新作「QC活動サポートツール」（お試し版）が入荷しました！なぜなぜ分析と特性要因図（FB図）が初心者でも作れます　／　📢 企業向け新作3本（お試し版）が入荷しました！改善提案・カイゼン管理／ヒヤリハット報告・集計／5S・安全点検パトロールが試せます　／　📢 新作「PCパーツ適合検索ツール」（お試し版）が入荷しました！型番を入れるだけで対応メモリー・SSD・GPU・電源と費用の目安が分かります</span></div>
 
 <div class="wrap">
 
@@ -275,7 +275,7 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
   </section>
 
   <footer>
-    <p>かーくんのお店 バージョン18（GitHub Pages版）</p>
+    <p>かーくんのお店 バージョン19（GitHub Pages版）</p>
     <p>© 2026 かーくん（Kuro）</p>
   </footer>
 </div>
@@ -301,6 +301,10 @@ const PRODUCTS=[
   feats:["店主の最初のデジタル商品","SNS・副業の投稿づくりに使えるテンプレ集","noteの有料記事でそのまま読める"],forWho:"副業の発信を始めたいけど、文面で止まってしまう人"}
 ];
 const APPS=[
+ {id:"pcparts",icon:"💻",bg:"#dbeafe",title:"PCパーツ適合検索ツール",tag:"お試し版",tagCls:"trial",type:"trial",order:19,cats:["kurashi","okane"],kw:"PC パーツ 適合 型番 メモリー メモリ SSD GPU 電源 グラフィックボード 増設 アップグレード 換装 DELL HP Lenovo NEC 富士通",
+  desc:"型番を入れるだけで対応メモリー／SSD／GPU／電源が分かり、◎△×の適合判定と費用の合計目安つき。内蔵データベース16型番・パーツ29件、無い型番は推定モードで判定できます。",
+  url:"https://muse.ai/s/pcpatushi-he-jian-suo-turu-oshi-siban-xod6xv2x0s4qxexi/OVMtLCBdozvR28eZVNrAAG5P-IAcBxw5q18xDY-rTYU",
+  feats:["型番の一部入力で内蔵データベース16型番を検索","パーツごとに◎適合／△注意／×不適合と理由を表示","選んだパーツの合計費用の目安（幅と中間値）を自動計算","無い型番は推定モードで判定、そのまま型番登録もできる"],forWho:"PCのメモリー増設やSSD換装、買い替えを考えている人"},
  {id:"kaizen",icon:"💡",bg:"#fff1dd",title:"改善提案・カイゼン管理ツール",tag:"お試し版",tagCls:"trial",type:"trial",order:18,cats:["okane"],kw:"改善提案 カイゼン 改善 提案 審査 採用 実施 効果確認 ポイント 職場 業務改善",
   desc:"提案→審査・採用→実施→効果確認まで管理。改善前後・効果金額・担当・期限・ポイント集計つき。",
   url:"https://muse.ai/s/gai-shan-ti-an-kaizenguan-li-turu-oshi-sa6xuxwxaxjxzpia/N9K8T_qMWqnnwJuWmo2sqInqyYsvxmEUb4aHb7XZiK4",
@@ -384,6 +388,7 @@ const DIAGS=[
  {ico:"🥦",label:"ごはん・買い物を楽に",sub:"献立と食費の悩みに",ids:["reizouko","gomi"]},
  {ico:"💸",label:"お金のムダを見直したい",sub:"サブスク・収支の管理に",ids:["subsc","gambling","hoken","reizouko"]},
  {ico:"🚗",label:"車・バイクを大事にしたい",sub:"整備の記録に",ids:["car","bike"]},
+ {ico:"💻",label:"PCの増設・買い替えを考えたい",sub:"対応パーツと費用の目安に",ids:["pcparts"]},
  {ico:"💊",label:"家族を見守りたい",sub:"服薬と子どもの習慣に",ids:["nondayo","okozukai","game"]},
  {ico:"📅",label:"仕事のシフトで困っている",sub:"交代勤務の表作りに",ids:["shift"]},
  {ico:"🔍",label:"職場の改善を進めたい",sub:"QC活動と改善提案に",ids:["kaizen","qc"]},
@@ -391,7 +396,8 @@ const DIAGS=[
  {ico:"🏘️",label:"地域とつながりたい",sub:"回覧板とお買い物に",ids:["kairanban","magokoro"]}
 ];
 const PICKS=[
- {id:"kaizen",grad:"linear-gradient(135deg,#f07f13,#2f7fd1)",tag:"最新アプリ"},
+ {id:"pcparts",grad:"linear-gradient(135deg,#2f7fd1,#7c5cd6)",tag:"最新アプリ"},
+ {id:"kaizen",grad:"linear-gradient(135deg,#f07f13,#2f7fd1)",tag:"改善提案"},
  {id:"hiyari",grad:"linear-gradient(135deg,#d94f30,#e85d8a)",tag:"安全・集計"},
  {id:"patrol5s",grad:"linear-gradient(135deg,#14714a,#1f9d63)",tag:"点検・スコア"},
  {id:"qc",grad:"linear-gradient(135deg,#2f7fd1,#7c5cd6)",tag:"問題解決"},
