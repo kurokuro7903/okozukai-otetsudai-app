@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>かーくんのお店｜触って楽しいアプリとデジタル商品のお店【大改装v20・スタンプラリー＆30秒診断】</title>
+<title>かーくんのお店｜触って楽しいアプリとデジタル商品のお店【大改装v21・コンシェルジュ＆スタンプラリー】</title>
 <meta name="description" content="かーくん（Kuro）のお店。家族と暮らしに役立つ無料アプリ19本と、BOOTH・noteのデジタル商品5点（準備中含む）が触って探せるお店です。スタンプラリーと30秒診断が加わりました。">
 <meta property="og:title" content="かーくんのお店">
 <meta property="og:description" content="暮らしの自作アプリ19本＋デジタル商品5点。スタンプラリー・30秒診断・人気ランキングで、あなたに合う1本が見つかります。">
@@ -217,6 +217,60 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
 .quiz-result p{margin:2px 0 0;font-size:12.5px;color:var(--sub)}
 .quiz-result .cta{margin-left:auto;flex-shrink:0}
 .party-emoji{font-size:56px;text-align:center}
+
+/* ===== v21: コンシェルジュ・クロ ===== */
+.cg-wrap{position:fixed;right:12px;bottom:14px;z-index:90;display:flex;align-items:flex-end;gap:8px;max-width:calc(100vw - 16px)}
+.cg-bubble{position:relative;background:#fff;border:2px solid var(--gold);border-radius:16px;padding:9px 12px;font-size:13px;font-weight:700;line-height:1.55;max-width:205px;box-shadow:var(--shadow-lg);cursor:pointer}
+.cg-bubble::after{content:"";position:absolute;right:-9px;bottom:20px;border:5px solid transparent;border-left:6px solid var(--gold)}
+.cg-bubble.pop{animation:cgPop .35s cubic-bezier(.2,.9,.3,1.35)}
+@keyframes cgPop{0%{transform:scale(.85);opacity:.4}100%{transform:scale(1);opacity:1}}
+.cg-char{position:relative;width:92px;flex-shrink:0;cursor:pointer;background:none;border:0;padding:0;line-height:0}
+.cg-char svg{width:100%;height:auto;display:block;overflow:visible;animation:cgBob 3.2s ease-in-out infinite}
+@keyframes cgBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.cg-char.hop svg{animation:cgHop .55s ease}
+@keyframes cgHop{0%{transform:translateY(0)}35%{transform:translateY(-18px)}70%{transform:translateY(2px)}100%{transform:translateY(0)}}
+.cg-eye{transform-box:fill-box;transform-origin:center;animation:cgBlink 4.6s infinite}
+@keyframes cgBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.08)}}
+.cg-tail{transform-box:fill-box;transform-origin:0% 100%;animation:cgTail 3.8s ease-in-out infinite}
+@keyframes cgTail{0%,100%{transform:rotate(0deg)}50%{transform:rotate(13deg)}}
+.cg-paw{transform-box:fill-box;transform-origin:20% 90%}
+.cg-char.waving .cg-paw{animation:cgWave .38s ease-in-out 4 alternate}
+@keyframes cgWave{from{transform:rotate(0deg)}to{transform:rotate(-32deg)}}
+.cg-min-btn{position:absolute;top:-4px;left:-4px;width:26px;height:26px;border-radius:50%;border:2px solid var(--line);background:#fff;font-size:14px;font-weight:900;line-height:1;z-index:2;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(90,55,10,.18)}
+.cg-mini{display:none;width:54px;height:54px;border-radius:50%;border:2px solid var(--gold);background:#fff;font-size:26px;box-shadow:var(--shadow-lg);cursor:pointer;align-items:center;justify-content:center}
+.cg-wrap.min .cg-bubble,.cg-wrap.min .cg-char{display:none}
+.cg-wrap.min .cg-mini{display:flex}
+.cg-panel{position:fixed;left:0;right:0;bottom:0;z-index:95;display:none;justify-content:center}
+.cg-panel.open{display:flex}
+.cg-panel-in{background:#fff;width:100%;max-width:560px;max-height:82vh;overflow-y:auto;border-radius:26px 26px 0 0;border-top:3px solid var(--gold);box-shadow:var(--shadow-lg);padding:20px 18px 26px;animation:up .28s cubic-bezier(.2,.9,.3,1.2)}
+.cg-panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cg-panel-head h3{margin:0;font-size:19px}
+.cg-panel-close{width:38px;height:38px;border-radius:50%;border:0;background:#f3ead8;font-size:18px;font-weight:800}
+.cg-answer{background:#fffaf0;border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.7;margin-bottom:14px;white-space:pre-line}
+.cg-bubble{white-space:pre-line}
+.cg-list{max-height:46vh;overflow-y:auto;display:grid;gap:8px;margin-bottom:6px}
+.cg-app-row{display:flex;gap:11px;align-items:center;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:14px;padding:10px 12px;font-size:15px;font-weight:800;transition:.15s}
+.cg-app-row:hover{border-color:var(--gold);background:#fff8e6}
+.cg-app-row:active{transform:scale(.98)}
+.cg-app-row .a-ico{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:23px;flex-shrink:0}
+.cg-howto h4{margin:0 0 8px;font-size:17px}
+.cg-howto ol{margin:0 0 14px;padding-left:22px;font-size:14.5px;line-height:1.75}
+.cg-howto .cg-howto-foot{display:flex;gap:10px;flex-wrap:wrap}
+.cg-howto .cta{margin-left:0;flex:1;text-align:center}
+.cg-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cg-act{border:2px solid var(--line);background:#fff;border-radius:16px;padding:14px 12px;font-size:15px;font-weight:800;text-align:left;transition:.15s;min-height:56px}
+.cg-act:hover{border-color:var(--gold);background:#fff8e6}
+.cg-act:active{transform:scale(.97)}
+.cg-shrink{margin-top:14px;width:100%}
+@media(max-width:640px){
+ .cg-char{width:76px}
+ .cg-bubble{max-width:152px;font-size:12px;padding:8px 10px}
+ .cg-wrap{right:8px;bottom:10px}
+ .cg-panel-in{max-width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+ .cg-char svg,.cg-eye,.cg-tail,.cg-char.waving .cg-paw{animation:none}
+}
 </style>
 </head>
 <body>
@@ -234,7 +288,7 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
   <span class="float" style="right:8%;top:20px;animation-delay:.8s">🚗</span>
   <span class="float" style="left:12%;bottom:18px;animation-delay:1.6s">💊</span>
   <span class="float" style="right:13%;bottom:26px;animation-delay:.4s">🎰</span>
-  <span class="hero-badge">🏪 大改装オープン！バージョン20</span>
+  <span class="hero-badge">🏪 大改装オープン！バージョン21</span>
   <h1>かーくんの<span class="accent">お店</span></h1>
   <p class="catch">いらっしゃいませ！触って、試せるお店になりました。</p>
   <p class="sub">家族と暮らしの「あったら便利なのに」から生まれたアプリとデジタル商品のお店です。気になるカードをタップすると詳しく見られます。まずは触ってみてください。</p>
@@ -253,7 +307,7 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
   <div class="spotlight" id="spotCard"></div>
 </header>
 
-<div class="ticker" aria-hidden="true"><span class="ticker-track">📢 お店が大改装オープン！バージョン20になりました！　／　📢 スタンプラリー開始！アプリを試して19個のスタンプを集めよう　／　📢 30秒診断と人気ランキングが増えました　／　📢 「現場改善ツール 3点セット」BOOTHで近日発売（1,980円予定）　／　📢 来店カウンターが付きました！各アプリの「試された回数」が分かるようになりました！　／　「ブログ・SNSアイキャッチ背景素材 24枚セット」BOOTHで販売中（500円）　／　2027年 防災カレンダーは300円です　／　アプリは全部スマホでそのまま試せます　／　新作の告知はX（@pooulpi）で出しています　📢 新作「マイほけん手帳」（お試し版）が入荷しました！証券を撮影して保険を登録できます　／　📢 新作「QC活動サポートツール」（お試し版）が入荷しました！なぜなぜ分析と特性要因図（FB図）が初心者でも作れます　／　📢 企業向け新作3本（お試し版）が入荷しました！改善提案・カイゼン管理／ヒヤリハット報告・集計／5S・安全点検パトロールが試せます　／　📢 新作「PCパーツ適合検索ツール」（お試し版）が入荷しました！型番を入れるだけで対応メモリー・SSD・GPU・電源と費用の目安が分かります</span></div>
+<div class="ticker" aria-hidden="true"><span class="ticker-track">📢 お店が大改装オープン！バージョン21になりました！　／　📢 コンシェルジュのクロが登場！右下の黒猫をタップするとお店のことを教えてくれます　／　📢 スタンプラリー開始！アプリを試して19個のスタンプを集めよう　／　📢 30秒診断と人気ランキングが増えました　／　📢 「現場改善ツール 3点セット」BOOTHで近日発売（1,980円予定）　／　📢 来店カウンターが付きました！各アプリの「試された回数」が分かるようになりました！　／　「ブログ・SNSアイキャッチ背景素材 24枚セット」BOOTHで販売中（500円）　／　2027年 防災カレンダーは300円です　／　アプリは全部スマホでそのまま試せます　／　新作の告知はX（@pooulpi）で出しています　📢 新作「マイほけん手帳」（お試し版）が入荷しました！証券を撮影して保険を登録できます　／　📢 新作「QC活動サポートツール」（お試し版）が入荷しました！なぜなぜ分析と特性要因図（FB図）が初心者でも作れます　／　📢 企業向け新作3本（お試し版）が入荷しました！改善提案・カイゼン管理／ヒヤリハット報告・集計／5S・安全点検パトロールが試せます　／　📢 新作「PCパーツ適合検索ツール」（お試し版）が入荷しました！型番を入れるだけで対応メモリー・SSD・GPU・電源と費用の目安が分かります</span></div>
 
 <div class="wrap">
 
@@ -344,7 +398,7 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
   </section>
 
   <footer>
-    <p>かーくんのお店 バージョン20（GitHub Pages版）</p>
+    <p>かーくんのお店 バージョン21（GitHub Pages版）</p>
     <p>© 2026 かーくん（Kuro）</p>
   </footer>
 </div>
@@ -368,6 +422,81 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
     <h3 style="text-align:center;margin:6px 0">スタンプ19個、コンプリート！</h3>
     <p class="m-desc" style="text-align:center">全19本を試してくださって、本当にありがとうございます！<br>あなたは「伝説のお客さま」です。<br><br>小さなお店ですが、家族と暮らしの「あったら便利なのに」を1本ずつ作ってきました。その全部に触ってもらえたことが、店主いちばんの励みです。これからも新作を並べていきますので、また遊びに来てくださいね。　店主 かーくん</p>
     <div class="m-foot"><button class="mini-btn" id="partyOk" type="button" style="flex:1">ありがとう！お店にもどる</button></div>
+  </div>
+</div>
+<!-- ===== v21: コンシェルジュ・クロ ===== -->
+<div class="cg-wrap" id="cgWrap">
+  <div class="cg-bubble" id="cgBubble" role="button" tabindex="0" aria-label="クロのご案内を開く">…</div>
+  <button class="cg-char" id="cgChar" type="button" aria-label="コンシェルジュ・クロのご案内を開く">
+    <span class="cg-min-btn" id="cgMinBtn" title="小さくする" aria-label="小さくする">−</span>
+    <svg viewBox="0 0 120 132" aria-hidden="true">
+      <!-- tail -->
+      <path class="cg-tail" d="M90 108 Q117 102 111 72" fill="none" stroke="#26221f" stroke-width="11" stroke-linecap="round"/>
+      <!-- body -->
+      <ellipse cx="58" cy="106" rx="31" ry="23" fill="#26221f"/>
+      <!-- apron -->
+      <path d="M40 94 h36 l3 30 a6 6 0 0 1 -6 6 h-30 a6 6 0 0 1 -6 -6 z" fill="#fdf3dd"/>
+      <path d="M40 94 l18 10 l18 -10 l-3 10 h-30 z" fill="#f7e7c3"/>
+      <!-- left paw on apron -->
+      <ellipse cx="36" cy="102" rx="7" ry="11" fill="#26221f" transform="rotate(18 36 102)"/>
+      <!-- waving right paw -->
+      <g class="cg-paw">
+        <ellipse cx="95" cy="66" rx="9" ry="15" fill="#26221f" transform="rotate(-14 95 66)"/>
+        <circle cx="97" cy="56" r="3" fill="#f2a7b8"/>
+        <circle cx="91" cy="59" r="2.2" fill="#f2a7b8"/>
+        <circle cx="102" cy="60" r="2.2" fill="#f2a7b8"/>
+      </g>
+      <!-- ears -->
+      <polygon points="33,36 40,8 58,27" fill="#26221f"/>
+      <polygon points="83,36 76,8 58,27" fill="#26221f"/>
+      <polygon points="38,31 42,17 52,27" fill="#f2a7b8"/>
+      <polygon points="78,31 74,17 64,27" fill="#f2a7b8"/>
+      <!-- head -->
+      <circle cx="58" cy="52" r="31" fill="#26221f"/>
+      <!-- eyes -->
+      <g class="cg-eye">
+        <ellipse cx="46" cy="50" rx="5.5" ry="7.5" fill="#f5b921"/>
+        <ellipse cx="46" cy="51" rx="2.4" ry="4.6" fill="#171310"/>
+        <circle cx="47.5" cy="47" r="1.4" fill="#fff"/>
+      </g>
+      <g class="cg-eye">
+        <ellipse cx="70" cy="50" rx="5.5" ry="7.5" fill="#f5b921"/>
+        <ellipse cx="70" cy="51" rx="2.4" ry="4.6" fill="#171310"/>
+        <circle cx="71.5" cy="47" r="1.4" fill="#fff"/>
+      </g>
+      <!-- nose & mouth -->
+      <polygon points="54,60 62,60 58,65" fill="#f2a7b8"/>
+      <path d="M58 65 q-2 5 -7 3 M58 65 q2 5 7 3" fill="none" stroke="#fdf3dd" stroke-width="1.8" stroke-linecap="round"/>
+      <!-- whiskers -->
+      <path d="M28 56 l-13 -3 M29 63 l-13 2 M88 56 l13 -3 M87 63 l13 2" stroke="#9a9186" stroke-width="1.6" stroke-linecap="round"/>
+      <!-- red bowtie -->
+      <polygon points="58,80 44,73 44,88" fill="#d94f30"/>
+      <polygon points="58,80 72,73 72,88" fill="#d94f30"/>
+      <circle cx="58" cy="80" r="4.5" fill="#b93a20"/>
+      <!-- name tag -->
+      <rect x="47" y="96" width="22" height="11" rx="3" fill="#fff" stroke="#d9c9a3"/>
+      <text x="58" y="104.5" text-anchor="middle" font-size="8" font-weight="bold" fill="#8a6a1f" font-family="sans-serif">クロ</text>
+    </svg>
+  </button>
+  <button class="cg-mini" id="cgMini" type="button" aria-label="コンシェルジュ・クロを出す">🐾</button>
+</div>
+<div class="cg-panel" id="cgPanel">
+  <div class="cg-panel-in" role="dialog" aria-modal="false" aria-label="クロのご案内">
+    <div class="cg-panel-head"><h3>🐾 クロのご案内</h3><button class="cg-panel-close" id="cgPanelClose" type="button" aria-label="閉じる">✕</button></div>
+    <div class="cg-answer" id="cgAnswer">いらっしゃいませ！コンシェルジュのクロです🐾
+下のボタンから、お店のことを何でも聞いてください。</div>
+    <div class="cg-actions">
+      <button class="cg-act" data-cg="quiz" type="button">🎯 おすすめを教えて</button>
+      <button class="cg-act" data-cg="find" type="button">🔍 アプリの探しかた</button>
+      <button class="cg-act" data-cg="stamps" type="button">🎴 スタンプラリーって？</button>
+      <button class="cg-act" data-cg="buy" type="button">🛍️ 商品の買いかた</button>
+      <button class="cg-act" data-cg="today" type="button">⭐ 今日のイチオシは？</button>
+      <button class="cg-act" data-cg="fav" type="button">⭐ お気に入りの使い方</button>
+      <button class="cg-act" data-cg="howto" type="button" style="grid-column:1/-1">📖 アプリの使い方を教えて</button>
+    </div>
+    <div class="cg-list" id="cgAppList" style="display:none"></div>
+    <div class="cg-howto" id="cgHowto" style="display:none"></div>
+    <button class="mini-btn cg-shrink" id="cgShrink" type="button">クロを小さくする</button>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -468,6 +597,29 @@ const APPS=[
   url:"https://muse.ai/s/space-6-kxz6xpxe8xbfvsxw/ieQlX0QLtYUSfednW8JlBkv6Ypi_T0jzCecKdMkjCi8",
   feats:["大きな文字とボタンで注文できる","停留所を選んで前日まで注文・取消OK","AIでつなぐ未来の移動スーパーの試作品"],forWho:"移動スーパーを使ってみたい地域の方"}
 ];
+/* ===== v21: アプリの使い方データ（クロの案内用） ===== */
+const HOWTO={
+ pcparts:["型番の一部を入れて検索する（無い型番は推定モードで判定）","対応パーツの一覧で◎／△／×の判定と理由をチェック","付けたいパーツを選ぶと、合計費用の目安が自動で出る"],
+ kaizen:["提案を登録する（改善前・提案内容・期待効果）","審査→採用→実施中と、状態を進めていく","完了したら効果（削減金額・時間）を記録すると、合計と集計が見られる"],
+ hiyari:["大きな報告ボタンからヒヤリハットを登録する","場所・作業・危険の種類を選ぶと、グラフで集計される","対策の担当・期限を決めて、完了・確認済みまで進める"],
+ patrol5s:["エリアを選んで点検をはじめる","項目ごとにOK／要改善をタップ（スコアは自動計算）","要改善は指摘ToDoになるので、担当・期限を決めて対応する"],
+ qc:["テーマを作るか、記入例を取り込んで完成形を見てみる","要因を入れると特性要因図（FB図）が自動で描ける。なぜなぜ分析で真因に印を付ける","対策を決めると、発表まとめ（報告書の下書き）が自動で作れる"],
+ hoken:["保険証券を撮影すると読み取り内容が出るので、確認して登録","種類や家族で絞り込んで、契約を一覧で見る","月額・年間合計と更新・満期アラートで見直し忘れを防ぐ"],
+ gambling:["種目と店／場を選んで、投資額・回収額を入力する","収支と回収率がその場で自動計算される","カレンダーや月別集計で、月の予算の残りと勝敗を確認する"],
+ shift:["スタッフを登録して、各自の希望休を入れる","平日・土日祝それぞれの必要人数を入れて自動作成","気になる所を手で直して、A4横で印刷する"],
+ subsc:["契約中のサービスを、料金と支払いサイクルで登録する","次回支払日と無料期間の終了はアラートでお知らせ","「使ってない」見直しリストで、解約したらいくら節約できるか確認"],
+ car:["車を登録して、オイル交換や点検を記録する","次回まで「あと◯km／あと◯日」が自動で計算される","車検・自賠責の期限もまとめて確認できる"],
+ bike:["バイクを登録する（車検あり／なしも台ごとに選べる）","オイル交換やチェーン清掃・注油を記録する","ホームでオイルとチェーンの残り目安を大きく確認"],
+ kairanban:["ホームで今日のゴミの日と防災情報を確認する","回覧板は未読バッジつき。新着のお知らせをタップで読む","行事カレンダーで出欠を答える（中身は全部サンプルデータです）"],
+ gomi:["施設を登録する（最大50件まで）","曜日ごとに回収した袋数を入力する","週間合計・1日平均・曜日別グラフで施設を比べる"],
+ reizouko:["冷蔵庫の写真を見ながら、食材をタップで確認して登録","期限が近い食材を優先した献立の提案を見る","足りない材料は買い物リストへ。近所10店の目安価格も比べられる"],
+ mymap:["地図に自分だけのピンを追加する","カテゴリで色分けして、メモ・評価・訪問記録を付ける","道順リンクで、その場所までの行き方を開く"],
+ okozukai:["お手伝い項目とお子さんを登録する（親画面はPINロック）","お手伝いしたらタップで記録。ポイントとお小遣いが貯まる","ポイントが貯まると、黒の剣士の装備が段階ごとに強化される"],
+ nondayo:["薬と飲むタイミング・時刻を登録する","飲んだら大きな「飲みました」ボタンを押すだけ","見守る人は今日の済み／まだを確認。処方日と日数から通院の目安も出る"],
+ game:["絵合わせか、タップで入れかえるパズルを選ぶ","大きなカードをタップして遊ぶ","時間制限・ペナルティなし。自分のペースでどうぞ"],
+ magokoro:["停留所を選ぶ","大きな文字とボタンのメニューから商品を選んで注文","前日までなら注文の取消もできる"]
+};
+APPS.forEach(x=>{x.howto=HOWTO[x.id]||[]});
 const SOON=[
  {id:"mini3",icon:"📦",bg:"#f0ead8",title:"家族で使えるミニアプリ3点セット",tag:"準備中",tagCls:"soon",price:1980,priceNote:"（予定）",cta:"",url:"",cats:["goods"],kw:"ミニアプリ セット 家族",
   desc:"お小遣い・お手伝い記録／くすりチェック／とうばん・週間チェックの3本セット。BOOTHでの出品準備中です。",
@@ -576,6 +728,7 @@ function openModal(id){
   <div class="m-foot">
     ${x.url?`<a class="cta ${ctaCls}" href="${x.url}" target="_blank" rel="noopener" data-try="${x.id}">${ctaTxt} →</a>`:`<span class="detail-hint" style="align-self:center">BOOTHでの出品準備中です</span>`}
     <button class="mini-btn" data-fav="${x.id}">${fav?"⭐ お気に入り済み":"☆ お気に入り"}</button>
+    ${APPS.includes(x)?`<button class="mini-btn" data-cg-howto="${x.id}">🐾 クロに使い方を聞く</button>`:""}
     <button class="mini-btn" id="shareBtn">🔗 共有</button>
   </div>`;
  $("#modalBg").classList.add("open"); document.body.style.overflow="hidden"; paintCounts();
@@ -688,6 +841,7 @@ function addStamp(id){
  else if(n===5)toast("✨ スタンプ5個！常連さんになりました");
  else if(n===10)toast("🏆 スタンプ10個！お店の達人まであと少し");
  else toast("✅ スタンプが貯まりました（"+n+" / 19）");
+ cgReactStamp(n);
 }
 $("#stampReset").addEventListener("click",()=>{
  if(!stamps.size){toast("まだスタンプがありません");return}
@@ -778,7 +932,95 @@ $("#quizClose").addEventListener("click",closeQuiz);
 $("#quizBg").addEventListener("click",e=>{if(e.target.id==="quizBg")closeQuiz()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeQuiz();closeParty()}});
 
-renderPills(); renderDiags(); renderPicks(); renderProducts(); renderSoon(); renderApps(); saveFavs(); observeCards(); renderStamps(); renderRanking(); renderSpot(); initAnalytics();
+/* ===== v21: コンシェルジュ・クロ ===== */
+let cgState={seen:0,min:0}; try{cgState=Object.assign(cgState,JSON.parse(localStorage.getItem("kakun-shop-guide-v21")||"{}"))}catch(e){}
+function saveCg(){try{localStorage.setItem("kakun-shop-guide-v21",JSON.stringify(cgState))}catch(e){}}
+let cgLast=Date.now(), cgHoldUntil=0, cgTipIdx=0;
+function todayPick(){const now=new Date();const start=new Date(now.getFullYear(),0,0);const doy=Math.floor((now-start)/86400000);return APPS[doy%APPS.length]}
+function setBubble(t){const b=$("#cgBubble");if(!b)return;b.textContent=t;b.classList.remove("pop");void b.offsetWidth;b.classList.add("pop")}
+function cgGreeting(){const h=new Date().getHours();return (h>=5&&h<11)?"おはようございます！":(h>=11&&h<17)?"こんにちは！":"こんばんは！"}
+function cgHop(){const c=$("#cgChar");if(!c||cgState.min)return;c.classList.remove("hop");void c.offsetWidth;c.classList.add("hop");setTimeout(()=>c.classList.remove("hop"),600)}
+function cgTouch(){cgLast=Date.now()}
+function openCgPanel(){cgTouch();$("#cgPanel").classList.add("open")}
+function closeCgPanel(){cgTouch();$("#cgPanel").classList.remove("open")}
+function cgMinimize(){cgState.min=1;saveCg();$("#cgWrap").classList.add("min");closeCgPanel()}
+function cgRestore(){cgState.min=0;saveCg();$("#cgWrap").classList.remove("min");cgHop();setBubble("ただいま🐾\n何かお探しですか？タップでご案内します！")}
+function cgTips(){const pk=todayPick();return [
+ "🔍 上の検索バーに言葉を入れると、アプリや商品をすぐ探せます",
+ "🎯 迷ったら「30秒診断」！3問タップでおすすめ3本を出しますよ",
+ "🎴 スタンプは今 "+stamps.size+" / 19 個です。アプリを試すと貯まります",
+ "⭐ カードの☆でお気に入り登録。上の⭐の数字が目印です",
+ "⭐ 今日のイチオシは「"+(pk?pk.title:"")+"」です",
+ "🛍️ デジタル商品はBOOTHとnoteで販売中。カードをタップすると詳細が見られます",
+ "🐾 アプリのカードをタップして「🐾 クロに使い方を聞く」を押すと、クロが使い方を教えます"
+]}
+function cgShowAnswer(t){$("#cgAnswer").textContent=t;$("#cgAppList").style.display="none";$("#cgHowto").style.display="none"}
+function cgShowAppList(){
+ cgTouch();
+ $("#cgAnswer").textContent="どのアプリの使い方を見ますか？タップしてください👇（全19本）";
+ $("#cgHowto").style.display="none";
+ const list=$("#cgAppList"); list.style.display="grid";
+ list.innerHTML=[...APPS].sort((a,b)=>b.order-a.order).map(x=>`<button class="cg-app-row" data-cg-app="${x.id}" type="button"><span class="a-ico" style="background:${x.bg}">${x.icon}</span>${x.title}</button>`).join("");
+}
+function cgShowHowto(id){
+ const x=byId(id); if(!x||!(x.howto&&x.howto.length))return;
+ cgTouch();
+ $("#cgAnswer").textContent="「"+x.title+"」の使い方ですね🐾";
+ $("#cgAppList").style.display="none";
+ const hw=$("#cgHowto"); hw.style.display="block";
+ hw.innerHTML=`<h4>${x.icon} ${x.title}</h4><ol>${x.howto.map(s=>`<li>${s}</li>`).join("")}</ol><div class="cg-howto-foot">${x.url?`<a class="cta green" href="${x.url}" target="_blank" rel="noopener" data-try="${x.id}" data-cg-try="1">▶ 今すぐ試す</a>`:""}<button class="mini-btn" id="cgBackList" type="button">← 一覧に戻る</button></div>`;
+ const bk=$("#cgBackList"); if(bk)bk.onclick=cgShowAppList;
+}
+function cgReactStamp(n){
+ if(cgState.min)return;
+ cgTouch(); cgHoldUntil=Date.now()+6000; cgHop();
+ setBubble(n>=19?"🎉 ついに19個コンプリート！\n伝説のお客さま、おめでとうございます🐾":"スタンプ"+n+"個目ゲット！すごいです🎉\nこの調子で集めてくださいね🐾");
+}
+function cgInit(){
+ if(cgState.min)$("#cgWrap").classList.add("min");
+ setBubble(cgGreeting()+"\nコンシェルジュのクロです🐾 お店のことは何でも聞いてください。タップでご案内します！");
+ if(!cgState.seen){cgState.seen=1;saveCg();setTimeout(()=>{if(!cgState.min)openCgPanel()},800)}
+ const char=$("#cgChar");
+ char.addEventListener("click",e=>{
+   if(e.target.closest("#cgMinBtn")){e.stopPropagation();cgMinimize();return}
+   cgHop(); openCgPanel();
+ });
+ $("#cgBubble").addEventListener("click",()=>{cgHop();openCgPanel()});
+ $("#cgMini").addEventListener("click",cgRestore);
+ $("#cgPanelClose").addEventListener("click",closeCgPanel);
+ $("#cgShrink").addEventListener("click",cgMinimize);
+ document.addEventListener("keydown",e=>{if(e.key==="Escape")closeCgPanel()});
+ document.querySelectorAll("[data-cg]").forEach(b=>b.addEventListener("click",()=>{
+   cgTouch();
+   const k=b.dataset.cg;
+   if(k==="quiz"){closeCgPanel();openQuiz()}
+   else if(k==="find"){cgShowAnswer("一番早いのは、画面の上のほうにある🔍検索バーに言葉を入れることです。\nアプリコーナーでは、カテゴリ（暮らし／お金・仕事／家族・見守り／地域／遊び）で絞ったり、おすすめ順・新着順・人気順に並び替えもできます。\n（このパネルを✕で閉じると、検索バーが見えます）");window.scrollTo({top:0,behavior:"smooth"})}
+   else if(k==="stamps"){cgShowAnswer("アプリの「試す」ボタンを押すと、スタンプが1個貯まります🎴\n今のあなたのスタンプは "+stamps.size+" / 19 個です。3個・5個・10個でランクが上がって、19個全部集めると店主からのお礼メッセージが出ます。\n（✕で閉じると、スタンプ帳が見えます）");const s=$("#stamps");if(s)s.scrollIntoView({behavior:"smooth"})}
+   else if(k==="buy"){cgShowAnswer("デジタル商品は、BOOTHとnoteで販売しています🛍️\n商品棚のカードをタップすると、詳細と買うページへのボタンが出ます。\n無料アプリとお試し版は、買わなくてもそのまま使えますよ。\n（✕で閉じると、商品棚が見えます）");const s=$("#shelf-products");if(s)s.scrollIntoView({behavior:"smooth"})}
+   else if(k==="today"){const pk=todayPick();closeCgPanel();if(pk)openModal(pk.id)}
+   else if(k==="fav"){cgShowAnswer("カードの右上にある☆を押すと、お気に入りに登録できます⭐\n画面の上のバーにある⭐の数字がお気に入りの数です。アプリコーナーの「⭐ お気に入りだけ」ボタンを押すと、お気に入りだけを表示できます。")}
+   else if(k==="howto"){cgShowAppList()}
+ }));
+ document.addEventListener("click",e=>{
+   const r=e.target.closest("[data-cg-app]"); if(r){cgShowHowto(r.dataset.cgApp);return}
+   const hb=e.target.closest("[data-cg-howto]"); if(hb){closeModal();if(cgState.min)cgRestore();openCgPanel();cgShowHowto(hb.dataset.cgHowto);return}
+   const tr=e.target.closest("[data-cg-try]"); if(tr){closeCgPanel()}
+ });
+ setInterval(()=>{ /* paw wave */
+   if(cgState.min)return;
+   const c=$("#cgChar"); if(!c)return;
+   c.classList.add("waving"); setTimeout(()=>c.classList.remove("waving"),1700);
+ },9000);
+ setInterval(()=>{ /* tip rotation */
+   if(cgState.min)return;
+   if($("#cgPanel").classList.contains("open"))return;
+   if(Date.now()-cgLast<10000)return;
+   if(Date.now()<cgHoldUntil)return;
+   const tips=cgTips(); cgTipIdx=(cgTipIdx+1)%tips.length; setBubble(tips[cgTipIdx]);
+ },14000);
+}
+
+renderPills(); renderDiags(); renderPicks(); renderProducts(); renderSoon(); renderApps(); saveFavs(); observeCards(); renderStamps(); renderRanking(); renderSpot(); initAnalytics(); cgInit();
 </script>
 <script data-goatcounter="https://pooulpi.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
