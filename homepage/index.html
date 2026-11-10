@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>かーくんのお店｜触って楽しいアプリとデジタル商品のお店</title>
-<meta name="description" content="かーくん（Kuro）のお店。家族と暮らしに役立つ無料アプリ19本と、BOOTH・noteで販売中のデジタル商品が触って探せるお店です。">
+<title>かーくんのお店｜触って楽しいアプリとデジタル商品のお店【大改装v20・スタンプラリー＆30秒診断】</title>
+<meta name="description" content="かーくん（Kuro）のお店。家族と暮らしに役立つ無料アプリ19本と、BOOTH・noteのデジタル商品5点（準備中含む）が触って探せるお店です。スタンプラリーと30秒診断が加わりました。">
 <meta property="og:title" content="かーくんのお店">
-<meta property="og:description" content="暮らしの自作アプリ19本＋デジタル商品。検索・診断・お気に入りで、あなたに合う1本が見つかります。">
+<meta property="og:description" content="暮らしの自作アプリ19本＋デジタル商品5点。スタンプラリー・30秒診断・人気ランキングで、あなたに合う1本が見つかります。">
 <meta property="og:type" content="website">
 <style>
 :root{
@@ -171,6 +171,52 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
 .try-count{font-size:12px;font-weight:800;color:#a85b12;background:#fff7e8;border:1px solid var(--line);border-radius:999px;padding:3px 10px;white-space:nowrap}
 .try-count:empty{display:none}
 .m-count{display:inline-block;margin-top:8px}
+
+/* ===== v20: quiz button / spotlight / stamps / ranking / quiz ===== */
+.btn.quiz{background:linear-gradient(135deg,#7c5cd6,#e85d8a);color:#fff}
+.spotlight{max-width:600px;margin:20px auto 4px;background:#fff;border:3px solid var(--gold);border-radius:20px;box-shadow:var(--shadow-lg);padding:16px 18px;display:flex;gap:14px;align-items:center;text-align:left}
+.spotlight .s-ico{width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0}
+.spotlight .s-body{flex:1;min-width:0}
+.spotlight .s-label{font-size:11.5px;font-weight:900;color:#a85b12;letter-spacing:.06em}
+.spotlight h3{margin:2px 0 3px;font-size:17px;line-height:1.35}
+.spotlight p{margin:0;font-size:13px;color:var(--sub);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tried-badge{font-size:11.5px;font-weight:900;color:var(--green-d);background:#dcf5e8;border-radius:999px;padding:3px 9px;white-space:nowrap}
+.stamp-box{background:#fff;border:2px solid var(--gold);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
+.stamp-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.stamp-prog{font-size:20px;font-weight:900}
+.stamp-prog b{color:var(--red);font-size:26px}
+.rank-name{font-size:13px;font-weight:900;background:#fff1dd;color:#a85b12;border-radius:999px;padding:4px 12px}
+.stamp-bar{height:16px;background:#f3ead8;border-radius:99px;overflow:hidden;margin:12px 0}
+.stamp-bar-in{height:100%;background:linear-gradient(90deg,#ffb020,var(--red));border-radius:99px;transition:width .5s}
+.stamp-msg{font-size:14px;font-weight:800;margin:0 0 12px}
+.stamp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:8px}
+.stamp-slot{border:2px dashed var(--line);border-radius:14px;padding:8px 2px 6px;text-align:center;position:relative;background:#fbf7ee}
+.stamp-slot .st-ico{font-size:26px;line-height:1.15;filter:grayscale(1);opacity:.4}
+.stamp-slot .st-name{font-size:9.5px;font-weight:700;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stamp-slot.got{border:2px solid var(--gold);background:#fff8e6}
+.stamp-slot.got .st-ico{filter:none;opacity:1}
+.stamp-slot .st-done{position:absolute;top:-7px;right:-5px;background:var(--red);color:#fff;font-size:10px;font-weight:900;border-radius:999px;padding:2px 7px;transform:rotate(10deg);box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.stamp-foot{margin-top:14px;text-align:right}
+.rank-list{display:grid;gap:10px}
+.rank-row{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 16px;box-shadow:0 2px 8px rgba(90,55,10,.05);transition:.18s;font-family:inherit}
+.rank-row:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.rank-row:active{transform:scale(.98)}
+.rank-no{font-size:22px;font-weight:900;width:38px;text-align:center;flex-shrink:0}
+.rank-row .r-ico{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+.rank-row h3{margin:0;font-size:16px;line-height:1.35}
+.rank-row .r-count{margin-left:auto;font-size:12.5px;font-weight:800;color:#a85b12;background:#fff7e8;border:1px solid var(--line);border-radius:999px;padding:4px 11px;white-space:nowrap}
+.quiz-prog{font-size:12.5px;font-weight:900;color:var(--purple);letter-spacing:.05em}
+.quiz-q{font-size:20px;font-weight:900;margin:8px 0 16px;line-height:1.45}
+.quiz-opts{display:grid;gap:10px}
+.quiz-opt{border:2px solid var(--line);background:#fff;border-radius:16px;padding:16px;font-size:16px;font-weight:800;text-align:left;transition:.15s;width:100%}
+.quiz-opt:hover{border-color:var(--purple);background:#f6f1ff}
+.quiz-opt:active{transform:scale(.97)}
+.quiz-result{display:flex;gap:12px;align-items:center;background:#fffaf0;border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:10px}
+.quiz-result .q-ico{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+.quiz-result h4{margin:0;font-size:15.5px;line-height:1.35}
+.quiz-result p{margin:2px 0 0;font-size:12.5px;color:var(--sub)}
+.quiz-result .cta{margin-left:auto;flex-shrink:0}
+.party-emoji{font-size:56px;text-align:center}
 </style>
 </head>
 <body>
@@ -188,24 +234,26 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
   <span class="float" style="right:8%;top:20px;animation-delay:.8s">🚗</span>
   <span class="float" style="left:12%;bottom:18px;animation-delay:1.6s">💊</span>
   <span class="float" style="right:13%;bottom:26px;animation-delay:.4s">🎰</span>
-  <span class="hero-badge">会社員店主の手作りアプリ店</span>
+  <span class="hero-badge">🏪 大改装オープン！バージョン20</span>
   <h1>かーくんの<span class="accent">お店</span></h1>
   <p class="catch">いらっしゃいませ！触って、試せるお店になりました。</p>
   <p class="sub">家族と暮らしの「あったら便利なのに」から生まれたアプリとデジタル商品のお店です。気になるカードをタップすると詳しく見られます。まずは触ってみてください。</p>
   <div class="stats">
     <div class="stat"><div class="num" data-count="19">0</div><div class="lbl">無料アプリ</div></div>
-    <div class="stat"><div class="num" data-count="3">0</div><div class="lbl">販売中の商品</div></div>
+    <div class="stat"><div class="num" data-count="5">0</div><div class="lbl">デジタル商品（準備中含む）</div></div>
     <div class="stat"><div class="num" data-count="100">0</div><div class="lbl">% スマホ対応</div></div>
     <div class="stat"><div class="num" id="visitCount">…</div><div class="lbl">👣 来店数（累計）</div></div>
   </div>
   <div class="hero-btns">
-    <a class="btn red" href="#shelf-apps">🧭 アプリをさがす</a>
+    <a class="btn red" href="#shelf-apps">▶ まず1本、無料で触る</a>
+    <button class="btn quiz" id="quizBtn" type="button">🎯 30秒診断をはじめる</button>
     <button class="btn gacha" id="gachaBtn" type="button">🎲 今日のおすすめを引く</button>
     <a class="btn ghost" href="https://pooulpi.booth.pm/" target="_blank" rel="noopener">BOOTH本店へ</a>
   </div>
+  <div class="spotlight" id="spotCard"></div>
 </header>
 
-<div class="ticker" aria-hidden="true"><span class="ticker-track">📢 来店カウンターが付きました！各アプリの「試された回数」が分かるようになりました！　／　「ブログ・SNSアイキャッチ背景素材 24枚セット」BOOTHで販売中（500円）　／　2027年 防災カレンダーは300円です　／　アプリは全部スマホでそのまま試せます　／　新作の告知はX（@pooulpi）で出しています　📢 新作「マイほけん手帳」（お試し版）が入荷しました！証券を撮影して保険を登録できます　／　📢 新作「QC活動サポートツール」（お試し版）が入荷しました！なぜなぜ分析と特性要因図（FB図）が初心者でも作れます　／　📢 企業向け新作3本（お試し版）が入荷しました！改善提案・カイゼン管理／ヒヤリハット報告・集計／5S・安全点検パトロールが試せます　／　📢 新作「PCパーツ適合検索ツール」（お試し版）が入荷しました！型番を入れるだけで対応メモリー・SSD・GPU・電源と費用の目安が分かります</span></div>
+<div class="ticker" aria-hidden="true"><span class="ticker-track">📢 お店が大改装オープン！バージョン20になりました！　／　📢 スタンプラリー開始！アプリを試して19個のスタンプを集めよう　／　📢 30秒診断と人気ランキングが増えました　／　📢 「現場改善ツール 3点セット」BOOTHで近日発売（1,980円予定）　／　📢 来店カウンターが付きました！各アプリの「試された回数」が分かるようになりました！　／　「ブログ・SNSアイキャッチ背景素材 24枚セット」BOOTHで販売中（500円）　／　2027年 防災カレンダーは300円です　／　アプリは全部スマホでそのまま試せます　／　新作の告知はX（@pooulpi）で出しています　📢 新作「マイほけん手帳」（お試し版）が入荷しました！証券を撮影して保険を登録できます　／　📢 新作「QC活動サポートツール」（お試し版）が入荷しました！なぜなぜ分析と特性要因図（FB図）が初心者でも作れます　／　📢 企業向け新作3本（お試し版）が入荷しました！改善提案・カイゼン管理／ヒヤリハット報告・集計／5S・安全点検パトロールが試せます　／　📢 新作「PCパーツ適合検索ツール」（お試し版）が入荷しました！型番を入れるだけで対応メモリー・SSD・GPU・電源と費用の目安が分かります</span></div>
 
 <div class="wrap">
 
@@ -215,10 +263,31 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
     <div class="diag-grid" id="diagGrid"></div>
   </section>
 
+  <section id="stamps">
+    <div class="sec-head"><h2><span class="shelf orange">集める</span>スタンプラリー</h2></div>
+    <p class="note">アプリの「試す」ボタンを押すとスタンプが1個貯まります。19本全部集めると…？この端末のブラウザに保存されます。</p>
+    <div class="stamp-box">
+      <div class="stamp-head">
+        <span class="stamp-prog">スタンプ <b id="stampNum">0</b> / 19</span>
+        <span class="rank-name" id="rankName">はじめまして</span>
+      </div>
+      <div class="stamp-bar"><div class="stamp-bar-in" id="stampBar" style="width:0%"></div></div>
+      <p class="stamp-msg" id="stampMsg"></p>
+      <div class="stamp-grid" id="stampGrid"></div>
+      <div class="stamp-foot"><button class="mini-btn" id="stampReset" type="button">スタンプをリセット</button></div>
+    </div>
+  </section>
+
   <section>
     <div class="sec-head"><h2><span class="shelf pink">注目</span>今週のピックアップ</h2></div>
     <p class="note">横にスワイプできます。タップで詳しく見られます。</p>
     <div class="pick-row" id="pickRow"></div>
+  </section>
+
+  <section id="ranking">
+    <div class="sec-head"><h2>👑 試された回数ランキング TOP5</h2></div>
+    <p class="note" id="rankNote">みんなが試した回数の多い順です。タップで詳しく見られます。</p>
+    <div class="rank-list" id="rankList"></div>
   </section>
 
   <section id="shelf-products">
@@ -236,8 +305,8 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
         <button class="toggle" id="favToggle" type="button"><span class="dot"></span>⭐ お気に入りだけ</button>
         <select class="sort" id="sortSel" aria-label="並び替え">
           <option value="rec">おすすめ順</option>
-          <option value="new">新しい順</option>
-          <option value="name">名前順</option>
+          <option value="new">新着順</option>
+          <option value="pop">人気順（試された回数）</option>
         </select>
         <span class="result-count" id="resultCount"></span>
       </div>
@@ -275,7 +344,7 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
   </section>
 
   <footer>
-    <p>かーくんのお店 バージョン19（GitHub Pages版）</p>
+    <p>かーくんのお店 バージョン20（GitHub Pages版）</p>
     <p>© 2026 かーくん（Kuro）</p>
   </footer>
 </div>
@@ -284,6 +353,21 @@ footer{margin-top:46px;text-align:center;font-size:12px;color:var(--sub)}
   <div class="modal" role="dialog" aria-modal="true">
     <button class="m-close" id="modalClose" type="button" aria-label="閉じる">✕</button>
     <div id="modalBody"></div>
+  </div>
+</div>
+<div class="modal-bg" id="quizBg">
+  <div class="modal" role="dialog" aria-modal="true">
+    <button class="m-close" id="quizClose" type="button" aria-label="閉じる">✕</button>
+    <div id="quizBody"></div>
+  </div>
+</div>
+<div class="modal-bg" id="partyBg">
+  <div class="modal" role="dialog" aria-modal="true">
+    <button class="m-close" id="partyClose" type="button" aria-label="閉じる">✕</button>
+    <div class="party-emoji">🎉🏆🎉</div>
+    <h3 style="text-align:center;margin:6px 0">スタンプ19個、コンプリート！</h3>
+    <p class="m-desc" style="text-align:center">全19本を試してくださって、本当にありがとうございます！<br>あなたは「伝説のお客さま」です。<br><br>小さなお店ですが、家族と暮らしの「あったら便利なのに」を1本ずつ作ってきました。その全部に触ってもらえたことが、店主いちばんの励みです。これからも新作を並べていきますので、また遊びに来てくださいね。　店主 かーくん</p>
+    <div class="m-foot"><button class="mini-btn" id="partyOk" type="button" style="flex:1">ありがとう！お店にもどる</button></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -298,7 +382,13 @@ const PRODUCTS=[
   feats:["A4・全14ページの印刷用PDF","祝日17日・防災関連日4日入り","月ごとのテーマとチェック＋メモ欄つき"],forWho:"家族で防災を習慣にしたい人、壁掛けカレンダー派の人"},
  {id:"template",icon:"📝",bg:"#dbeafe",title:"SNS・副業向けテンプレ集",tag:"",tagCls:"",price:300,cta:"noteで買う",ctaCls:"blue",url:"https://note.com/modern_ruff2149/n/nf84fdbdee838",cats:["goods"],kw:"テンプレ SNS 副業 note 投稿文",
   desc:"店主の最初のデジタル商品。noteの有料記事で販売中です。",
-  feats:["店主の最初のデジタル商品","SNS・副業の投稿づくりに使えるテンプレ集","noteの有料記事でそのまま読める"],forWho:"副業の発信を始めたいけど、文面で止まってしまう人"}
+  feats:["店主の最初のデジタル商品","SNS・副業の投稿づくりに使えるテンプレ集","noteの有料記事でそのまま読める"],forWho:"副業の発信を始めたいけど、文面で止まってしまう人"},
+ {id:"mini3",icon:"📦",bg:"#f0ead8",title:"家族で使えるミニアプリ3点セット",tag:"準備中",tagCls:"soon",price:1980,priceNote:"（予定）",cta:"",ctaCls:"red",url:"",cats:["goods"],kw:"ミニアプリ セット 家族 お小遣い くすり 当番",
+  desc:"お小遣い・お手伝い記録／くすりチェック／とうばん・週間チェックの3本セット。BOOTHでの出品準備中です。",
+  feats:["家族で使えるミニアプリ3本セット","購入者用テンプレート版（開始時は空）","端末内保存で外部通信なし"],forWho:"家族の記録をまとめてデジタル化したい人"},
+ {id:"genba3",icon:"🏢",bg:"#dbeafe",title:"現場改善ツール 3点セット",tag:"近日発売",tagCls:"soon",price:1980,priceNote:"（予定）",cta:"",ctaCls:"red",url:"",cats:["goods"],kw:"改善提案 ヒヤリハット 5S 安全 点検 職場 業務改善 BOOTH",
+  desc:"職場の改善活動のためのHTMLツール3本セット（改善提案・カイゼン管理／ヒヤリハット報告・集計／5S・安全点検パトロール）。ブラウザで開くだけ、登録なし・ネット不要で、記録から集計までできます。BOOTHで近日販売予定です。",
+  feats:["改善提案・カイゼン管理：提案から効果確認・金額集計まで","ヒヤリハット報告・集計：対策フローと集計グラフつき","5S・安全点検パトロール：スコア自動計算と指摘ToDo化"],forWho:"紙やExcelで回している改善提案・ヒヤリハット・5S点検を楽にしたい職場の人"}
 ];
 const APPS=[
  {id:"pcparts",icon:"💻",bg:"#dbeafe",title:"PCパーツ適合検索ツール",tag:"お試し版",tagCls:"trial",type:"trial",order:19,cats:["kurashi","okane"],kw:"PC パーツ 適合 型番 メモリー メモリ SSD GPU 電源 グラフィックボード 増設 アップグレード 換装 DELL HP Lenovo NEC 富士通",
@@ -411,6 +501,7 @@ const PICKS=[
 const ALL=[...PRODUCTS,...APPS,...SOON];
 const byId=id=>ALL.find(x=>x.id===id);
 let favs=new Set(); try{favs=new Set(JSON.parse(localStorage.getItem("kakun-shop-favs-v12")||"[]"))}catch(e){}
+let stamps=new Set(); try{stamps=new Set(JSON.parse(localStorage.getItem("kakun-shop-stamps-v20")||"[]"))}catch(e){}
 let curCat="all", favOnly=false, spotIds=[];
 const $=s=>document.querySelector(s);
 
@@ -433,7 +524,7 @@ function cardHTML(x,isProduct){
   <div class="card-top"><div class="ico-badge" style="background:${x.bg}">${x.icon}</div>
   <div style="flex:1;min-width:0"><h3>${x.title}</h3><p class="desc">${x.desc}</p></div></div>
   <div class="chips">${chips}</div>
-  <div class="card-foot">${priceHTML(x)}<span class="try-count" data-count-for="${x.id}"></span><span class="detail-hint">タップで詳細</span>${foot}</div></article>`;
+  <div class="card-foot">${priceHTML(x)}${stamps.has(x.id)&&APPS.some(a=>a.id===x.id)?`<span class="tried-badge">✅ 試した</span>`:""}<span class="try-count" data-count-for="${x.id}"></span><span class="detail-hint">タップで詳細</span>${foot}</div></article>`;
 }
 function renderProducts(){$("#productGrid").innerHTML=PRODUCTS.map(x=>cardHTML(x,true)).join("")}
 function renderSoon(){$("#soonGrid").innerHTML=SOON.map(x=>cardHTML(x,true)).join("")}
@@ -446,7 +537,7 @@ function renderApps(){
    return true;
  });
  const sort=$("#sortSel").value;
- if(sort==="new")list.sort((a,b)=>b.order-a.order); else if(sort==="name")list.sort((a,b)=>a.title.localeCompare(b.title,"ja")); else list.sort((a,b)=>((spotIds.includes(b.id)?1:0)-(spotIds.includes(a.id)?1:0))||b.order-a.order);
+ if(sort==="new")list.sort((a,b)=>b.order-a.order); else if(sort==="pop")list.sort((a,b)=>((counts["try-"+b.id]||0)-(counts["try-"+a.id]||0))||b.order-a.order); else list.sort((a,b)=>((spotIds.includes(b.id)?1:0)-(spotIds.includes(a.id)?1:0))||b.order-a.order);
  $("#appGrid").innerHTML=list.map(x=>cardHTML(x,false)).join("");
  $("#resultCount").textContent=list.length+"本 表示中";
  $("#emptyBox").style.display=list.length?"none":"block";
@@ -534,6 +625,7 @@ function paintCounts(){
     const n=counts[keyFor(x)];
     el.textContent=(typeof n==="number"&&n>=1)?labelFor(x,n):"";
   });
+  scheduleRank();
 }
 async function abGet(key){try{const r=await fetch(`${AB_BASE}/get/${AB_NS}/${key}`);if(!r.ok)return null;const j=await r.json();return typeof j.value==="number"?j.value:null}catch(e){return null}}
 async function abHit(key){try{const r=await fetch(`${AB_BASE}/hit/${AB_NS}/${key}`);if(!r.ok)return null;const j=await r.json();return typeof j.value==="number"?j.value:null}catch(e){return null}}
@@ -550,6 +642,7 @@ async function loadCounts(){
 }
 function countTry(id){
   const x=byId(id); if(!x||!x.url)return;
+  addStamp(id);
   const k=keyFor(x);
   if(typeof counts[k]==="number"){counts[k]++;paintCounts()}
   abHit(k).then(v=>{if(v!=null){counts[k]=v;paintCounts()}});
@@ -564,7 +657,128 @@ function initAnalytics(){
     document.body.appendChild(s);
   }
 }
-renderPills(); renderDiags(); renderPicks(); renderProducts(); renderSoon(); renderApps(); saveFavs(); observeCards(); initAnalytics();
+/* ===== v20: stamp rally ===== */
+function saveStamps(){localStorage.setItem("kakun-shop-stamps-v20",JSON.stringify([...stamps]))}
+function rankFor(n){if(n>=19)return"伝説のお客さま";if(n>=10)return"お店の達人";if(n>=5)return"常連さん";if(n>=3)return"常連さん見習い";if(n>=1)return"常連さん見習い";return"はじめまして"}
+function stampMsgFor(n){
+ if(n>=19)return"🎉 19個コンプリート！あなたは伝説のお客さまです。本当にありがとうございます！";
+ if(n>=10)return"🏆 10個突破！あと"+(19-n)+"個でコンプリートです";
+ if(n>=5)return"✨ 5個集まりました！常連さんの仲間入りです";
+ if(n>=3)return"👍 3個集まりました！いいペースです";
+ if(n>=1)return"🎉 最初のスタンプ、ありがとうございます！気になるアプリをどんどん試してみてください";
+ return"アプリを試すと、ここにスタンプが貯まっていきます";
+}
+function renderStamps(){
+ const n=stamps.size;
+ $("#stampNum").textContent=n;
+ $("#rankName").textContent=rankFor(n);
+ $("#stampBar").style.width=(n/19*100)+"%";
+ $("#stampMsg").textContent=stampMsgFor(n);
+ const ordered=[...APPS].sort((a,b)=>b.order-a.order);
+ $("#stampGrid").innerHTML=ordered.map(x=>{const got=stamps.has(x.id);return `<div class="stamp-slot${got?" got":""}" title="${x.title}"><div class="st-ico">${x.icon}</div><div class="st-name">${x.title}</div>${got?`<span class="st-done">済</span>`:""}</div>`}).join("");
+}
+function addStamp(id){
+ if(!APPS.some(a=>a.id===id))return;
+ if(stamps.has(id)){renderStamps();return}
+ stamps.add(id); saveStamps(); renderStamps(); renderApps();
+ const n=stamps.size;
+ if(n===19){setTimeout(()=>{$("#partyBg").classList.add("open");document.body.style.overflow="hidden"},600)}
+ else if(n===1)toast("🎉 スタンプ1個目！ありがとうございます");
+ else if(n===3)toast("👍 スタンプ3個！常連さん見習いです");
+ else if(n===5)toast("✨ スタンプ5個！常連さんになりました");
+ else if(n===10)toast("🏆 スタンプ10個！お店の達人まであと少し");
+ else toast("✅ スタンプが貯まりました（"+n+" / 19）");
+}
+$("#stampReset").addEventListener("click",()=>{
+ if(!stamps.size){toast("まだスタンプがありません");return}
+ if(confirm("スタンプを全部リセットしますか？")){stamps=new Set();saveStamps();renderStamps();renderApps();toast("スタンプをリセットしました")}
+});
+function closeParty(){$("#partyBg").classList.remove("open");document.body.style.overflow=""}
+$("#partyClose").addEventListener("click",closeParty);
+$("#partyOk").addEventListener("click",closeParty);
+$("#partyBg").addEventListener("click",e=>{if(e.target.id==="partyBg")closeParty()});
+
+/* ===== v20: 今日のイチオシ ===== */
+function renderSpot(){
+ const now=new Date(); const start=new Date(now.getFullYear(),0,0);
+ const doy=Math.floor((now-start)/86400000);
+ const x=APPS[doy%APPS.length]; if(!x)return;
+ $("#spotCard").innerHTML=`<div class="s-ico" style="background:${x.bg}">${x.icon}</div><div class="s-body"><span class="s-label">⭐ 今日のイチオシ</span><h3>${x.title}</h3><p>${x.desc}</p></div><a class="cta green" href="${x.url}" target="_blank" rel="noopener" data-try="${x.id}">試す →</a>`;
+}
+
+/* ===== v20: 人気ランキング ===== */
+let _rankTimer=null;
+function scheduleRank(){clearTimeout(_rankTimer);_rankTimer=setTimeout(()=>{renderRanking();if($("#sortSel").value==="pop")renderApps()},350)}
+function renderRanking(){
+ const listEl=$("#rankList"); if(!listEl)return;
+ const medals=["👑","🥈","🥉","4","5"];
+ const withN=APPS.map(x=>({x,n:counts["try-"+x.id]})).filter(o=>typeof o.n==="number"&&o.n>=1).sort((a,b)=>b.n-a.n);
+ let rows,showCounts=true;
+ if(withN.length){rows=withN.slice(0,5)}
+ else{
+   showCounts=false;
+   const seen=new Set(); rows=[];
+   for(const p of PICKS){const x=byId(p.id);if(x&&APPS.some(a=>a.id===x.id)&&!seen.has(x.id)){seen.add(x.id);rows.push({x,n:counts["try-"+x.id]});if(rows.length>=5)break}}
+ }
+ $("#rankNote").textContent=showCounts?"みんなが試した回数の多い順です。タップで詳しく見られます。":"試された回数は集計中です。まずは今週のピックアップからおすすめを表示しています。";
+ listEl.innerHTML=rows.map((o,i)=>`<button class="rank-row" data-rank="${o.x.id}" type="button"><span class="rank-no">${medals[i]||i+1}</span><span class="r-ico" style="background:${o.x.bg}">${o.x.icon}</span><h3>${o.x.title}</h3><span class="r-count">${showCounts?`▶ ${o.n}回 試されました`:"集計中…"}</span></button>`).join("");
+}
+document.addEventListener("click",e=>{const r=e.target.closest("[data-rank]");if(r)openModal(r.dataset.rank)});
+
+/* ===== v20: 30秒診断クイズ ===== */
+const QUIZ=[
+ {q:"いま一番困ってるのは？",opts:[
+   {t:"🍳 家事・ごはん",cats:["kurashi"]},
+   {t:"💰 お金の管理",cats:["okane"]},
+   {t:"🏢 仕事の改善",cats:["okane"]},
+   {t:"👨‍👩‍👧 家族・子どものこと",cats:["kazoku"]},
+   {t:"🏘️ 地域・防災",cats:["chiiki"]}]},
+ {q:"誰に使ってほしい？",opts:[
+   {t:"🙋 自分",cats:["kurashi","asobi"]},
+   {t:"👨‍👩‍👧 家族",cats:["kazoku"]},
+   {t:"🏢 職場の仲間",cats:["okane"]}]},
+ {q:"どんな気分？",opts:[
+   {t:"⚡ サクッと試したい",type:"trial"},
+   {t:"📖 じっくり使いたい",type:"free"},
+   {t:"🎮 遊びたい",cats:["asobi"]}]}
+];
+const CAT_NAMES={kurashi:"暮らし",okane:"お金・仕事",kazoku:"家族・見守り",chiiki:"地域",asobi:"遊び"};
+let quizStep=0,quizCats=[],quizType="";
+function openQuiz(){quizStep=0;quizCats=[];quizType="";renderQuiz();$("#quizBg").classList.add("open");document.body.style.overflow="hidden"}
+function closeQuiz(){$("#quizBg").classList.remove("open");document.body.style.overflow=""}
+function renderQuiz(){
+ const body=$("#quizBody");
+ if(quizStep<QUIZ.length){
+   const qz=QUIZ[quizStep];
+   body.innerHTML=`<div class="quiz-prog">🎯 30秒診断　質問 ${quizStep+1} / ${QUIZ.length}</div><div class="quiz-q">${qz.q}</div><div class="quiz-opts">${qz.opts.map((o,i)=>`<button class="quiz-opt" data-qopt="${i}" type="button">${o.t}</button>`).join("")}</div>`;
+ }else{
+   const scored=APPS.map(x=>{
+     let s=0,hitCat="";
+     for(const c of (x.cats||[])){if(quizCats.includes(c)){s+=3;if(!hitCat)hitCat=c}}
+     if(quizType&&x.type===quizType)s+=2;
+     s+=x.order/100;
+     return{x,s,hitCat};
+   }).sort((a,b)=>b.s-a.s).slice(0,3);
+   body.innerHTML=`<div class="quiz-prog">🎯 30秒診断　結果</div><div class="quiz-q">あなたにおすすめの3本です</div>`+
+     scored.map(o=>{const reason=o.hitCat?`${CAT_NAMES[o.hitCat]||""}の悩みにぴったり`:(quizType==="trial"?"サクッと試せるお試し版":"じっくり使える1本");return `<div class="quiz-result"><div class="q-ico" style="background:${o.x.bg}">${o.x.icon}</div><div style="flex:1;min-width:0"><h4>${o.x.title}</h4><p>${reason}｜${o.x.desc.slice(0,40)}…</p></div><a class="cta green" href="${o.x.url}" target="_blank" rel="noopener" data-try="${o.x.id}">試す →</a></div>`}).join("")+
+     `<div class="m-foot"><button class="mini-btn" id="quizRetry" type="button" style="flex:1">🔄 もう一度診断</button><button class="mini-btn" id="quizDone" type="button" style="flex:1">閉じる</button></div>`;
+   $("#quizRetry").onclick=openQuiz;
+   $("#quizDone").onclick=closeQuiz;
+ }
+}
+document.addEventListener("click",e=>{
+ const b=e.target.closest("[data-qopt]"); if(!b)return;
+ const opt=QUIZ[quizStep].opts[+b.dataset.qopt];
+ if(opt.cats)quizCats.push(...opt.cats);
+ if(opt.type)quizType=opt.type;
+ quizStep++; renderQuiz();
+});
+$("#quizBtn").addEventListener("click",openQuiz);
+$("#quizClose").addEventListener("click",closeQuiz);
+$("#quizBg").addEventListener("click",e=>{if(e.target.id==="quizBg")closeQuiz()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeQuiz();closeParty()}});
+
+renderPills(); renderDiags(); renderPicks(); renderProducts(); renderSoon(); renderApps(); saveFavs(); observeCards(); renderStamps(); renderRanking(); renderSpot(); initAnalytics();
 </script>
 <script data-goatcounter="https://pooulpi.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
