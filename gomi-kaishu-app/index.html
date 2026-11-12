@@ -32,6 +32,17 @@ input,textarea{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:10
 .comp{width:100%;border-collapse:collapse;font-size:14px}.comp th,.comp td{padding:7px 4px;border-bottom:1px solid #e5e7eb;text-align:right}.comp th:first-child,.comp td:first-child{text-align:left}
 .mini{position:relative;height:64px;display:flex;align-items:flex-end;gap:5px;border-bottom:2px solid #bbf7d0;margin-top:8px}.mini .bar-col .bar{background:#4ade80}
 .fac-graph{position:relative;height:118px;display:flex;align-items:flex-end;gap:5px;border-bottom:2px solid #bbf7d0;margin-top:10px}.fac-graph .bar-col .bar{background:#4ade80;width:72%}.fac-graph .bar.max{background:#f97316}.fac-summary{font-weight:700;color:#ea580c;margin:8px 0 0;font-size:14px}
+.cal-nav{display:flex;align-items:center;gap:8px;margin:4px 0 10px}.cal-nav b{flex:1;text-align:center;font-size:18px}
+.cal-dow,.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal-dow div{text-align:center;font-size:12px;font-weight:700;color:#166534;padding:2px 0}.cal-dow div:first-child{color:#dc2626}.cal-dow div:last-child{color:#2563eb}
+.cal-cell{min-height:62px;border:1px solid #bbf7d0;border-radius:10px;padding:5px 4px;background:#fbfdfc;cursor:pointer;text-align:center}
+.cal-cell.empty{border:0;background:transparent;cursor:default;min-height:10px}
+.cal-cell .dnum{font-size:14px;font-weight:700}.cal-cell.sun .dnum{color:#dc2626}.cal-cell.satd .dnum{color:#2563eb}
+.cal-cell .bags{font-size:13px;font-weight:700;color:#15803d;margin-top:3px}.cal-cell .facs{font-size:10px;color:#666}
+.cal-cell .off{font-size:11px;color:#999;margin-top:5px}
+.cal-cell.today{outline:2px solid #f59e0b;outline-offset:-2px}
+.cal-cell.selected{background:#dcfce7;border-color:#16a34a}
+.cal-detail-row{display:flex;align-items:center;gap:8px;margin:7px 0}.cal-detail-row .fac-name{flex:1}
 .muted{color:#666;font-size:13px;line-height:1.6}.hidden{display:none}
 dialog{border:0;border-radius:14px;padding:18px;width:min(92vw,480px)}dialog::backdrop{background:rgba(0,0,0,.4)}
 </style>
@@ -47,6 +58,27 @@ dialog{border:0;border-radius:14px;padding:18px;width:min(92vw,480px)}dialog::ba
       <div class="stat"><b id="allColl">0</b><span>回収日平均</span></div>
     </div>
     <p class="muted">曜日をタップすると、その施設・曜日の入力（1回目・2回目…）を追加・編集できます。入力はこのiPhoneの中に保存されます。</p>
+  </div>
+
+  <div class="card">
+    <h2 style="margin:0 0 6px">📅 カレンダー</h2>
+    <div class="cal-nav">
+      <button class="sub small" id="calPrev">◀ 前月</button>
+      <b id="calTitle"></b>
+      <button class="sub small" id="calToday">今月</button>
+      <button class="sub small" id="calNext">次月 ▶</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="calMonthTotal">0</b><span>今月の合計（袋）</span></div>
+      <div class="stat"><b id="calMonthDays">0</b><span>今月の回収日数</span></div>
+      <div class="stat"><b id="calMonthAvg">0</b><span>回収日平均（袋）</span></div>
+    </div>
+    <div style="height:10px"></div>
+    <div class="cal-dow"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
+    <div class="cal-grid" id="calGrid"></div>
+    <p class="muted" style="margin:8px 0 0">袋数は、いま登録されている「曜日ごとの袋数」を、その日付の曜日に当てはめた目安です。日付をタップすると、その曜日に回収がある施設が見られます。日曜は回収なしです。</p>
+    <h3 id="calDetailTitle" style="margin:16px 0 8px"></h3>
+    <div id="calDetail"></div>
   </div>
 
   <div class="card">
@@ -87,7 +119,7 @@ dialog{border:0;border-radius:14px;padding:18px;width:min(92vw,480px)}dialog::ba
   </div>
 
   <div id="list"></div>
-  <p class="muted" style="text-align:center;padding:12px">データはこの端末のブラウザに保存されます。<br>ホーム画面のアイコンから開いて使ってください。<br>バージョン7（入力欄の0なし）</p>
+  <p class="muted" style="text-align:center;padding:12px">データはこの端末のブラウザに保存されます。<br>ホーム画面のアイコンから開いて使ってください。<br>バージョン8（カレンダー機能を追加）</p>
 </div>
 
 <dialog id="facEditor">
@@ -110,7 +142,7 @@ dialog{border:0;border-radius:14px;padding:18px;width:min(92vw,480px)}dialog::ba
 
 <script>
 const DAYS=[["mon","月"],["tue","火"],["wed","水"],["thu","木"],["fri","金"],["sat","土"]];
-const APP_VERSION=7;
+const APP_VERSION=8;
 async function checkUpdate(){try{const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"});if(!r.ok)return;const t=await r.text();const m=t.match(/バージョン(\d+)/);if(m&&Number(m[1])>APP_VERSION){location.replace(location.pathname+"?v="+m[1]);}}catch(e){}}
 checkUpdate();
 const KEY="gomi-kaishu-home-v1";
@@ -144,6 +176,7 @@ function render(){
   document.getElementById("facRankGraph").innerHTML=facSorted.map((x,idx)=>{const pct=all?Math.round(x.t/all*100):0;const isMax=x.t===facMax&&x.t>0;return `<div class="fac-row"><div class="fac-rank">${idx+1}位</div><div class="fac-name" onclick="openFacInput(${x.i})">${esc(x.f.name)}${isMax?" ★":""}</div><div class="rank-track"><div class="rank-fill ${isMax?"max":""}" style="width:${Math.max(2,x.t/facMax*100)}%"></div></div><div class="fac-val">${x.t}袋（${pct}%）</div></div>`}).join("")||`<p class="muted">施設がありません</p>`;
   const ranked=[...DAYS].sort((a,b)=>perDay[b[0]]-perDay[a[0]]);
   document.getElementById("weekRank").innerHTML=ranked.map(([d,l],idx)=>{const v=perDay[d];const pct=all?Math.round(v/all*100):0;const isMax=v===max&&max>0;return `<div class="rank-row"><div class="rank-day">${idx+1}位 ${l}</div><div class="rank-track"><div class="rank-fill ${isMax?"max":""}" style="width:${Math.max(2,v/max*100)}%"></div></div><div class="rank-val">${v}袋（${pct}%）</div></div>`}).join("");
+  renderCalendar(perDay);
   const sorted=data.facilities.map((f,i)=>({f,i})).sort((a,b)=>facTotal(b.f)-facTotal(a.f));
   document.getElementById("compBody").innerHTML=sorted.map(({f,i})=>{const t=facTotal(f),c=collDays(f);return `<tr onclick="openFacInput(${i})" style="cursor:pointer"><td style="color:#15803d;font-weight:600;text-decoration:underline;text-underline-offset:3px">${esc(f.name)}</td><td>${t}</td><td>${fmt(t/6)}</td><td>${c?fmt(t/c):"-"}</td></tr>`}).join("")||`<tr><td colspan="4">施設がありません</td></tr>`;
   document.getElementById("list").innerHTML=data.facilities.map((f,fi)=>{
@@ -158,6 +191,54 @@ function render(){
     ${t?`<p class="fac-summary">この施設で一番多いのは ${fMaxDays.join("・")}（${maxF}袋）</p>`:`<p class="muted" style="margin:8px 0 0">入力すると、この施設の曜日別グラフが出ます。</p>`}
     <div class="days">${days}</div></div>`}).join("");
 }
+const DOW_CODE=[null,"mon","tue","wed","thu","fri","sat"];
+const DOW_LABEL=["日","月","火","水","木","金","土"];
+const _today=new Date();
+let calY=_today.getFullYear(), calM=_today.getMonth();
+let calSel=`${_today.getFullYear()}-${String(_today.getMonth()+1).padStart(2,"0")}-${String(_today.getDate()).padStart(2,"0")}`;
+function facCountFor(d){return data.facilities.filter(f=>(f.entries[d]||[]).length>0).length}
+function renderCalendar(perDay){
+  document.getElementById("calTitle").textContent=`${calY}年${calM+1}月`;
+  const dim=new Date(calY,calM+1,0).getDate();
+  const startDow=new Date(calY,calM,1).getDay();
+  const todayIso=`${_today.getFullYear()}-${String(_today.getMonth()+1).padStart(2,"0")}-${String(_today.getDate()).padStart(2,"0")}`;
+  let monthTotal=0, monthDays=0;
+  for(let d=1;d<=dim;d++){
+    const dow=new Date(calY,calM,d).getDay(); if(dow===0) continue;
+    const code=DOW_CODE[dow];
+    if(facCountFor(code)>0){monthDays++; monthTotal+=perDay[code]||0}
+  }
+  document.getElementById("calMonthTotal").textContent=monthTotal;
+  document.getElementById("calMonthDays").textContent=monthDays;
+  document.getElementById("calMonthAvg").textContent=monthDays?fmt(monthTotal/monthDays):"0";
+  let cells="";
+  for(let i=0;i<startDow;i++) cells+=`<div class="cal-cell empty"></div>`;
+  for(let d=1;d<=dim;d++){
+    const dt=new Date(calY,calM,d); const dow=dt.getDay();
+    const iso=`${calY}-${String(calM+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const cls=["cal-cell",dow===0?"sun":"",dow===6?"satd":"",iso===todayIso?"today":"",iso===calSel?"selected":""].join(" ");
+    let inner=`<div class="dnum">${d}</div>`;
+    if(dow===0){inner+=`<div class="off">回収なし</div>`}
+    else{const code=DOW_CODE[dow]; const fc=facCountFor(code); const tot=perDay[code]||0;
+      inner+= fc>0?`<div class="bags">${tot}袋</div><div class="facs">${fc}施設</div>`:`<div class="off">−</div>`}
+    cells+=`<div class="${cls}" onclick="selectCalDate('${iso}')">${inner}</div>`;
+  }
+  document.getElementById("calGrid").innerHTML=cells;
+  const [sy,sm,sd]=calSel.split("-").map(Number);
+  const sdt=new Date(sy,sm-1,sd); const sdow=sdt.getDay();
+  document.getElementById("calDetailTitle").textContent=`${sy}年${sm}月${sd}日（${DOW_LABEL[sdow]}）の回収`;
+  const detail=document.getElementById("calDetail");
+  if(sdow===0){detail.innerHTML=`<p class="muted">日曜は回収がありません。</p>`; return}
+  const code=DOW_CODE[sdow];
+  const rows=data.facilities.map((f,i)=>({f,i,t:dayTotal(f,code),n:(f.entries[code]||[]).length})).filter(x=>x.n>0).sort((a,b)=>b.t-a.t);
+  if(!rows.length){detail.innerHTML=`<p class="muted">この曜日（${DOW_LABEL[sdow]}曜日）は、まだ入力がある施設がありません。下の施設一覧から曜日をタップして入力すると、ここに出ます。</p>`; return}
+  const total=rows.reduce((a,x)=>a+x.t,0);
+  detail.innerHTML=`<p style="margin:0 0 6px;font-weight:700;color:#ea580c">合計 ${total}袋 ・ ${rows.length}施設</p>`+rows.map(x=>`<div class="cal-detail-row"><div class="fac-name" onclick="openFacInput(${x.i})">${esc(x.f.name)}</div><div class="fac-val">${x.t}袋（${x.n}回）</div></div>`).join("")+`<p class="muted" style="margin:6px 0 0">施設名をタップすると、その施設の入力を開けます。</p>`;
+}
+window.selectCalDate=function(iso){calSel=iso; const [y,m]=iso.split("-").map(Number); calY=y; calM=m-1; render()};
+document.getElementById("calPrev").onclick=()=>{calM--; if(calM<0){calM=11;calY--} render()};
+document.getElementById("calNext").onclick=()=>{calM++; if(calM>11){calM=0;calY++} render()};
+document.getElementById("calToday").onclick=()=>{calY=_today.getFullYear(); calM=_today.getMonth(); calSel=`${calY}-${String(calM+1).padStart(2,"0")}-${String(_today.getDate()).padStart(2,"0")}`; render()};
 function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 let curF=null,curD=null;
 window.openFacInput=function(fi){curF=fi;document.getElementById("facTitle").textContent=data.facilities[fi].name+" ・ 入力";drawFac();document.getElementById("facEditor").showModal()};
