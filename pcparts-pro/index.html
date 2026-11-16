@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PCパーツ適合チェッカー Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 検査成績書のように正確で落ち着いた道具
+   IDEA: 部品の検査票（スペックシート）
+   PICTURE: 検索窓と結果カード、判定記号 ◎△×
+   COLOUR and TYPE: 深いティール1色＋判定色、Zen Kaku Gothic New / Noto Sans JP / JetBrains Mono
+   LAYOUT: 上部ナビ（スマホは下部タブ）、最大1080px、カードと罫線の表 */
+:root{color-scheme:light dark;
+--bg:light-dark(#f6f5f1,#111719);--card:light-dark(#fdfcf9,#182124);--ink:light-dark(#1c2326,#e8ecea);--mut:light-dark(#646b6d,#9aa5a6);
+--line:light-dark(#d8d5cc,#2c3739);--muted:light-dark(#ebe9e2,#202b2e);--pri:light-dark(#0d5c63,#5fb9bf);--prifg:light-dark(#f4fbfb,#071c1e);--acc:light-dark(#d9ecea,#173538);
+--ok:light-dark(#1f7a4a,#5cc98c);--okbg:light-dark(#eef8f2,#12261b);--warn:light-dark(#a86200,#f0a43a);--warnbg:light-dark(#fff6e6,#2a1f0d);--ng:light-dark(#b3261e,#ff8a80);--ngbg:light-dark(#fdeeed,#2c1514);
+--disp:"Zen Kaku Gothic New","Noto Sans JP",sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Noto Sans JP",system-ui,sans-serif;overflow-x:clip}
+a{color:var(--pri)}
+button{font:inherit;color:inherit}
+header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px max(3vw,16px);background:var(--card);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;font-family:var(--disp);font-weight:700;font-size:16px}
+.brand i{font-style:normal;font-family:var(--mono);font-size:12px;background:var(--pri);color:var(--prifg);padding:2px 6px;border-radius:4px}
+.brand b{color:var(--pri);font-weight:900}
+.sync{font-size:12px;color:var(--mut);white-space:nowrap}
+nav.top{display:flex;gap:4px;flex-wrap:wrap}
+nav a{text-decoration:none;color:var(--mut);padding:8px 12px;border-radius:6px;font-size:14px;font-weight:500;white-space:nowrap}
+nav a.on{color:var(--pri);background:var(--acc)}
+nav.bottom{display:none}
+main{max-width:1080px;margin:0 auto;padding:20px max(3vw,16px) 40px;display:flex;flex-direction:column;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:18px}
+h1{font-family:var(--disp);font-weight:900;font-size:clamp(22px,3vw,30px);line-height:1.25;margin:0;text-wrap:balance}
+h2{font-family:var(--disp);font-size:17px;margin:0 0 8px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.lead,.hint{color:var(--mut);font-size:13px;margin:6px 0}
+input,select,textarea{font:16px "Noto Sans JP",sans-serif;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:9px 10px;width:100%;min-height:44px}
+input:focus,select:focus,textarea:focus,button:focus-visible,a:focus-visible{outline:2px solid var(--pri);outline-offset:1px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:8px 16px;border-radius:6px;border:1px solid var(--pri);background:var(--pri);color:var(--prifg);cursor:pointer;font-weight:500;text-decoration:none;font-size:14px}
+.btn.o{background:transparent;color:var(--pri)}.btn.g{background:transparent;border-color:transparent;color:var(--mut)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.searchrow{display:grid;grid-template-columns:minmax(0,1fr) 200px;gap:8px;margin-top:10px}
+.searchrow input{font-family:var(--mono);height:48px}
+.chip{font-family:var(--mono);font-size:12px;border:1px solid var(--line);background:var(--bg);border-radius:99px;padding:4px 10px;cursor:pointer}
+.chip:hover{border-color:var(--pri);color:var(--pri)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.mc{display:flex;flex-direction:column;gap:6px;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px}
+.mc:hover{border-color:var(--pri)}
+.mk{font-size:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.mk b{color:var(--pri)}
+.tag{margin-left:auto;font-size:11px;border-radius:4px;padding:0 6px;border:1px solid var(--ok);color:var(--ok)}
+.tag.p{border:1px dashed var(--mut);color:var(--mut)}
+.nm{font-family:var(--disp);font-weight:700;font-size:16px}
+.codes{display:flex;flex-wrap:wrap;gap:4px}
+code{font-family:var(--mono);font-size:12px;background:var(--muted);border-radius:4px;padding:1px 6px}
+code.hit{background:var(--acc);outline:1px solid var(--pri)}
+.facts{font-size:12px;color:var(--mut);border-top:1px solid var(--line);padding-top:6px;margin-top:auto;display:flex;flex-wrap:wrap;gap:2px 12px}
+.meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:13px;color:var(--mut)}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.sr{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.sr:last-child{border-bottom:0}
+.sl{font-size:13px;color:var(--mut)}
+.v{font-family:var(--mono);font-weight:600;font-size:14px;word-break:break-word}
+.note{display:block;font-size:12px;color:var(--mut)}
+.src{display:block;font-family:var(--mono);font-size:11px;text-decoration:none;word-break:break-all}
+.unk{display:inline-block;font-size:12px;color:var(--mut);border:1px dashed var(--mut);border-radius:4px;padding:0 6px}
+.conf{border:1px solid var(--warn);background:var(--warnbg);border-radius:6px;padding:8px;display:flex;flex-direction:column;gap:4px}
+.conf>b{font-size:12px;color:var(--warn)}
+.notice{border:1px solid var(--warn);background:var(--warnbg);border-radius:6px;padding:8px 12px;font-size:14px;margin-top:8px}
+.pend{border:1px dashed var(--mut);border-radius:6px;padding:10px;font-size:14px;color:var(--mut);margin-top:8px}
+.vd{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:2px 8px;border-radius:4px;white-space:nowrap;border:1px solid}
+.vd b{font-size:15px}
+.vd.ok{color:var(--ok);background:var(--okbg)}.vd.warn{color:var(--warn);background:var(--warnbg)}.vd.ng{color:var(--ng);background:var(--ngbg)}.vd.unknown{color:var(--mut);background:var(--muted);border-style:dashed}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:6px}
+.tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:10px 12px;cursor:pointer;color:var(--mut);min-height:44px}
+.tabs button.on{color:var(--pri);border-color:var(--pri);font-weight:700}
+.pi{border-bottom:1px solid var(--line)}
+.ph{width:100%;display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 4px;background:none;border:0;cursor:pointer;text-align:left;min-height:44px}
+.ph:hover{background:var(--muted)}
+.price{font-family:var(--mono);font-size:13px;white-space:nowrap;text-align:right}.price small{display:block;font-size:11px;color:var(--mut)}
+.pb{padding:0 4px 12px}
+.pb ul{margin:0 0 8px;padding-left:1.2em;font-size:14px}
+.shop{font-size:13px;border:1px solid var(--line);border-radius:6px;padding:8px 10px;text-decoration:none;white-space:nowrap}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:12px;color:var(--mut);font-weight:500;border-bottom:1px solid var(--line);padding:6px 4px}
+td{border-bottom:1px solid var(--line);padding:8px 4px;vertical-align:top}
+.num{text-align:right;font-family:var(--mono);white-space:nowrap}
+.tot{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.tot b{font-family:var(--mono);font-size:20px}.tot .mid{color:var(--pri);font-size:clamp(24px,4vw,32px)}
+.qty{display:inline-flex;align-items:center;gap:6px}.qty button{width:32px;height:32px;border:1px solid var(--line);background:var(--bg);border-radius:4px;cursor:pointer}
+.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mut)}
+fieldset{border:1px solid var(--line);border-radius:8px;padding:14px;margin:0 0 12px;background:var(--card)}
+legend{font-family:var(--disp);font-weight:700;padding:0 6px}
+.err{color:var(--ng);font-weight:700;font-size:14px}
+.list li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:14px}
+.list{list-style:none;margin:0;padding:0}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50;max-width:90vw}
+#toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+footer{max-width:1080px;margin:0 auto;padding:0 max(3vw,16px) 100px;font-size:12px;color:var(--mut)}
+@media(max-width:760px){
+ nav.top{display:none}
+ nav.bottom{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+ nav.bottom a{display:flex;flex-direction:column;align-items:center;font-size:11px;padding:8px 0 10px;border-radius:0;min-height:52px;justify-content:center}
+ nav.bottom a span{font-size:18px;line-height:1}
+ .searchrow,.two{grid-template-columns:1fr}
+ .sr{grid-template-columns:90px minmax(0,1fr)}
+ .ph{grid-template-columns:82px minmax(0,1fr) auto;gap:6px}
+ table .hm{display:none}
+ .sync{display:none}
+}
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="#search"><i>◎△×</i><span>PCパーツ適合チェッカー <b>Pro</b></span></a>
+  <span class="sync" id="sync">この端末に保存</span>
+  <nav class="top" id="ntop"></nav>
+</header>
+<main id="app"><p class="hint">読み込み中…</p></main>
+<footer>仕様データは出典つきで収録しています。「要確認」の項目はメーカー公式情報や実機で必ずご確認ください。価格は目安です。</footer>
+<nav class="bottom" id="nbot"></nav>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+{
+/* ===== データ（2026-11-16 確認）===== */
+const D="2026-11-16";
+const f=(v,...src)=>({v,src});
+const fn=(v,note,...src)=>({v,src,note});
+const u=(note)=>({v:null,note});
+const fc=(main,...alt)=>({v:main.v,src:main.src,alt});
+const s=(id,label,url)=>({id,label,url,checked:D});
+const K=(id,url,label)=>s(id,"Kingston 適合検索："+label,url);
+const blank=(p)=>({id:p.id,maker:p.maker||"",series:p.series||"",name:p.name||"",orderCodes:p.orderCodes||[],productCodes:p.productCodes||[],aliases:p.aliases||[],category:p.category||"desktop",formFactor:p.formFactor||"要確認",researched:p.researched!==false,userAdded:p.userAdded,
+ cpu:p.cpu||u(),cpuGen:p.cpuGen||u(),cpuReplace:p.cpuReplace||u(),tpm:p.tpm||u(),
+ mem:Object.assign({type:u(),form:u(),speed:u(),standardGB:u(),slots:u(),freeSlots:u(),maxGB:u(),ecc:u()},p.mem),
+ storage:Object.assign({m2Sizes:u(),m2Iface:u(),bay25:u(),bay35:u()},p.storage),
+ gpu:Object.assign({slot:u(),maxLengthMm:u(),auxPower:u()},p.gpu),
+ psu:Object.assign({type:u(),watt:u()},p.psu),notes:p.notes||[],sources:p.sources||[]});
+const M=[
+blank({id:"nec-mkt44-l-f",maker:"NEC",series:"Mate タイプML",name:"Mate タイプML MKT44/L-F",orderCodes:["PC-MKT44LZ85HZF"],productCodes:["MKT44/L-F"],aliases:["Mate ML","タイプML"],formFactor:"タワー（タイプML）",cpu:f("Core i5-12400","e1"),cpuGen:f("Intel 第12世代","e1"),
+ mem:{type:f("DDR4","e1"),form:f("DIMM","e1"),speed:f(3200,"e1"),standardGB:f(8,"e1"),slots:f(2,"e1"),freeSlots:f(1,"e1"),maxGB:f(32,"e1")},
+ sources:[s("e1","ELECOMメモナビ（MKT44/L-F）","https://www2.elecom.co.jp/support/memory/guide.asp?call=200347")]}),
+blank({id:"nec-mrt29-l-7",maker:"NEC",series:"Mate タイプML",name:"Mate タイプML MRT29/L-7",orderCodes:["PC-MRT29LZ7ACS7"],productCodes:["MRT29/L-7"],aliases:["Mate ML","タイプML"],formFactor:"タワー（タイプML）",cpu:f("Core i5-10400","b","e"),cpuGen:f("Intel 第10世代","b","e"),
+ mem:{type:f("DDR4","b","e"),form:f("DIMM","e"),speed:f(2666,"b","e"),standardGB:f(8,"b","e"),slots:f(2,"b","e"),freeSlots:f(1,"b","e"),maxGB:fc({v:16,src:["b"]},{v:32,src:["shop"]})},
+ notes:["最大メモリ容量はバッファロー表記（16GB）と販売店表記（32GB）で異なります。購入前にメーカー仕様書で確認してください。"],
+ sources:[s("b","バッファロー 対応メモリ検索（MRT29/L-7）","https://www.buffalo.jp/taiou/search-pc/?maker=&keyword=&type=3&view=20&page=1185"),s("e","ELECOMメモナビ（MRT29/L-7）","https://www2.elecom.co.jp/support/memory2/guide.asp?call=160316"),s("shop","販売店の商品ページ表記（32GB）","https://www.google.com/search?q=MRT29%2FL-7+%E6%9C%80%E5%A4%A7%E3%83%A1%E3%83%A2%E3%83%AA+32GB")]}),
+blank({id:"fujitsu-d588-t",maker:"富士通",series:"ESPRIMO D588",name:"ESPRIMO D588/T",orderCodes:["FMVD38002"],productCodes:["D588/T"],aliases:["ESPRIMO D","D588"],formFactor:"省スペース（Dシリーズ）",
+ mem:{type:f("DDR4","e","io"),speed:f(2400,"e","io"),slots:f(4,"e","io"),maxGB:f(32,"e","io")},
+ gpu:{slot:fn("custom-only","PCI Express x16スロットはカスタムメイド専用。通常構成ではGPU増設不可","man")},psu:{type:fn("専用","専用電源のため市販ATX電源への交換不可","man")},
+ notes:["PCI Express x16スロットはカスタムメイド専用のため、通常構成ではグラフィックボードを増設できません。","電源は専用品で、市販のATX電源には交換できません。"],
+ sources:[s("e","ELECOMメモナビ（D588/Tで検索）","https://www2.elecom.co.jp/support/memory/"),s("io","IODATA 対応製品検索 PIO（D588/T）","https://pio.iodata.jp/pio/MatchCategory?categoryCd=1010&bodyCd=170380"),s("man","富士通 ESPRIMO D588/T・D958/T 取扱説明書 追補版（PDF）","https://www.fmworld.net/biz/fmv/support/fmvmanual/pdf/B6FK/B6FK0691.pdf")]}),
+blank({id:"fujitsu-celsius-w580",maker:"富士通",series:"CELSIUS",name:"CELSIUS W580",category:"workstation",orderCodes:["CELW09003"],productCodes:["W580","D3617"],aliases:["CELSIUS W","W580power+"],formFactor:"マイクロタワー（ワークステーション）",cpu:f("Xeon E-2100番台 / Core i3・i5・i7（第8世代）から構成により異なる","k","fj"),cpuGen:f("Intel 第8世代","k"),
+ mem:{type:f("DDR4","fj","k"),form:f("DIMM","k"),speed:f(2666,"fj"),slots:f(4,"k"),maxGB:f(64,"fj","k"),ecc:fn(true,"Xeon搭載時はECC UDIMMが必要。Core i5/i7はnon-ECC、i3はどちらも可","k")},
+ storage:{m2Iface:f("NVMe","k")},psu:{watt:u("構成により280W／400Wの違いあり。実機の電源ラベルで確認")},
+ notes:["⚠️ 電源は280Wと400Wの構成違いがあります。グラフィックボード増設前に実機の電源ラベルで容量を確認してください。","Xeon搭載機はECC UDIMM、Core i5/i7搭載機はnon-ECC UDIMMを選んでください。"],
+ sources:[s("fj","富士通 CELSIUS W580 製品ページ・データシート","https://www.fujitsu.com/my/products/computing/pc/ap/workstations/celsius-w580"),K("k","https://www.kingston.com/jp/memory/search/model/98780/fujitsu-celsius-w580-d3617","CELSIUS W580 (D3617)")]}),
+blank({id:"dell-7070-micro",maker:"DELL",series:"OptiPlex",name:"OptiPlex 7070 Micro",productCodes:["7070 Micro","D10U"],aliases:["OptiPlex 7070","7070 MFF"],formFactor:"Micro（超小型）",cpu:f("Core i5-9500T / i7-9700T など（35W版）","sh"),cpuGen:f("Intel 第9世代","sh"),
+ mem:{type:f("DDR4","dc"),form:f("SO-DIMM","dc"),slots:f(2,"dc"),maxGB:fc({v:32,src:["sth"]},{v:64,src:["sth"]})},gpu:{slot:fn("none","Micro筐体は単体グラフィックス非対応","sh")},
+ notes:["最大メモリはDELL公式表記と、ServeTheHomeの実機検証（2×32GBで動作）で異なります。"],
+ sources:[s("sh","DELL OptiPlex 7070 スペックシート（PDF）","https://redingtongroup.com/india/delltechnologies/files/optiplex_7070_spec_sheet.pdf"),s("dc","DELLコミュニティ（7070 Micro メモリ）","https://www.dell.com/community/Optiplex-Desktops/Optiplex-MFF-7070-memory-upgrade/m-p/7848216"),s("sth","ServeTheHome OptiPlex 7070 Micro レビュー","https://www.servethehome.com/dell-optiplex-7070-micro-project-tinyminimicro-guide-and-review/")]}),
+blank({id:"dell-7070-sff",maker:"DELL",series:"OptiPlex",name:"OptiPlex 7070 SFF / Tower",productCodes:["7070 SFF","7070 Tower"],aliases:["OptiPlex 7070"],formFactor:"SFF / タワー",cpuGen:f("Intel 第8・9世代（Q370）","k"),
+ mem:{type:f("DDR4","k"),slots:f(4,"k"),maxGB:f(64,"k")},storage:{m2Iface:f("NVMe/SATA","k")},sources:[K("k","https://www.kingston.com/ru/memory/search/model/100198/dell-alienware-optiplex-7070-small-form-factor-sff-tower","OptiPlex 7070 SFF/Tower")]}),
+blank({id:"dell-3070-micro",maker:"DELL",series:"OptiPlex",name:"OptiPlex 3070 Micro",productCodes:["3070 Micro"],aliases:["OptiPlex 3070"],formFactor:"Micro（超小型）",cpuGen:f("Intel 第8・9世代","k"),
+ mem:{type:f("DDR4","k","ds"),form:f("SO-DIMM","ds"),speed:f(2666,"ds"),slots:f(2,"k","ds"),maxGB:f(32,"k","ds")},storage:{m2Sizes:f(["2280","2230"],"ds"),m2Iface:f("NVMe/SATA","k"),bay25:f(1,"ds")},
+ sources:[K("k","https://www.kingston.com/ru/memory/search/model/100105/dell-alienware-optiplex-3070-micro","OptiPlex 3070 Micro"),s("ds","Drive Solutions 適合情報（3070 Micro）","https://drivesolutions.com/upgrade/model/view/id/651904/")]}),
+blank({id:"dell-3070-sff",maker:"DELL",series:"OptiPlex",name:"OptiPlex 3070 SFF / Tower",productCodes:["3070 SFF"],aliases:["OptiPlex 3070"],formFactor:"SFF / タワー",
+ mem:{type:f("DDR4","k"),slots:f(2,"mr"),maxGB:f(32,"k","mr")},storage:{m2Iface:f("NVMe/SATA","k")},sources:[K("k","https://www.kingston.com/br/memory/search/model/100104/dell-alienware-optiplex-3070-sff-tower","OptiPlex 3070 SFF/Tower"),s("mr","Mr Memory（3070 SFF）","https://www.mrmemory.co.uk/memory-ram-upgrades/dell/optiplex/3070-small-form-factor-sff")]}),
+blank({id:"dell-7090-micro",maker:"DELL",series:"OptiPlex",name:"OptiPlex 7090 Micro",productCodes:["7090 Micro"],aliases:["OptiPlex 7090"],formFactor:"Micro（超小型）",cpuGen:f("Intel 第10・11世代（Q570）","k"),
+ mem:{type:f("DDR4","k"),form:f("SO-DIMM","k"),speed:f(3200,"k"),slots:f(2,"k"),maxGB:f(64,"k")},sources:[K("k","https://kingston.com/en/memory/search/model/103251/dell-alienware-optiplex-7090-micro","OptiPlex 7090 Micro")]}),
+blank({id:"dell-7080-sff",maker:"DELL",series:"OptiPlex",name:"OptiPlex 7080 SFF / Tower",productCodes:["7080 SFF","7080 Tower"],aliases:["OptiPlex 7080"],formFactor:"SFF / タワー",cpuGen:f("Intel 第10世代（Q470）","k"),
+ mem:{type:f("DDR4","k"),speed:fn(2933,"i7/i9は2933、その他は2666以下で動作","k"),slots:f(4,"k"),maxGB:f(128,"k")},storage:{m2Iface:f("NVMe","k")},sources:[K("k","https://www.kingston.com/ru/memory/search/model/101433/dell-alienware-optiplex-7080-tower-small-form-factor-sff","OptiPlex 7080 Tower/SFF")]}),
+blank({id:"hp-800g4-sff",maker:"HP",series:"EliteDesk",name:"EliteDesk 800 G4 SFF",productCodes:["800 G4 SFF"],aliases:["EliteDesk 800 G4"],formFactor:"SFF（省スペース）",cpuGen:f("Intel 第8世代（Q370）","ds"),
+ mem:{type:f("DDR4","ds"),form:f("DIMM","ds"),speed:f(2666,"ds"),slots:f(4,"ds"),maxGB:f(64,"ds")},storage:{m2Sizes:f(["2280","2230"],"ds")},
+ gpu:{slot:fn("x16","PCIe 3.0 x16 ×1、x16(x4配線) ×1、x1 ×2。ロープロファイル要否は要確認","ds")},psu:{watt:f(250,"psu")},
+ sources:[s("ds","HP EliteDesk 800 G4 SFF データシート","https://www.laptopsdirect.co.uk/PDFs/4KW43EA_ProductDataSheetBrochure1.PDF"),s("psu","販売店スペック表（250W 内蔵電源）","https://acquireit.com.au/p/hp/computers/desktop-pcs-workstations/hp-elitedesk-800-g4-small-form-factor-pc-4sq87pa-4877616/")]}),
+blank({id:"hp-600g4-sff",maker:"HP",series:"ProDesk",name:"ProDesk 600 G4 SFF",productCodes:["600 G4 SFF"],aliases:["ProDesk 600 G4"],formFactor:"SFF（省スペース）",cpuGen:f("Intel 第8世代（Q370）","ds"),
+ mem:{type:f("DDR4","ds"),form:f("DIMM","ds"),speed:f(2666,"ds"),slots:f(4,"ds"),maxGB:f(64,"ds")},gpu:{slot:fn("x16-lp","ロープロファイルGPUのみ","hc")},psu:{watt:f(180,"psu")},
+ sources:[s("ds","HP ProDesk 600 G4 SFF データシート","https://bargainhardware.co.uk/media/quick-specs/desktops/HP-ProDesk-600-G4-SFF-Quick-Specs.pdf"),s("psu","販売店スペック表（180W 内蔵電源）","https://acquireit.com.au/p/hp/computers/desktop-pcs-workstations/hp-prodesk-600-g4-small-form-factor-pc-4vg26pa-4910516/"),s("hc","hardware-corner（600 G4 SFF）","https://hardware-corner.net/desktop-models/HP-ProDesk-600-G4-SFF")]}),
+blank({id:"hp-800g5-dm",maker:"HP",series:"EliteDesk",name:"EliteDesk 800 G5 Desktop Mini",productCodes:["800 G5 DM","800 G5 Mini"],aliases:["EliteDesk 800 G5"],formFactor:"Desktop Mini（超小型）",cpuGen:f("Intel 第8・9世代（Q370）","ds"),
+ mem:{type:f("DDR4","ds"),form:f("SO-DIMM","ds"),speed:f(2666,"ds"),slots:f(2,"ds"),maxGB:fc({v:64,src:["ds","k"]},{v:32,src:["fo"]})},gpu:{slot:fn("none","Mini筐体は単体GPU非対応","hc")},
+ notes:["最大メモリはデータシート（64GB）とサービスガイド（1枚16GB×2＝32GB）で異なります。"],
+ sources:[s("ds","HP EliteDesk 800 G5 Desktop Mini データシート","https://www.barcodesinc.com/media/pdf/HP/elitedesk-800-g5.pdf"),K("k","https://kingston.com/en/memory/search/model/100251/hp-hpe-elitedesk-800-g5-desktop-mini","EliteDesk 800 G5 Mini"),s("fo","HPコミュニティ（サービスガイドは32GB表記）","https://h30434.www3.hp.com/t5/Desktop-Hardware-and-Upgrade-Questions/Is-maximum-RAM-for-Elitebook-G5-800-Mini-32GB-or-64GB/m-p/9106070"),s("hc","hardware-corner（800 G5 Mini）","https://www.hardware-corner.net/desktop-models/HP-EliteDesk-800-G5-Mini/")]}),
+blank({id:"lenovo-m720q",maker:"Lenovo",series:"ThinkCentre",name:"ThinkCentre M720q Tiny",productCodes:["M720q","10T7","10T8"],aliases:["M720 Tiny"],formFactor:"Tiny（超小型）",cpuGen:f("Intel 第8・9世代（B360）","ps"),
+ mem:{type:f("DDR4","ps"),form:f("SO-DIMM","ps"),speed:f(2666,"ps"),slots:f(2,"ps"),maxGB:f(32,"ps","k"),ecc:f(false,"ps")},storage:{m2Sizes:f(["2280","2242"],"ps"),m2Iface:f("NVMe","ps"),bay25:f(1,"ps")},
+ gpu:{slot:fn("x8-lp","PCIe 3.0 x8 ロープロファイル（別売ライザー等が必要な場合あり）","cdw")},
+ sources:[s("ps","Lenovo PSREF ThinkCentre M720 Tiny","https://psref.lenovo.com/syspool/Sys/PDF/ThinkCentre/ThinkCentre_M720_Tiny/ThinkCentre_M720_Tiny_Spec.PDF"),K("k","https://kingston.com/en/memory/search/model/99279/lenovo-thinkcentre-m720q-tiny","ThinkCentre M720q"),s("cdw","CDW スペック表（M720q）","https://m.cdw.com/product/lenovo-thinkcentre-m720q-tiny-core-i7-8700t-2.4-ghz-16-gb-256-gb/5615408")]}),
+blank({id:"lenovo-m920q",maker:"Lenovo",series:"ThinkCentre",name:"ThinkCentre M920q Tiny",productCodes:["M920q","10RS"],aliases:["M920 Tiny"],formFactor:"Tiny（超小型）",cpuGen:f("Intel 第8・9世代（Q370）","ps"),
+ mem:{type:f("DDR4","ps"),form:f("SO-DIMM","ps"),speed:f(2666,"ps"),slots:f(2,"ps"),maxGB:f(32,"ps"),ecc:f(false,"ld")},storage:{m2Sizes:f(["2280","2242"],"ps"),m2Iface:f("NVMe","ps"),bay25:f(1,"ld")},gpu:{slot:fn("x8-lp","PCIe 3.0 x8 ロープロファイル×1","ld")},
+ sources:[s("ps","Lenovo PSREF ThinkCentre M920 Tiny","https://psref.lenovo.com/syspool/Sys/PDF/ThinkCentre/ThinkCentre_M920_Tiny/ThinkCentre_M920_Tiny_Spec.PDF"),s("ld","Lenovo M920 Tiny プラットフォーム仕様（PDF）","https://www.laptopsdirect.co.uk/PDFs/10RS003VUK_ProductDataSheetBrochure1.PDF")]}),
+blank({id:"lenovo-m920x",maker:"Lenovo",series:"ThinkCentre",name:"ThinkCentre M920x Tiny",productCodes:["M920x"],aliases:["M920x Tiny"],formFactor:"Tiny（超小型）",cpuGen:f("Intel 第8・9世代（Q370）","ps"),
+ mem:{type:f("DDR4","ps"),form:f("SO-DIMM","ps"),speed:f(2666,"ps"),slots:f(2,"ps"),maxGB:fc({v:32,src:["ps"]},{v:64,src:["sth"]}),ecc:f(false,"ps")},gpu:{slot:fn("x8-lp","PCIe 3.0 x8 ロープロファイル×1","ps")},
+ sources:[s("ps","Lenovo PSREF ThinkCentre M920x Tiny","https://psref.lenovo.com/syspool/Sys/PDF/ThinkCentre/ThinkCentre_M920x_Tiny/ThinkCentre_M920x_Tiny_Spec.PDF"),s("sth","ServeTheHome M920x Tiny（2×32GBで動作）","https://www.servethehome.com/lenovo-thinkcentre-m920x-tiny-review-and-guide/2/")]}),
+blank({id:"lenovo-m920-sff",maker:"Lenovo",series:"ThinkCentre",name:"ThinkCentre M920 SFF",productCodes:["M920s","M920 SFF"],aliases:["M920s"],formFactor:"SFF（省スペース）",cpuGen:f("Intel 第8・9世代（Q370）","ps"),
+ mem:{type:f("DDR4","ps"),form:f("DIMM","cc"),speed:f(2666,"ps"),slots:f(4,"cc"),maxGB:f(64,"ps"),ecc:f(false,"cc")},gpu:{slot:fn("x16-lp","PCIe 3.0 x16（x4信号）ロープロファイル","ps"),maxLengthMm:f(150,"ps")},
+ notes:["拡張カードは長さ150mm未満・高さ68mm未満（ロープロファイル）。"],
+ sources:[s("ps","Lenovo PSREF ThinkCentre M920 SFF","https://psref.lenovo.com/syspool/Sys/PDF/ThinkCentre/ThinkCentre_M920_SFF/ThinkCentre_M920_SFF_Spec.PDF"),s("cc","Lenovo M920 プラットフォーム仕様（PDF）","https://www.cclonline.com/content/pdfs/surZpTRV-2bqwh4f2Ha82KRQ-3d-3d.pdf")]}),
+blank({id:"lenovo-m75q-gen2",maker:"Lenovo",series:"ThinkCentre",name:"ThinkCentre M75q Gen 2",productCodes:["M75q Gen 2","11JN","11JJ"],aliases:["M75q-2"],formFactor:"Tiny（超小型）",cpu:f("Ryzen PRO 5000GE系 など","ps"),cpuGen:f("AMD Ryzen 4000/5000（AMD PRO 500）","ps"),
+ mem:{type:f("DDR4","ps"),form:f("SO-DIMM","ps"),speed:f(3200,"ps"),slots:f(2,"ps"),maxGB:f(64,"ps")},storage:{m2Sizes:f(["2280"],"cp"),m2Iface:f("NVMe","cp"),bay25:f(1,"cp")},
+ sources:[s("ps","Lenovo PSREF ThinkCentre M75q Gen 2","https://psref.lenovo.com/syspool/Sys/PDF/ThinkCentre/ThinkCentre_M75q_Gen_2/ThinkCentre_M75q_Gen_2_Spec.html"),s("cp","Lenovo M75q Gen 2 製品仕様（PDF）","https://campuspoint.de/media/custom/upload/File-1741684479.pdf")]}),
+blank({id:"lenovo-m75s-gen2",maker:"Lenovo",series:"ThinkCentre",name:"ThinkCentre M75s Gen 2",productCodes:["M75s Gen 2"],aliases:["M75s-2"],formFactor:"SFF（省スペース）",cpuGen:f("AMD Ryzen PRO 4000/5000（PRO 565）","ps"),
+ mem:{type:f("DDR4","ps"),form:f("DIMM","ps"),speed:f(3200,"ps"),slots:f(4,"ps"),maxGB:f(128,"ps")},sources:[s("ps","Lenovo PSREF ThinkCentre M75s Gen 2","https://psrefstuff.lenovo.com/syspool/Sys/PDF/ThinkCentre/ThinkCentre_M75s_Gen_2/ThinkCentre_M75s_Gen_2_Spec.PDF")]}),
+blank({id:"lenovo-x1c-gen9",maker:"Lenovo",series:"ThinkPad",name:"ThinkPad X1 Carbon Gen 9",category:"notebook",productCodes:["20XW","20XX"],aliases:["X1 Carbon 2021"],formFactor:"ノートPC 14型",cpuGen:f("Intel 第11世代","ps"),tpm:f("dTPM 2.0","ba"),
+ mem:{type:f("LPDDR4x","ps"),form:fn("オンボード","8/16/32GBのいずれかで固定。増設・交換不可","ps"),speed:f(4266,"ps"),slots:f(0,"ps"),freeSlots:f(0,"ps")},storage:{m2Sizes:f(["2280"],"ps"),m2Iface:f("NVMe","ps")},gpu:{slot:f("none","ps")},psu:{type:f("ACアダプタ","ps")},
+ notes:["メモリはオンボード固定（購入時の容量から増やせません）。"],
+ sources:[s("ps","Lenovo PSREF ThinkPad X1 Carbon Gen 9","https://psref.lenovo.com/syspool/Sys/PDF/ThinkPad/ThinkPad_X1_Carbon_Gen_9/ThinkPad_X1_Carbon_Gen_9_Spec.pdf"),s("ba","Lenovo 製品仕様（20XW0055GE）","https://www.ba-computer.at/media/awagimport/lenovo/psreflink/20XW0055GE.pdf")]}),
+blank({id:"nec-mate-mb-b-n",maker:"NEC",series:"Mate タイプMB",name:"Mate タイプMB（MK33M/B-N ほか B-N系）",productCodes:["MK33M/B-N","MK28E/B-N","MK33R/B-N","MK36H/B-N","MK37L/B-N","MJ28E/B-N","MJ33M/B-N","MJ33R/B-N","MJ36H/B-N","MJ37L/B-N"],aliases:["タイプMB","Mate MB"],formFactor:"省スペース（タイプMB）",cpu:f("Core i3-4170 / i5-4590 / i7-4790 など","k"),cpuGen:f("Intel 第4世代（B85）","k"),
+ mem:{slots:f(4,"k"),maxGB:f(16,"k")},sources:[K("k","https://www.kingston.com/en/memory/search/model/103355/nec-mate-type-mb-series","NEC Mate Type MB Series")]}),
+blank({id:"nec-mate-j-ml-t",maker:"NEC",series:"Mate J タイプML",name:"Mate J タイプML（ML-T系 MJ33R/L-T ほか）",productCodes:["MJ27M/L-T","MJ27U/L-T","MJ28E/L-T","MJ28X/L-T","MJ33R/L-T","MJ33W/L-T","MJ37M/L-T","MJ37V/L-T"],orderCodes:["PC-MJ27MLZGT"],aliases:["Mate J ML","タイプML"],formFactor:"タワー（タイプML）",cpu:f("Core i3-6100 / i5-6400 など","k"),cpuGen:f("Intel 第6世代（H110）","k"),
+ mem:{slots:f(2,"k"),maxGB:f(8,"k")},sources:[K("k","https://www.kingston.com/en/memory/search/model/96443/nec-pc-mate-j-type-ml-ml-t","NEC Mate J Type ML (ML-T)")]}),
+blank({id:"nec-mate-ml-9",maker:"NEC",series:"Mate タイプML",name:"Mate タイプML（ML-9系 MRT29/L-9 ほか）",productCodes:["MRT29/L-9","MRE35/L-9","MRH29/L-9","MRL36/L-9","MRR40/L-9","MJT29/L-9","MJE35/L-9","MJH29/L-9","MJL36/L-9","MJR40/L-9","MUT29/L-9"],aliases:["タイプML","ML-9"],formFactor:"タワー（タイプML）",cpu:f("Core i3-10100 / i5-10500 / i7-10700 など","k"),cpuGen:f("Intel 第10世代（H470）","k"),
+ mem:{slots:f(2,"k")},sources:[K("k","https://www.kingston.com/en/memory/search/model/103244/nec-pc-mate-ml-9","NEC PC Mate ML-9")]}),
+blank({id:"nec-mate-j-ml-c",maker:"NEC",series:"Mate J タイプML",name:"Mate J タイプML（ML-C系 MJT44/LC ほか）",productCodes:["MJT44/LC","MJE34/LC","MJH48/LC","MJL43/LC"],aliases:["Mate J ML","ML-C"],formFactor:"タワー（タイプML）",cpu:f("Core i3-12100 / i5-12400 / i7-12700 など","k"),cpuGen:f("Intel 第12世代（Q670）","k"),
+ mem:{slots:f(2,"k"),maxGB:f(32,"k")},storage:{m2Sizes:f(["2280"],"k"),m2Iface:f("NVMe","k")},sources:[K("k","https://www.kingston.com/unitedkingdom/en/memory/search/model/106574/nec-pc-mate-pc-mate-j-ml-c","NEC PC Mate/PC Mate J ML-C")]}),
+blank({id:"nec-mate-j-ld",maker:"NEC",series:"Mate J",name:"Mate J（MLxxx/LD系 MJ25M/LD ほか）",productCodes:["MJ25M/LD","MJ16E/LD","MJ33L/LD"],aliases:["Mate J LD"],cpu:f("Core i3-2120 / i5-2400S など","k"),cpuGen:f("Intel 第2世代（B65）","k"),
+ mem:{slots:f(4,"k"),maxGB:f(16,"k")},sources:[K("k","https://kingston.com/unitedkingdom/latam/memory/search/model/97850/nec-mate-j-mlxxx-ld-series-desktop","NEC Mate J MLxxx/LD")]}),
+blank({id:"nec-versapro-vx-r",maker:"NEC",series:"VersaPro タイプVX",name:"VersaPro タイプVX（VX-R・2025年11月モデル）",category:"notebook",productCodes:["VX-R"],aliases:["VersaPro VX","タイプVX"],formFactor:"ノートPC 15.6型",cpu:f("Core Ultra（200Uシリーズ）","n"),cpuGen:f("Intel Core Ultra 200U","n"),tpm:f("TPM（TCG v2.0）","n"),
+ mem:{type:f("DDR5","n"),form:f("SO-DIMM","n"),speed:f(5600,"n"),slots:f(2,"n"),maxGB:f(32,"n")},psu:{type:f("ACアダプタ","n")},sources:[s("n","NEC VersaPro タイプVX（VX-R）仕様表（PDF）","https://jpn.nec.com/products/bizpc/versapro/spec/202511/pdf/vx-r.pdf")]}),
+blank({id:"fujitsu-d586-p",maker:"富士通",series:"ESPRIMO D586",name:"ESPRIMO D586/P",productCodes:["D586/P"],aliases:["ESPRIMO D","D586"],formFactor:"省スペース（Dシリーズ）",cpuGen:f("Intel 第6世代（B150）","k"),
+ mem:{type:f("DDR4","k"),slots:f(2,"k"),maxGB:f(32,"k")},sources:[K("k","https://kingston.com/unitedkingdom/cn/memory/search/model/96027/fujitsu-esprimo-d586-p","ESPRIMO D586/P")]}),
+blank({id:"fujitsu-d7010-f",maker:"富士通",series:"ESPRIMO D7010",name:"ESPRIMO D7010/F",productCodes:["D7010/F","D3823-A2"],aliases:["ESPRIMO D","D7010"],formFactor:"省スペース（Dシリーズ）",cpu:f("Core i3-10100 〜 i9-10900","k"),cpuGen:f("Intel 第10世代（B460）","k","fj"),
+ mem:{type:f("DDR4","k","fj"),form:f("DIMM","fj"),speed:f(2933,"fj"),slots:f(4,"k"),maxGB:f(128,"k"),ecc:f(false,"fj")},storage:{m2Iface:f("NVMe","k")},
+ notes:["マザーボードは独自規格（D3823-A2）です。電源の容量・規格は実機ラベルで確認してください。"],
+ sources:[K("k","https://www.kingston.com/unitedkingdom/fr/memory/search/model/102385/fujitsu-esprimo-d7010-f-d3823-a2","ESPRIMO D7010/F"),s("fj","富士通 ESPRIMO D7010 データシート（PDF）","https://sp.ts.fujitsu.com/dmsp/Publications/public/ds_ESPRIMO_D7010.pdf")]}),
+blank({id:"fujitsu-dh-2210",maker:"富士通",series:"ESPRIMO DH",name:"ESPRIMO DHシリーズ（2022年10月モデル）",productCodes:["DH 2210"],aliases:["ESPRIMO DH","FMV DH"],formFactor:"省スペース（個人向けWeb限定）",
+ mem:{type:f("DDR4","fm"),form:f("SO-DIMM","fm"),speed:f(3200,"fm"),maxGB:fn(32,"購入時の構成＝最大容量（4GB構成は最大4GB、8GB構成は最大8GB…）。実質的に増設不可","fm")},
+ notes:["公式仕様では「標準容量＝最大容量」の表記です。購入時の容量から増設できない前提で検討してください。"],sources:[s("fm","FMV ESPRIMO DHシリーズ 仕様（2022年10月）","https://www.fmworld.net/fmv/dh_s/2210/spec/index.html")]}),
+blank({id:"fujitsu-dh-1807",maker:"富士通",series:"ESPRIMO DH",name:"ESPRIMO DHシリーズ（2018年7月モデル）",productCodes:["DH 1807"],aliases:["ESPRIMO DH","FMV DH"],formFactor:"省スペース（個人向けWeb限定）",
+ mem:{type:f("DDR4","fm"),form:f("SO-DIMM","fm"),speed:fn(2400,"CPUによりPC4-21300（2666）またはPC4-19200（2400）","fm"),slots:f(2,"fm"),maxGB:f(16,"fm")},
+ notes:["16GB/8GB構成は空きスロット0、4GB構成は空き1です。"],sources:[s("fm","FMV ESPRIMO DHシリーズ 仕様（2018年7月）","https://www.fmworld.net/fmv/dh_s/1807/spec/?from=dh_float")]}),
+blank({id:"dynabook-b65-hv",maker:"dynabook",series:"dynabook B65",name:"dynabook B65/HV",category:"notebook",productCodes:["B65/HV","A6BCHVF8LN15","A6BCHVG8LA15"],aliases:["B65","dynabook B"],formFactor:"ノートPC 15.6型",cpu:f("Core i3-1115G4 / i5-1135G7 / i7-1165G7 など","k"),cpuGen:f("Intel 第11世代","k"),
+ mem:{slots:f(2,"k"),maxGB:f(32,"k")},storage:{m2Sizes:f(["2280"],"k"),m2Iface:fn("NVMe","片面実装（single-sided）のみ","k")},psu:{type:f("ACアダプタ","dy")},
+ sources:[K("k","https://www.kingston.com/en/memory/search/model/106780/dynabook-b-series-b65-hv","dynabook B65/HV"),s("dy","dynabook B65 仕様表（PDF）","https://dynabook.com/b/spec/b65es_mar_2021_spec.pdf")]}),
+blank({id:"dynabook-b65-f",maker:"dynabook",series:"dynabook B65",name:"dynabook B65/F",category:"notebook",productCodes:["B65/F"],aliases:["B65","dynabook B"],formFactor:"ノートPC 15.6型",
+ mem:{slots:f(2,"dy"),freeSlots:f(1,"dy")},psu:{type:f("ACアダプタ","dy")},sources:[s("dy","dynabook B65/F 仕様表（2018年1月・PDF）","https://dynabook.com/b/spec/b65f_jan_2018_spec.pdf")]}),
+blank({id:"panasonic-sv8",maker:"Panasonic",series:"レッツノート SV",name:"レッツノート CF-SV8（生協モデル CF-SV8F87LC ほか）",category:"notebook",productCodes:["CF-SV8F87LC","CF-SV8F8LLC","CF-SV8"],aliases:["Let's note SV8","レッツノート SV8","SV8"],formFactor:"ノートPC 12.1型",cpu:f("Core i5-8265U（生協モデル）","co"),cpuGen:f("Intel 第8世代","co"),
+ mem:{form:fn("オンボード","8GB（メモリーの増設はできません）","co"),standardGB:f(8,"co"),slots:f(0,"co"),freeSlots:f(0,"co")},gpu:{slot:f("none","co")},psu:{type:f("ACアダプタ","co")},
+ notes:["メモリーは増設できません（公式仕様表記）。"],sources:[s("co","Let's note SV8 生協モデル 仕様（PDF）","https://www.univcoop-tokai.jp/sample/nus/webapp/data_file_im/html_file/CF-JC5K20L_coop_SV8_5_191108.pdf")]})
+];
+const pend=(id,maker,series,name,ff,cat,al)=>blank({id,maker,series,name,formFactor:ff,category:cat||"desktop",aliases:al||[],researched:false,productCodes:[name.replace(series,"").trim()].filter(Boolean)});
+M.push(
+pend("dell-5070-micro","DELL","OptiPlex","OptiPlex 5070 Micro","Micro（超小型）"),pend("dell-5080-micro","DELL","OptiPlex","OptiPlex 5080 Micro","Micro（超小型）"),pend("dell-3080-micro","DELL","OptiPlex","OptiPlex 3080 Micro","Micro（超小型）"),
+pend("dell-7010-sff","DELL","OptiPlex","OptiPlex 7010 SFF（2023年）","SFF（省スペース）"),pend("dell-5090-sff","DELL","OptiPlex","OptiPlex 5090 SFF","SFF（省スペース）"),
+pend("hp-400g6-sff","HP","ProDesk","ProDesk 400 G6 SFF","SFF（省スペース）"),pend("hp-600g5-sff","HP","ProDesk","ProDesk 600 G5 SFF","SFF（省スペース）"),pend("hp-600g6-dm","HP","ProDesk","ProDesk 600 G6 Desktop Mini","Desktop Mini（超小型）"),
+pend("hp-800g6-sff","HP","EliteDesk","EliteDesk 800 G6 SFF","SFF（省スペース）"),pend("hp-800g6-dm","HP","EliteDesk","EliteDesk 800 G6 Desktop Mini","Desktop Mini（超小型）"),
+pend("lenovo-m70q-gen2","Lenovo","ThinkCentre","ThinkCentre M70q Gen 2","Tiny（超小型）"),pend("lenovo-m720s","Lenovo","ThinkCentre","ThinkCentre M720s","SFF（省スペース）"),pend("lenovo-m90q-gen2","Lenovo","ThinkCentre","ThinkCentre M90q Gen 2","Tiny（超小型）"),
+pend("lenovo-t14-gen2","Lenovo","ThinkPad","ThinkPad T14 Gen 2","ノートPC 14型","notebook"),
+pend("fujitsu-d7011","富士通","ESPRIMO D7011","ESPRIMO D7011","省スペース（Dシリーズ）"),pend("fujitsu-g5010","富士通","ESPRIMO G5010","ESPRIMO G5010","超小型（Gシリーズ）"),pend("fujitsu-k5010","富士通","ESPRIMO K5010","ESPRIMO K5010","一体型（Kシリーズ）"),
+pend("fujitsu-celsius-j580","富士通","CELSIUS","CELSIUS J580","省スペース（ワークステーション）","workstation"),pend("fujitsu-celsius-w5010","富士通","CELSIUS","CELSIUS W5010","ミニタワー（ワークステーション）","workstation"),
+pend("nec-mate-mc","NEC","Mate タイプMC","Mate タイプMC（シリーズ）","超小型（タイプMC）","desktop",["タイプMC"]),pend("nec-mate-me","NEC","Mate タイプME","Mate タイプME（シリーズ）","タワー（タイプME）","desktop",["タイプME"]),
+pend("nec-versapro-vd","NEC","VersaPro タイプVD","VersaPro タイプVD（シリーズ）","ノートPC","notebook",["タイプVD"]),pend("nec-versapro-vk","NEC","VersaPro タイプVK","VersaPro タイプVK（シリーズ）","ノートPC","notebook",["タイプVK"]),
+pend("dynabook-b55","dynabook","dynabook B55","dynabook B55（シリーズ）","ノートPC 15.6型","notebook"),pend("dynabook-g83","dynabook","dynabook G83","dynabook G83（シリーズ）","ノートPC 13.3型","notebook"),
+pend("panasonic-sv1","Panasonic","レッツノート SV","レッツノート CF-SV1","ノートPC 12.1型","notebook",["SV1","Let's note SV1"]),pend("panasonic-lv9","Panasonic","レッツノート LV","レッツノート CF-LV9","ノートPC 14型","notebook",["LV9","Let's note LV9"]),
+pend("apple-mba-m1","Apple","MacBook Air","MacBook Air（M1, 2020）","ノートPC 13.3型","notebook"),
+pend("bto-atx","自作・BTO","自作・BTO","自作・BTO ATX／MicroATX ミドルタワー（汎用）","ミドルタワー","bto",["自作PC","BTO","ATX"]),pend("bto-itx","自作・BTO","自作・BTO","自作・BTO Mini-ITX 小型ケース（汎用）","小型ケース","bto",["自作PC","BTO","ITX"])
+);
+const mp=(id,name,t,fm,sp,gb,n,ecc,a,b)=>({id,category:"memory",name,memType:t,memForm:fm,memSpeed:sp,moduleGB:gb,modules:n,ecc,priceMin:a,priceMax:b});
+const P=[
+mp("mem-d4-dimm-8-3200","DDR4-3200 DIMM 8GB ×1","DDR4","DIMM",3200,8,1,false,3000,6000),mp("mem-d4-dimm-16-3200","DDR4-3200 DIMM 16GB ×1","DDR4","DIMM",3200,16,1,false,5000,10000),
+mp("mem-d4-dimm-16x2-3200","DDR4-3200 DIMM 16GB ×2（32GB）","DDR4","DIMM",3200,16,2,false,10000,20000),mp("mem-d4-dimm-32-3200","DDR4-3200 DIMM 32GB ×1","DDR4","DIMM",3200,32,1,false,10000,20000),
+mp("mem-d4-dimm-8-2666","DDR4-2666 DIMM 8GB ×1","DDR4","DIMM",2666,8,1,false,3000,6000),mp("mem-d4-dimm-16-2666-ecc","DDR4-2666 ECC UDIMM 16GB ×1","DDR4","DIMM",2666,16,1,true,8000,16000),
+mp("mem-d4-so-8-3200","DDR4-3200 SO-DIMM 8GB ×1","DDR4","SO-DIMM",3200,8,1,false,3000,6000),mp("mem-d4-so-16-3200","DDR4-3200 SO-DIMM 16GB ×1","DDR4","SO-DIMM",3200,16,1,false,5000,10000),
+mp("mem-d4-so-32-3200","DDR4-3200 SO-DIMM 32GB ×1","DDR4","SO-DIMM",3200,32,1,false,10000,20000),mp("mem-d5-so-16-5600","DDR5-5600 SO-DIMM 16GB ×1","DDR5","SO-DIMM",5600,16,1,false,7000,15000),
+mp("mem-d5-dimm-16-5600","DDR5-5600 DIMM 16GB ×1","DDR5","DIMM",5600,16,1,false,7000,15000),mp("mem-d3-dimm-8-1600","DDR3-1600 DIMM 8GB ×1","DDR3","DIMM",1600,8,1,false,1500,4000),
+{id:"ssd-nvme-2280-500",category:"ssd",name:"NVMe M.2 2280 SSD 500GB",ssdIface:"NVMe",ssdForm:"2280",priceMin:5000,priceMax:9000},
+{id:"ssd-nvme-2280-1t",category:"ssd",name:"NVMe M.2 2280 SSD 1TB",ssdIface:"NVMe",ssdForm:"2280",priceMin:8000,priceMax:15000},
+{id:"ssd-nvme-2280-2t",category:"ssd",name:"NVMe M.2 2280 SSD 2TB",ssdIface:"NVMe",ssdForm:"2280",priceMin:14000,priceMax:28000},
+{id:"ssd-nvme-2242-512",category:"ssd",name:"NVMe M.2 2242 SSD 512GB",ssdIface:"NVMe",ssdForm:"2242",priceMin:6000,priceMax:12000},
+{id:"ssd-nvme-2230-512",category:"ssd",name:"NVMe M.2 2230 SSD 512GB",ssdIface:"NVMe",ssdForm:"2230",priceMin:6000,priceMax:12000},
+{id:"ssd-sata-m2-2280-500",category:"ssd",name:"M.2 SATA 2280 SSD 500GB",ssdIface:"SATA",ssdForm:"2280",priceMin:5000,priceMax:9000},
+{id:"ssd-sata-25-500",category:"ssd",name:"2.5インチ SATA SSD 500GB",ssdIface:"SATA",ssdForm:"2.5",priceMin:5000,priceMax:9000},
+{id:"ssd-sata-25-1t",category:"ssd",name:"2.5インチ SATA SSD 1TB",ssdIface:"SATA",ssdForm:"2.5",priceMin:8000,priceMax:14000},
+{id:"gpu-gt1030-lp",category:"gpu",name:"GeForce GT 1030 ロープロファイル",lowProfile:true,tdpW:30,needsAux:false,priceMin:9000,priceMax:14000},
+{id:"gpu-rx6400-lp",category:"gpu",name:"Radeon RX 6400 ロープロファイル",lowProfile:true,tdpW:53,needsAux:false,priceMin:18000,priceMax:26000},
+{id:"gpu-rtx3050-6g-lp",category:"gpu",name:"GeForce RTX 3050 6GB ロープロファイル",lowProfile:true,tdpW:70,needsAux:false,priceMin:25000,priceMax:35000},
+{id:"gpu-rtx4060",category:"gpu",name:"GeForce RTX 4060（フルサイズ・補助電源8ピン）",lowProfile:false,tdpW:115,needsAux:true,priceMin:40000,priceMax:55000},
+{id:"gpu-rtx4070",category:"gpu",name:"GeForce RTX 4070（フルサイズ・補助電源あり）",lowProfile:false,tdpW:200,needsAux:true,priceMin:80000,priceMax:100000},
+{id:"psu-atx-550",category:"psu",name:"ATX電源 550W（80PLUS Bronze）",psuType:"ATX",psuWatt:550,priceMin:6000,priceMax:10000},
+{id:"psu-atx-750",category:"psu",name:"ATX電源 750W（80PLUS Gold）",psuType:"ATX",psuWatt:750,priceMin:11000,priceMax:18000},
+{id:"psu-sfx-600",category:"psu",name:"SFX電源 600W（80PLUS Gold）",psuType:"SFX",psuWatt:600,priceMin:12000,priceMax:20000}
+];
+
+/* ===== 状態と保存（端末＋アカウント）===== */
+const EMPTY={userModels:[],userParts:[],plan:[],myPcs:[],estimate:null,lastViewed:null};
+let ST=Object.assign({},EMPTY);
+try{const r=localStorage.getItem("pcfit-pro-v1");if(r)ST=Object.assign({},EMPTY,JSON.parse(r));}catch(e){}
+let db=null,docRef=null,saveT=null,saving=false,dirty=false;
+const syncEl=document.getElementById("sync");
+const setSync=t=>{syncEl.textContent=t};
+const persist=()=>{
+  try{localStorage.setItem("pcfit-pro-v1",JSON.stringify(ST));}catch(e){}
+  if(!docRef)return;
+  clearTimeout(saveT);saveT=setTimeout(flush,700);
+};
+const flush=async()=>{
+  if(!docRef)return;
+  if(saving){dirty=true;return;}
+  saving=true;setSync("保存中…");
+  try{await docRef.set({state:JSON.stringify(ST),updatedAt:new Date().toISOString()});setSync("✓ アカウントに保存済み");}
+  catch(e){setSync("この端末に保存（アカウント保存不可）");}
+  saving=false;if(dirty){dirty=false;flush();}
+};
+const update=(fnc)=>{Object.assign(ST,typeof fnc==="function"?fnc(ST):fnc);persist();render();};
+(async()=>{
+  try{
+    if(!window.claude||!window.claude.use)return;
+    const d=await window.claude.use("db");if(!d)return;
+    const ref=d.doc("state/main");
+    let timer;const got=await Promise.race([ref.get(),new Promise(r=>{timer=setTimeout(()=>r("timeout"),10000)})]);clearTimeout(timer);
+    if(got==="timeout")return;
+    db=d;docRef=ref;
+    const data=got&&(got.data?(typeof got.data==="function"?got.data():got.data):got);
+    if(data&&data.state){ST=Object.assign({},EMPTY,JSON.parse(data.state));try{localStorage.setItem("pcfit-pro-v1",JSON.stringify(ST));}catch(e){}render();setSync("✓ アカウントに保存済み");}
+    else{setSync("✓ アカウント保存オン");if(ST.plan.length||ST.myPcs.length||ST.userModels.length||ST.userParts.length)flush();}
+  }catch(e){setSync("この端末に保存");}
+})();
+
+const models=()=>{const ids=new Set(ST.userModels.map(m=>m.id));return [...ST.userModels,...M.filter(m=>!ids.has(m.id))];};
+const parts=()=>{const ids=new Set(ST.userParts.map(p=>p.id));return [...P.filter(p=>!ids.has(p.id)),...ST.userParts];};
+const getModel=id=>id==="estimate"?ST.estimate:models().find(m=>m.id===id);
+const getPart=id=>parts().find(p=>p.id===id);
+
+/* ===== 判定 ===== */
+const RK={ok:0,warn:1,unknown:2,ng:3};const W=(a,b)=>RK[b]>RK[a]?b:a;
+const SYM={ok:"◎",warn:"△",ng:"×",unknown:"？"},LAB={ok:"適合",warn:"注意",ng:"不適合",unknown:"要確認"};
+const vals=fl=>fl.v===null?[]:[fl.v,...(fl.alt||[]).map(a=>a.v)];
+function jMem(m,p){const r=[];let v="ok";const mm=m.mem;
+ if(mm.form.v==="オンボード")return{v:"ng",r:["メモリはオンボード固定のため、増設・交換できません。"]};
+ if(mm.type.v===null){v=W(v,"unknown");r.push("本機のメモリ規格（DDR4/DDR5など）が要確認です。");}else if(mm.type.v!==p.memType){v=W(v,"ng");r.push(`規格が違います（本機 ${mm.type.v}／パーツ ${p.memType}）。`);}else r.push(`規格 ${p.memType} は一致。`);
+ if(mm.form.v===null){v=W(v,"unknown");r.push("本機のメモリ形状（DIMM/SO-DIMM）が要確認です。");}else if(mm.form.v!==p.memForm){v=W(v,"ng");r.push(`形状が違います（本機 ${mm.form.v}／パーツ ${p.memForm}）。`);}else r.push(`形状 ${p.memForm} は一致。`);
+ if(p.ecc&&mm.ecc.v!==true){v=W(v,"warn");r.push("ECCメモリです。本機のECC対応は要確認（非対応機では動かないことがあります）。");}
+ if(!p.ecc&&mm.ecc.v===true){v=W(v,"warn");r.push(mm.ecc.note||"本機はECC対応機です。CPU構成によりECCが必要な場合があります。");}
+ if(mm.speed.v!==null&&p.memSpeed){if(p.memSpeed>mm.speed.v){v=W(v,"warn");r.push(`${p.memType}-${p.memSpeed}は本機では${mm.speed.v}にダウンクロックして動作します（通常は使用可）。`);}else if(p.memSpeed<mm.speed.v){v=W(v,"warn");r.push(`本機の標準（${mm.speed.v}）より遅いメモリです。性能が下がる可能性があります。`);}}
+ else if(mm.speed.v===null){v=W(v,"warn");r.push("対応速度は要確認です。");}
+ if(mm.speed.note)r.push(mm.speed.note);
+ const tot=(p.moduleGB||0)*(p.modules||1),mx=vals(mm.maxGB);
+ if(!mx.length){v=W(v,"warn");r.push("最大搭載容量は要確認です。");}
+ else{const lo=Math.min(...mx),hi=Math.max(...mx);
+  if(mx.length>1){v=W(v,"warn");r.push(`⚠️ 最大容量は情報源で異なります（${mx.join("GB／")}GB）。少ない方（${lo}GB）を基準に判定しています。`);}
+  if(tot>hi){v=W(v,"ng");r.push(`合計${tot}GBは最大${hi}GBを超えます。`);}else if(tot>lo){v=W(v,"warn");r.push(`合計${tot}GBは少ない方の最大値${lo}GBを超えます。`);}
+  if(mm.slots.v){const per=lo/mm.slots.v;if((p.moduleGB||0)>per){v=W(v,"warn");r.push(`1枚あたりの上限（目安 ${per}GB）を超える容量です。`);}}
+  if(mm.maxGB.note){v=W(v,"warn");r.push(mm.maxGB.note);}}
+ if(mm.freeSlots.v!==null){if(mm.freeSlots.v===0){v=W(v,"warn");r.push("空きスロットがありません。既存メモリとの交換になります。");}else if((p.modules||1)>mm.freeSlots.v){v=W(v,"warn");r.push(`空きスロット${mm.freeSlots.v}に対して${p.modules}枚です。既存メモリの取り外しが必要です。`);}else r.push(`空きスロット${mm.freeSlots.v}に装着できます。`);}
+ else if(mm.slots.v!==null)r.push(`スロット数は${mm.slots.v}（空き数は実機で確認）。`);
+ return{v,r};}
+function jSsd(m,p){const st=m.storage;
+ if(p.ssdForm==="2.5"){if(st.bay25.v===null)return{v:"unknown",r:["2.5インチベイの有無が要確認です。"]};if(st.bay25.v===0)return{v:"ng",r:["2.5インチベイがありません。"]};return{v:"ok",r:[`2.5インチベイ×${st.bay25.v}に装着できます（SATA接続）。`]};}
+ const r=[];let v="ok";
+ if(st.m2Sizes.v===null){v="unknown";r.push("M.2スロットの対応サイズが要確認です。");}else if(!st.m2Sizes.v.includes(p.ssdForm)){v="ng";r.push(`M.2 ${p.ssdForm}は非対応です（対応：${st.m2Sizes.v.join("／")}）。`);}else r.push(`M.2 ${p.ssdForm}に対応。`);
+ if(st.m2Iface.v===null){v=W(v,"warn");r.push("M.2の接続方式（NVMe/SATA）は要確認です。");}else if(st.m2Iface.v!=="NVMe/SATA"&&st.m2Iface.v!==p.ssdIface){v=W(v,"ng");r.push(`本機のM.2は${st.m2Iface.v}のみ対応です。`);}else r.push(`${p.ssdIface}接続に対応。`);
+ if(st.m2Iface.note)r.push(st.m2Iface.note);return{v,r};}
+function jGpu(m,p){const g=m.gpu,sl=g.slot.v;
+ if(sl===null)return{v:"unknown",r:["拡張スロットの有無・種類が要確認です。"]};
+ if(sl==="none")return{v:"ng",r:["増設不可："+(g.slot.note||"拡張スロットがありません。")]};
+ if(sl==="custom-only")return{v:"ng",r:["増設不可："+(g.slot.note||"スロットはカスタムメイド専用です。")]};
+ const r=[];let v="ok";
+ if((sl==="x16-lp"||sl==="x8-lp")&&!p.lowProfile){v="ng";r.push("本機はロープロファイル専用です。フルサイズのカードは入りません。");}
+ if(sl==="x8-lp"){v=W(v,"warn");r.push("x8スロット（ロープロ）です。x16カードは物理的に挿さらない場合があり、ライザーが必要なことがあります。");}
+ if(sl==="x16"&&g.slot.note)r.push(g.slot.note);
+ if(sl==="x16"&&p.lowProfile===false){v=W(v,"warn");r.push("ケースがフルサイズのカードを収容できるか要確認です。");}
+ const w=m.psu.watt.v,t=p.tdpW||0;
+ if(w===null){v=W(v,"warn");r.push(m.psu.watt.note?"⚠️ 電源："+m.psu.watt.note:"電源容量は要確認です（実機の電源ラベルで確認）。");}
+ else if(w<=250&&t>75){v=W(v,"ng");r.push(`電源${w}Wに対してカード消費電力${t}Wは不足する可能性が高いです。`);}
+ else if(t>w*.3){v=W(v,"warn");r.push(`電源${w}Wに対してカード${t}Wは余裕が少なめです。`);}else r.push(`電源${w}Wに対してカード${t}W。`);
+ if(p.needsAux){if(g.auxPower.v===false){v=W(v,"ng");r.push("本機の電源にはGPU用補助電源コネクタがありません。");}else if(g.auxPower.v===null){v=W(v,"warn");r.push("補助電源コネクタの有無は要確認です（メーカー製PCは無いことが多い）。");}}
+ v=W(v,"warn");r.push(g.maxLengthMm.v!==null?`カード長は${g.maxLengthMm.v}mm未満が必要です。購入予定品の長さを製品ページで確認してください。`:"カード長はケース内寸と製品ページで確認してください。");
+ if(m.psu.type.v==="専用")r.push("電源は専用品のため、容量不足でも市販電源へ交換できません。");
+ return{v,r};}
+function jPsu(m,p){const t=m.psu.type.v;
+ if(t===null)return{v:"unknown",r:["電源の規格（専用品／ATX／SFX）が要確認です。"]};
+ if(t==="専用")return{v:"ng",r:["交換不可（市販品は付きません）。"+(m.psu.type.note?" "+m.psu.type.note:"")]};
+ if(t==="ACアダプタ")return{v:"ng",r:["ACアダプタ給電のため、電源ユニットの交換はできません。"]};
+ if(t!==p.psuType)return{v:"ng",r:[`規格が違います（本機 ${t}／パーツ ${p.psuType}）。`]};
+ return{v:"ok",r:[`${t}規格に一致。${p.psuWatt}W。ケース内寸とケーブル長は実機で確認してください。`]};}
+const judge=(m,p)=>p.category==="memory"?jMem(m,p):p.category==="ssd"?jSsd(m,p):p.category==="gpu"?jGpu(m,p):jPsu(m,p);
+function win11(m){const g=m.cpuGen.v;if(!g)return{v:"unknown",t:"CPU世代が要確認のため判定できません。"};
+ const tpm=m.tpm.v?`TPM：${m.tpm.v}。`:"TPM 2.0の有効化はBIOS設定で要確認。";
+ if(/Core Ultra/.test(g))return{v:"ok",t:`CPU世代は対応（${g}）。${tpm}`};
+ const i=g.match(/第(\d+)/);if(i){return Number(i[1])>=8?{v:"ok",t:`CPU世代はWindows 11の要件を満たします（${g}）。${tpm}`}:{v:"ng",t:`${g}はWindows 11の公式対応CPU外です（Intelは第8世代以降が必要）。`};}
+ const r=g.match(/Ryzen[^\d]*(\d)000/);if(r){return Number(r[1])>=2?{v:"ok",t:`CPU世代はWindows 11の要件を満たします（${g}）。${tpm}`}:{v:"ng",t:`${g}はWindows 11の公式対応CPU外です。`};}
+ return{v:"unknown",t:`${g}：判定には個別確認が必要です。`};}
+const cpuRep=m=>m.cpuReplace.v||(m.category==="notebook"?"ノートPCは原則CPU交換不可（要確認）":"要確認（ソケット形状とBIOSの対応CPU一覧で確認）");
+
+/* ===== 検索 ===== */
+const norm=x=>String(x).normalize("NFKC").toUpperCase().replace(/[\s\-\/._・()（）]/g,"").replace(/^PC(?=[A-Z0-9])/,"");
+function search(q,maker){const pool=maker==="all"?models():models().filter(m=>m.maker===maker);q=q.trim();
+ if(!q)return{hits:pool.map(m=>({m,mt:""})),near:[]};
+ const words=q.split(/\s+/).map(norm).filter(Boolean),whole=norm(q),hits=[];
+ for(const m of pool){const codes=[...m.orderCodes,...m.productCodes];const tx=[m.name,m.series,m.maker,...m.aliases,...codes].map(norm);
+  if(!words.every(w=>tx.some(t=>t.includes(w))))continue;let sc=10,mt=m.name;
+  codes.forEach(c=>{const n=norm(c);if(n===whole){sc=Math.max(sc,100);mt=c;}else if(n.startsWith(whole)){sc=Math.max(sc,80);mt=c;}else if(n.includes(whole)){sc=Math.max(sc,60);mt=c;}});
+  if(norm(m.name).includes(whole))sc=Math.max(sc,50);if(m.researched)sc+=1;hits.push({m,mt,sc});}
+ hits.sort((a,b)=>b.sc-a.sc);let near=[];
+ if(!hits.length){for(let L=whole.length-1;L>=5&&!near.length;L--){const pre=whole.slice(0,L);const seen=new Set();
+  pool.forEach(m=>[...m.orderCodes,...m.productCodes].forEach(c=>{if(norm(c).startsWith(pre)&&!seen.has(m.id)){seen.add(m.id);near.push({m,mt:c});}}));}}
+ return{hits,near};}
+
+/* ===== 外部リンク（ショップはここで差し替え）===== */
+const enc=encodeURIComponent,G=q=>"https://www.google.com/search?q="+enc(q);
+const SITE={NEC:"jpn.nec.com","富士通":"fmworld.net",DELL:"dell.com",HP:"support.hp.com",Lenovo:"psref.lenovo.com",dynabook:"dynabook.com",Panasonic:"panasonic.jp",Apple:"support.apple.com"};
+const linksModel=m=>{const k=m.productCodes[0]||m.orderCodes[0]||m.name,st=SITE[m.maker];return[["メーカー公式サポート",st?G(`site:${st} ${k} 仕様`):G(`${m.maker} ${k} 仕様`)],["ELECOM メモナビ",G(`site:elecom.co.jp メモリ ${k}`)],["バッファロー 対応検索","https://www.buffalo.jp/taiou/search-pc/?keyword="+enc(k)],["IODATA PIO",G(`site:pio.iodata.jp ${k}`)],["Crucial 適合検索",G(`site:crucial.jp ${m.maker} ${k}`)],["価格.com",`https://kakaku.com/search_results/${enc(k)}/`],["Google（型番 仕様）",G(`${k} 仕様`)]];};
+const linksQuery=q=>[["Google（型番 仕様）",G(`${q} 仕様`)],["バッファロー 対応検索","https://www.buffalo.jp/taiou/search-pc/?keyword="+enc(q)],["ELECOM メモナビ",G(`site:elecom.co.jp メモリ ${q}`)],["IODATA PIO",G(`site:pio.iodata.jp ${q}`)],["価格.com",`https://kakaku.com/search_results/${enc(q)}/`]];
+const shops=n=>{n=n.replace(/（.*?）/g,"");return[["Amazon","https://www.amazon.co.jp/s?k="+enc(n)],["楽天市場",`https://search.rakuten.co.jp/search/mall/${enc(n)}/`],["Yahoo!ショッピング","https://shopping.yahoo.co.jp/search?p="+enc(n)]];};
+
+/* ===== 表示部品 ===== */
+const esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
+const yen=n=>"¥"+Math.round(n).toLocaleString("ja-JP");
+const VD=v=>`<span class="vd ${v}"><b>${SYM[v]}</b>${LAB[v]}</span>`;
+const refs=(ids,src)=>(ids||[]).map(id=>src.find(x=>x.id===id)).filter(Boolean).map(x=>`<a class="src" href="${esc(x.url)}" target="_blank" rel="noopener">出典：${esc(x.label)}（${esc(x.checked)}）</a>`).join("");
+const fmtDef=v=>Array.isArray(v)?v.join("／"):typeof v==="boolean"?(v?"あり":"なし"):String(v);
+function SV(fl,src,fmt){fmt=fmt||fmtDef;
+ if(!fl||fl.v===null)return `<span class="unk">要確認</span>${fl&&fl.note?`<span class="note">${esc(fl.note)}</span>`:""}`;
+ if(fl.alt&&fl.alt.length)return `<div class="conf"><b>⚠️ 情報源で異なります・要確認</b>${[{v:fl.v,src:fl.src},...fl.alt].map(a=>`<div><span class="v">${esc(fmt(a.v))}</span>${refs(a.src,src)}</div>`).join("")}</div>`;
+ return `<span class="v">${esc(fmt(fl.v))}</span>${fl.note?`<span class="note">${esc(fl.note)}</span>`:""}${refs(fl.src,src)}`;}
+const SR=(l,h)=>`<div class="sr"><div class="sl">${l}</div><div>${h}</div></div>`;
+const SLOT={x16:"PCI Express x16","x16-lp":"PCI Express x16（ロープロファイル専用）","x8-lp":"PCI Express x8（ロープロファイル）",none:"なし（増設不可）","custom-only":"カスタムメイド専用（通常構成は増設不可）"};
+const toastEl=document.getElementById("toast");let tT;
+const toast=t=>{toastEl.textContent=t;toastEl.classList.add("on");clearTimeout(tT);tT=setTimeout(()=>toastEl.classList.remove("on"),2600);};
+
+/* ===== 画面 ===== */
+const UI={q:"",maker:"all",open:null,ptab:"memory",dtab:"model",edit:null,preset:"",myQ:"",myPick:null,err:"",pf:{category:"memory"}};
+const SAMPLES=["PC-MKT44LZ85HZF","FMVD38002","MRT29/L-7","CELW09003","ESPRIMO D588","Mate タイプML"];
+const memSum=m=>{const t=m.mem.type.v||"?",x=m.mem.maxGB;const mx=x.v===null?"要確認":x.alt&&x.alt.length?vals(x).join("/")+"GB⚠️":x.v+"GB";return `${t} ・ 最大 ${mx}`;};
+
+function vSearch(){const ms=models(),{hits,near}=search(UI.q,UI.maker),mk=[...new Set(ms.map(m=>m.maker))];
+ const res=ms.filter(m=>m.researched).length;
+ let h=`<section class="card"><h1>型番から、増設できるパーツと費用を確認</h1><p class="lead">注文型番（PC-〜）でも製品型番（MKT44/L-F など）でも検索できます。シリーズ名・型番の一部でもOK。</p>
+ <form class="searchrow" id="sf"><input id="q" value="${esc(UI.q)}" placeholder="例：PC-MKT44LZ85HZF / FMVD38002" aria-label="型番を入力" autocomplete="off"><select id="mk" aria-label="メーカー"><option value="all">すべてのメーカー</option>${mk.map(x=>`<option ${x===UI.maker?"selected":""}>${esc(x)}</option>`).join("")}</select></form>
+ <div class="row" style="margin-top:10px"><span class="hint" style="margin:0">試す：</span>${SAMPLES.map(x=>`<button class="chip" data-q="${esc(x)}">${esc(x)}</button>`).join("")}</div></section>
+ <div class="meta"><span>${UI.q?`「${esc(UI.q)}」の検索結果 ${hits.length}件`:`収録 ${ms.length}機種（うち仕様調査済み ${res}機種）`}</span><a href="#estimate">推定モード（仕様を入力して判定）</a></div>`;
+ if(hits.length)h+=`<div class="grid">${hits.map(({m,mt})=>`<a class="mc" href="#pc-${esc(m.id)}"><div class="mk"><b>${esc(m.maker)}</b><span>${esc(m.series)}</span>${m.userAdded?`<span class="tag">ユーザー登録</span>`:m.researched?`<span class="tag">出典つき</span>`:`<span class="tag p">仕様未調査</span>`}</div><div class="nm">${esc(m.name)}</div><div class="codes">${[...m.orderCodes,...m.productCodes].slice(0,4).map(c=>`<code class="${c===mt?"hit":""}">${esc(c)}</code>`).join("")}</div><div class="facts"><span>${esc(m.formFactor)}</span><span>${esc(memSum(m))}</span>${m.cpu.v?`<span>${esc(m.cpu.v)}</span>`:""}</div></a>`).join("")}</div>`;
+ else h+=`<section class="card"><h2>「${esc(UI.q)}」は収録データに見つかりませんでした</h2>${near.length?`<p><b>近い型番：</b></p>${near.map(({m,mt})=>`<p style="margin:2px 0"><a href="#pc-${esc(m.id)}"><code>${esc(mt)}</code> ${esc(m.name)}</a></p>`).join("")}`:""}
+ <p class="lead">外部サイトで仕様を調べるか、分かっている仕様を入力して判定できます。調べた結果は出典URLつきで登録できます。</p><div class="row">${linksQuery(UI.q).map(([l,u])=>`<a class="shop" href="${esc(u)}" target="_blank" rel="noopener">${l} ↗</a>`).join("")}</div>
+ <div class="row" style="margin-top:12px"><button class="btn" data-act="toEst">推定モードで判定する</button><button class="btn o" data-act="toReg">調べた仕様を登録する</button></div></section>`;
+ return h;}
+
+function vPc(id){const m=getModel(id);
+ if(!m)return `<section class="card"><h1>${id==="none"?"まだ機種が選ばれていません":"この機種は見つかりませんでした"}</h1><p class="hint">型番検索から機種を選ぶと、ここに仕様と適合判定が表示されます。</p><a href="#search">← 型番検索へ</a></section>`;
+ const S=(fl,fmt)=>SV(fl,m.sources,fmt),w=win11(m),ps=parts();
+ let h=`<section class="card"><div class="hint" style="margin:0">${esc(m.maker)} ／ ${esc(m.series)} ／ ${esc(m.formFactor)}</div><h1>${esc(m.name)}</h1>
+ <div class="hint">${m.orderCodes.length?`注文型番 ${m.orderCodes.map(c=>`<code>${esc(c)}</code>`).join(" ")}<br>`:""}${m.productCodes.length?`製品型番・型名 ${m.productCodes.slice(0,6).map(c=>`<code>${esc(c)}</code>`).join(" ")}${m.productCodes.length>6?` ほか${m.productCodes.length-6}件`:""}`:""}</div>
+ <div class="row"><button class="btn o" data-act="addMy" data-id="${esc(m.id)}">マイPCに登録</button>${id!=="estimate"?`<button class="btn g" data-act="edit" data-id="${esc(m.id)}">仕様を追加・修正</button>`:`<a class="btn g" href="#estimate">入力を直す</a>`}</div>
+ ${!m.researched?`<div class="pend">この機種は型番のみ収録で、仕様は未調査です（全項目「要確認」）。下の外部リンクで調べて「データ管理」から出典URLつきで登録してください。</div>`:""}
+ ${m.notes.map(n=>`<div class="notice">${esc(n)}</div>`).join("")}</section>
+ <div class="two"><section class="card"><h2>CPU・Windows 11</h2>${SR("CPU",S(m.cpu))}${SR("CPU世代",S(m.cpuGen))}${SR("CPU交換",`<span>${esc(cpuRep(m))}</span>`)}${SR("Windows 11",`${VD(w.v)}<span class="note">${esc(w.t)}</span>`)}</section>
+ <section class="card"><h2>メモリー</h2>${SR("規格",S(m.mem.type))}${SR("形状",S(m.mem.form))}${SR("速度",S(m.mem.speed,v=>`${m.mem.type.v||""}-${v}`))}${SR("標準搭載",S(m.mem.standardGB,v=>v+"GB"))}${SR("スロット",S(m.mem.slots))}${SR("空きスロット",S(m.mem.freeSlots))}${SR("最大容量",S(m.mem.maxGB,v=>v+"GB"))}${SR("ECC",S(m.mem.ecc,v=>v?"ECC対応":"non-ECC"))}</section>
+ <section class="card"><h2>ストレージ</h2>${SR("M.2 サイズ",S(m.storage.m2Sizes,v=>v.map(x=>"M.2 "+x).join("／")))}${SR("M.2 接続",S(m.storage.m2Iface))}${SR("2.5インチベイ",S(m.storage.bay25))}${SR("3.5インチベイ",S(m.storage.bay35))}</section>
+ <section class="card"><h2>拡張スロット・電源</h2>${SR("GPU用スロット",S(m.gpu.slot,v=>SLOT[v]||v))}${SR("カード長上限",S(m.gpu.maxLengthMm,v=>v+"mm未満"))}${SR("GPU補助電源",S(m.gpu.auxPower))}${SR("電源の種類",S(m.psu.type,v=>v==="専用"?"専用電源（市販品へ交換不可）":v))}${SR("電源容量",S(m.psu.watt,v=>v+"W"))}</section></div>
+ <section class="card"><h2>パーツ適合判定</h2><p class="hint">◎適合 ／ △注意 ／ ×不適合 ／ ？要確認。行をタップすると理由が開きます。価格は目安です。</p>
+ <div class="tabs">${[["memory","メモリー"],["ssd","SSD"],["gpu","グラフィック"],["psu","電源"]].map(([k,l])=>`<button class="${UI.ptab===k?"on":""}" data-ptab="${k}">${l}</button>`).join("")}</div>
+ <div>${ps.filter(p=>p.category===UI.ptab).map(p=>({p,j:judge(m,p)})).sort((a,b)=>RK[a.j.v]-RK[b.j.v]).map(({p,j})=>`<div class="pi"><button class="ph" data-open="${esc(p.id)}" aria-expanded="${UI.open===p.id}">${VD(j.v)}<span>${esc(p.name)}</span><span class="price">${yen(p.priceMin)}〜${yen(p.priceMax).slice(1)}<small>目安</small></span></button>
+ ${UI.open===p.id?`<div class="pb"><ul>${j.r.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><div class="row">${shops(p.name).map(([l,u])=>`<a class="shop" href="${esc(u)}" target="_blank" rel="noopener">${l}で現在価格 ↗</a>`).join("")}<button class="btn" data-act="addPlan" data-m="${esc(m.id)}" data-p="${esc(p.id)}" ${j.v==="ng"?"disabled":""}>＋ プランに追加</button></div></div>`:""}</div>`).join("")}</div></section>
+ <section class="card"><h2>外部サイトで確認</h2><div class="row">${linksModel(m).map(([l,u])=>`<a class="shop" href="${esc(u)}" target="_blank" rel="noopener">${l} ↗</a>`).join("")}</div></section>
+ <section class="card"><h2>出典一覧</h2>${m.sources.length?`<ol style="margin:0;padding-left:1.4em;font-size:14px">${m.sources.map(x=>`<li><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.label)}</a> <span class="hint">確認日 ${esc(x.checked)}</span></li>`).join("")}</ol>`:`<p class="hint">出典はまだ登録されていません。</p>`}</section>`;
+ return h;}
+
+function planRows(){return ST.plan.map(it=>({it,m:getModel(it.modelId),p:getPart(it.partId)})).filter(r=>r.m&&r.p);}
+function planText(){const rows=planRows();const lo=rows.reduce((s,r)=>s+r.p.priceMin*r.it.qty,0),hi=rows.reduce((s,r)=>s+r.p.priceMax*r.it.qty,0);
+ const ms=[...new Map(rows.map(r=>[r.m.id,r.m])).values()];
+ let t=`アップグレード計画書（PCパーツ適合チェッカー Pro）\n作成日 ${new Date().toLocaleDateString("ja-JP")}\n\n`;
+ ms.forEach(m=>{t+=`■ ${m.name}（${m.maker}${m.orderCodes[0]?" / 注文型番 "+m.orderCodes[0]:""}${m.productCodes[0]?" / 型番 "+m.productCodes[0]:""}）\n`;
+  rows.filter(r=>r.m.id===m.id).forEach(r=>{const j=judge(m,r.p);t+=`  ${SYM[j.v]}${LAB[j.v]}  ${r.p.name} ×${r.it.qty}  ${yen(r.p.priceMin*r.it.qty)}〜${yen(r.p.priceMax*r.it.qty)}（目安）\n`;});
+  t+=`  出典：\n${m.sources.map(x=>`   - ${x.label}（確認日 ${x.checked}） ${x.url}`).join("\n")||"   - なし"}\n\n`;});
+ t+=`合計（幅）：${yen(lo)} 〜 ${yen(hi)}\n中間値：${yen((lo+hi)/2)}\n\n※価格は参考価格帯（目安）です。「要確認」「△注意」の項目は購入前にメーカー公式情報または実機で確認してください。\n`;return t;}
+function vPlan(){const rows=planRows();
+ if(!rows.length)return `<h1>費用プラン</h1><section class="card" style="text-align:center"><p>まだパーツが追加されていません。</p><p class="hint">PC詳細の「パーツ適合判定」で「プランに追加」を押すとここに集計されます。</p><a href="#search">型番検索へ</a></section>`;
+ const lo=rows.reduce((s,r)=>s+r.p.priceMin*r.it.qty,0),hi=rows.reduce((s,r)=>s+r.p.priceMax*r.it.qty,0),ms=[...new Map(rows.map(r=>[r.m.id,r.m])).values()];
+ return `<div class="row" style="justify-content:space-between"><h1>費用プラン</h1><div class="row"><button class="btn o" data-act="copyPlan">計画書をコピー</button><button class="btn o" data-act="dlPlan" id="dlPlan" hidden>計画書を保存</button><button class="btn g" data-act="clearPlan">すべて削除</button></div></div>
+ <section class="card"><div class="hint" style="margin:0;font-family:var(--mono)">PCパーツ適合チェッカー Pro ／ 作成日 ${new Date().toLocaleDateString("ja-JP")}</div><h1 style="margin:4px 0 12px">アップグレード計画書</h1>
+ ${ms.map(m=>`<h2 style="border:0;margin-top:12px">${esc(m.name)} <span class="hint">${esc(m.maker)}${m.orderCodes[0]?" ／ 注文型番 "+esc(m.orderCodes[0]):""}${m.productCodes[0]?" ／ 型番 "+esc(m.productCodes[0]):""}</span></h2>
+ <table><thead><tr><th>判定</th><th>パーツ</th><th class="num hm">数量</th><th class="num">価格帯（目安）</th><th></th></tr></thead><tbody>${rows.filter(r=>r.m.id===m.id).map(({it,p})=>{const j=judge(m,p);return `<tr><td>${VD(j.v)}</td><td><b style="font-weight:500">${esc(p.name)}</b><span class="note">${esc(j.r.filter(x=>!x.endsWith("一致。")).slice(0,2).join(" "))}</span><div class="row" style="gap:10px;font-size:12px">${shops(p.name).map(([l,u])=>`<a href="${esc(u)}" target="_blank" rel="noopener">${l} ↗</a>`).join("")}</div></td>
+ <td class="num hm"><span class="qty"><button data-qty="-1" data-id="${esc(it.id)}" aria-label="減らす">−</button>${it.qty}<button data-qty="1" data-id="${esc(it.id)}" aria-label="増やす">＋</button></span></td><td class="num">${yen(p.priceMin*it.qty)}〜<br>${yen(p.priceMax*it.qty)}</td><td><button class="btn g" data-act="rmPlan" data-id="${esc(it.id)}" aria-label="削除">✕</button></td></tr>`;}).join("")}</tbody></table>`).join("")}
+ <div style="border-top:2px solid var(--ink);margin-top:16px;padding-top:12px"><div class="tot"><span>合計（幅）</span><b>${yen(lo)} 〜 ${yen(hi)}</b></div><div class="tot"><span>中間値</span><b class="mid">${yen((lo+hi)/2)}</b></div><p class="hint">価格はアプリ内の参考価格帯（目安）です。実際の価格は各ショップでご確認ください。</p></div>
+ <h2 style="margin-top:16px">出典</h2><ul style="font-size:12px;margin:0;padding-left:1.2em">${ms.flatMap(m=>m.sources.map(x=>`<li>${esc(m.name)}：${esc(x.label)}（確認日 ${esc(x.checked)}） <a href="${esc(x.url)}" target="_blank" rel="noopener" style="word-break:break-all">${esc(x.url)}</a></li>`)).join("")}</ul></section>`;}
+
+function vMy(){const hits=UI.myQ&&!UI.myPick?search(UI.myQ,"all").hits.slice(0,6):[];
+ return `<h1>マイPC</h1><p class="hint">手持ちのPCや購入候補を登録しておくと、すぐに詳細と適合判定を開けます。${docRef?"登録内容はアカウントに保存され、他の端末やClaudeからも参照できます。":"登録内容はこの端末に保存されます。"}</p>
+ ${ST.myPcs.length?`<div class="grid">${ST.myPcs.map(p=>{const m=getModel(p.modelId),w=m?win11(m):null;return `<div class="card"><div class="nm">${esc(p.nickname)}</div><div class="hint" style="font-family:var(--mono)">${m?esc(m.maker+" "+m.name):"（機種データが見つかりません）"}</div>${p.memo?`<p style="margin:4px 0;font-size:14px">${esc(p.memo)}</p>`:""}${w?`<p class="hint">Windows 11 ${VD(w.v)}</p>`:""}<div class="row" style="justify-content:space-between">${m?`<a class="btn" href="#pc-${esc(m.id)}">詳細・適合判定</a>`:""}<button class="btn g" data-act="rmMy" data-id="${esc(p.id)}" aria-label="削除">✕ 削除</button></div></div>`;}).join("")}</div>`:`<div class="card" style="text-align:center;color:var(--mut)">まだ登録されていません。</div>`}
+ <section class="card" style="max-width:580px"><h2>PCを登録</h2><label class="f">型番・機種名で探す<input id="myq" value="${esc(UI.myQ)}" placeholder="例：MKT44/L-F" autocomplete="off"></label>
+ ${hits.length?`<div style="border:1px solid var(--line);border-radius:6px;margin-top:6px">${hits.map(({m})=>`<button class="ph" style="grid-template-columns:1fr" data-pick="${esc(m.id)}">${esc(m.maker+" "+m.name)}</button>`).join("")}</div>`:""}
+ ${UI.myQ&&!UI.myPick&&!hits.length?`<p class="hint">見つからない場合は「データ管理」で機種を登録してから選んでください。</p>`:""}
+ <label class="f" style="margin-top:10px">呼び名（任意）<input id="mynick" placeholder="例：事務所の1台目"></label><label class="f" style="margin-top:10px">メモ（任意）<textarea id="mymemo" rows="2" placeholder="例：メモリ8GB、SSD 256GB搭載。中古で購入予定"></textarea></label>
+ <button class="btn" style="margin-top:12px" data-act="addMyForm" ${UI.myPick?"":"disabled"}>登録する</button></section>`;}
+
+/* --- 機種フォーム（データ管理・推定モード共通）--- */
+const U="__u";
+function formVals(m,preset){const sv=fl=>fl&&fl.v!==null&&fl.v!==undefined?(Array.isArray(fl.v)?fl.v.join(","):String(fl.v)):"";
+ return{maker:m?m.maker:"",series:m?m.series:"",name:m?m.name:(preset||""),orderCodes:m?m.orderCodes.join(", "):"",productCodes:m?m.productCodes.join(", "):"",category:m?m.category:"desktop",formFactor:m?m.formFactor:"",cpu:sv(m&&m.cpu),cpuGen:sv(m&&m.cpuGen),
+ memType:sv(m&&m.mem.type)||U,memForm:sv(m&&m.mem.form)||U,memSpeed:sv(m&&m.mem.speed),memStd:sv(m&&m.mem.standardGB),memSlots:sv(m&&m.mem.slots),memFree:sv(m&&m.mem.freeSlots),memMax:sv(m&&m.mem.maxGB),
+ ecc:m&&m.mem.ecc.v===true?"yes":m&&m.mem.ecc.v===false?"no":U,m2Sizes:sv(m&&m.storage.m2Sizes),m2Iface:sv(m&&m.storage.m2Iface)||U,bay25:sv(m&&m.storage.bay25),gpuSlot:sv(m&&m.gpu.slot)||U,gpuLen:sv(m&&m.gpu.maxLengthMm),psuType:sv(m&&m.psu.type)||U,psuWatt:sv(m&&m.psu.watt)};}
+function modelForm(m,preset,reqSrc,label){const v=formVals(m,preset);
+ const I=(k,l,ph,t)=>`<label class="f">${l}<input name="${k}" type="${t||"text"}" value="${esc(v[k])}" placeholder="${esc(ph||"")}"></label>`;
+ const SEL=(k,l,opts,noU)=>`<label class="f">${l}<select name="${k}">${noU?"":`<option value="${U}">要確認（不明）</option>`}${opts.map(([a,b])=>`<option value="${esc(a)}" ${v[k]===a?"selected":""}>${esc(b)}</option>`).join("")}</select></label>`;
+ return `<form id="mf"><fieldset><legend>機種</legend><div class="fg">${I("maker","メーカー","NEC / 富士通 / DELL …")}${I("series","シリーズ","Mate タイプML")}${I("name","機種名（必須）","Mate タイプML MKT44/L-F")}${I("formFactor","筐体","タワー / SFF / Micro / ノート")}${I("orderCodes","注文型番（カンマ区切り）","PC-MKT44LZ85HZF")}${I("productCodes","製品型番・型名（カンマ区切り）","MKT44/L-F")}
+ ${SEL("category","種別",[["desktop","デスクトップ"],["workstation","ワークステーション"],["notebook","ノートPC"],["bto","自作・BTO"]],true)}${I("cpu","CPU","Core i5-12400")}${I("cpuGen","CPU世代（Win11判定に使用）","Intel 第12世代 / AMD Ryzen 5000")}</div></fieldset>
+ <fieldset><legend>メモリー</legend><div class="fg">${SEL("memType","規格",[["DDR3","DDR3"],["DDR4","DDR4"],["DDR5","DDR5"],["LPDDR4x","LPDDR4x（オンボード）"],["LPDDR5","LPDDR5（オンボード）"]])}${SEL("memForm","形状",[["DIMM","DIMM（デスクトップ用）"],["SO-DIMM","SO-DIMM（ノート・小型用）"],["オンボード","オンボード（増設不可）"]])}
+ ${I("memSpeed","速度（例 3200）","3200","number")}${I("memStd","標準搭載GB","8","number")}${I("memSlots","スロット数","2","number")}${I("memFree","空きスロット","1","number")}${I("memMax","最大容量GB","32","number")}${SEL("ecc","ECC",[["yes","ECC対応"],["no","non-ECC"]])}</div></fieldset>
+ <fieldset><legend>ストレージ・拡張・電源</legend><div class="fg">${I("m2Sizes","M.2対応サイズ（例 2280,2242）","2280")}${SEL("m2Iface","M.2接続",[["NVMe","NVMeのみ"],["SATA","SATAのみ"],["NVMe/SATA","NVMe・SATA両対応"]])}${I("bay25","2.5インチベイ数","1","number")}
+ ${SEL("gpuSlot","GPU用スロット",[["x16","PCIe x16（フルサイズ可）"],["x16-lp","PCIe x16 ロープロファイル専用"],["x8-lp","PCIe x8 ロープロファイル"],["none","なし"],["custom-only","カスタムメイド専用"]])}${I("gpuLen","カード長上限mm","","number")}${SEL("psuType","電源の種類",[["専用","専用電源（交換不可）"],["ATX","ATX"],["SFX","SFX"],["ACアダプタ","ACアダプタ"]])}${I("psuWatt","電源容量W","","number")}</div>
+ <label class="f" style="margin-top:10px">注意書き（任意）<textarea name="note" rows="2" placeholder="例：情報源で最大容量が異なる 等"></textarea></label></fieldset>
+ <fieldset><legend>出典${reqSrc?"（必須）":"（任意）"}</legend><div class="fg"><label class="f">出典URL<input name="srcUrl" placeholder="https://…"></label><label class="f">出典名<input name="srcLabel" placeholder="ELECOMメモナビ など"></label><label class="f">確認日<input name="srcDate" type="date" value="${new Date().toISOString().slice(0,10)}"></label></div><p class="hint">空欄の項目は「要確認」として扱われます。入力した値にはこの出典が紐づきます。</p></fieldset>
+ ${UI.err?`<p class="err">${esc(UI.err)}</p>`:""}<button class="btn" type="submit">${label}</button></form>`;}
+function readForm(form,prev,reqSrc){const fd=Object.fromEntries(new FormData(form).entries());
+ if(!String(fd.name||"").trim())return "機種名を入力してください。";
+ const url=String(fd.srcUrl||"").trim();if(reqSrc&&!/^https?:\/\//.test(url))return "出典URL（https://〜）は必須です。";
+ const has=!!url,sid="user-"+Date.now(),src=has?[sid]:[];
+ const keep=(val,old)=>{if(val===null)return{v:null};if(old&&old.v!==null&&JSON.stringify(old.v)===JSON.stringify(val))return old;return{v:val,src,note:has?undefined:"ユーザー入力（出典なし）"};};
+ const num=k=>String(fd[k]||"").trim()===""?null:Number(fd[k]),str=k=>{const x=String(fd[k]||"").trim();return x===""||x===U?null:x;},list=k=>String(fd[k]||"").split(/[,、\s]+/).map(x=>x.trim()).filter(Boolean);
+ const b=blank({id:prev?prev.id:"um-"+Date.now(),userAdded:true});
+ return Object.assign(b,{maker:String(fd.maker).trim()||"その他",series:String(fd.series).trim()||String(fd.maker).trim(),name:String(fd.name).trim(),orderCodes:list("orderCodes"),productCodes:list("productCodes"),aliases:prev?prev.aliases:[],category:fd.category,formFactor:String(fd.formFactor).trim()||"要確認",
+  cpu:keep(str("cpu"),prev&&prev.cpu),cpuGen:keep(str("cpuGen"),prev&&prev.cpuGen),cpuReplace:prev?prev.cpuReplace:{v:null},tpm:prev?prev.tpm:{v:null},
+  mem:{type:keep(str("memType"),prev&&prev.mem.type),form:keep(str("memForm"),prev&&prev.mem.form),speed:keep(num("memSpeed"),prev&&prev.mem.speed),standardGB:keep(num("memStd"),prev&&prev.mem.standardGB),slots:keep(num("memSlots"),prev&&prev.mem.slots),freeSlots:keep(num("memFree"),prev&&prev.mem.freeSlots),maxGB:keep(num("memMax"),prev&&prev.mem.maxGB),ecc:keep(fd.ecc===U?null:fd.ecc==="yes",prev&&prev.mem.ecc)},
+  storage:{m2Sizes:keep(list("m2Sizes").length?list("m2Sizes"):null,prev&&prev.storage.m2Sizes),m2Iface:keep(str("m2Iface"),prev&&prev.storage.m2Iface),bay25:keep(num("bay25"),prev&&prev.storage.bay25),bay35:prev?prev.storage.bay35:{v:null}},
+  gpu:{slot:keep(str("gpuSlot"),prev&&prev.gpu.slot),maxLengthMm:keep(num("gpuLen"),prev&&prev.gpu.maxLengthMm),auxPower:prev?prev.gpu.auxPower:{v:null}},
+  psu:{type:keep(str("psuType"),prev&&prev.psu.type),watt:keep(num("psuWatt"),prev&&prev.psu.watt)},
+  notes:[...(prev?prev.notes:[]),...(String(fd.note||"").trim()?[String(fd.note).trim()]:[])],
+  sources:[...(prev?prev.sources:[]),...(has?[{id:sid,label:String(fd.srcLabel||"").trim()||url,url,checked:String(fd.srcDate||D)}]:[])]});}
+
+function vEst(){return `<section class="card"><h1>推定モード</h1><p class="lead">収録されていない機種でも、分かっている仕様（PCのシール、取扱説明書、CPU-Zなど）を入力すれば適合判定できます。分からない項目は「要確認」のままで大丈夫です。入力内容は検索結果には出ません。</p></section>${modelForm(UI.preset?null:ST.estimate,UI.preset?"推定："+UI.preset:"",false,"この仕様で適合判定する")}`;}
+
+function vData(){const ed=UI.edit?getModel(UI.edit):null,pf=UI.pf,c=pf.category;
+ const PI=(k,l,t,ph)=>`<label class="f">${l}<input data-pf="${k}" type="${t||"text"}" value="${esc(pf[k]||"")}" placeholder="${esc(ph||"")}"></label>`;
+ const PS=(k,l,o)=>`<label class="f">${l}<select data-pf="${k}">${o.map(([a,b])=>`<option value="${a}" ${(pf[k]||o[0][0])===a?"selected":""}>${b}</option>`).join("")}</select></label>`;
+ return `<h1>データ管理</h1><div class="tabs">${[["model","型番の登録・修正"],["part","パーツの登録"],["list","登録済み"],["backup","バックアップ"]].map(([k,l])=>`<button class="${UI.dtab===k?"on":""}" data-dtab="${k}">${l}</button>`).join("")}</div>
+ ${UI.dtab==="model"?`<p class="hint">${ed?`「${esc(ed.name)}」の仕様を追加・修正します。変更した値には今回の出典が紐づきます。`:"Webで調べた型番の仕様を登録します。出典URLは必須です。調べていない項目は空欄（要確認）のままにしてください。"}</p>${modelForm(ed,UI.preset,true,ed?"修正を保存":"型番を登録")}`:""}
+ ${UI.dtab==="part"?`<section class="card"><div class="fg">${PS("category","種類",[["memory","メモリー"],["ssd","SSD"],["gpu","グラフィック"],["psu","電源"]])}${PI("name","パーツ名","text","DDR4-3200 SO-DIMM 16GB ×2")}${PI("priceMin","価格帯 下限（円・目安）","number")}${PI("priceMax","価格帯 上限（円・目安）","number")}
+ ${c==="memory"?PS("memType","規格",[["DDR4","DDR4"],["DDR5","DDR5"],["DDR3","DDR3"]])+PS("memForm","形状",[["DIMM","DIMM"],["SO-DIMM","SO-DIMM"]])+PI("memSpeed","速度","number","3200")+PI("moduleGB","1枚の容量GB","number","16")+PI("modules","枚数","number","1")+PS("ecc","ECC",[["no","non-ECC"],["yes","ECC"]]):""}
+ ${c==="ssd"?PS("ssdIface","接続",[["NVMe","NVMe"],["SATA","SATA"]])+PS("ssdForm","形状",[["2280","M.2 2280"],["2242","M.2 2242"],["2230","M.2 2230"],["2.5","2.5インチ"]]):""}
+ ${c==="gpu"?PS("lowProfile","ロープロファイル",[["yes","対応（ロープロ）"],["no","フルサイズ"]])+PI("tdpW","消費電力W","number")+PS("needsAux","補助電源",[["no","不要"],["yes","必要"]]):""}
+ ${c==="psu"?PS("psuType","規格",[["ATX","ATX"],["SFX","SFX"]])+PI("psuWatt","容量W","number"):""}</div><button class="btn" style="margin-top:12px" data-act="savePart">パーツを登録</button></section>`:""}
+ ${UI.dtab==="list"?`<section class="card"><h2>登録した型番（${ST.userModels.length}）</h2>${ST.userModels.length?`<ul class="list">${ST.userModels.map(m=>`<li><a href="#pc-${esc(m.id)}">${esc(m.name)}</a><span class="hint" style="margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc((m.sources[m.sources.length-1]||{}).url||"出典なし")}</span><button class="btn g" data-act="rmUM" data-id="${esc(m.id)}" aria-label="削除">✕</button></li>`).join("")}</ul>`:`<p class="hint">まだありません。</p>`}
+ <h2 style="margin-top:12px">登録したパーツ（${ST.userParts.length}）</h2>${ST.userParts.length?`<ul class="list">${ST.userParts.map(p=>`<li><span>${esc(p.name)}</span><span class="hint" style="margin:0">${yen(p.priceMin)}〜${yen(p.priceMax)}</span><button class="btn g" data-act="rmUP" data-id="${esc(p.id)}" aria-label="削除">✕</button></li>`).join("")}</ul>`:`<p class="hint">まだありません。</p>`}</section>`:""}
+ ${UI.dtab==="backup"?`<section class="card"><p class="hint">登録した型番・パーツ・費用プラン・マイPCのバックアップです。${docRef?"アカウントへの保存はオンになっています（自動保存）。":""}</p>
+ <div class="row"><button class="btn" data-act="copyJson">JSONをコピー</button><button class="btn o" data-act="dlJson" id="dlJson" hidden>JSONファイルを保存</button><label class="btn o" style="cursor:pointer">JSONファイルを読み込む<input type="file" id="upJson" accept="application/json,.json" hidden></label></div>
+ <label class="f" style="margin-top:12px">またはJSONを貼り付けて読み込み<textarea id="pasteJson" rows="4" placeholder='{"app":"pcfit-pro", ...}'></textarea></label><button class="btn o" style="margin-top:8px" data-act="pasteJson">貼り付けた内容を読み込む</button><p class="hint">読み込むと現在の登録内容は置き換わります。</p></section>`:""}`;}
+
+/* ===== ルーティングと描画 ===== */
+const NAV=()=>[["search","型番検索","⌕"],["pc-"+(ST.lastViewed||"none"),"PC詳細","▤"],["plan","費用プラン"+(ST.plan.length?` (${ST.plan.length})`:""),"¥"],["my-pc","マイPC","▣"],["data","データ管理","⛁"]];
+const route=()=>(location.hash||"#search").slice(1)||"search";
+let downloads=null;
+function render(){const r=route(),app=document.getElementById("app");
+ const cur=r.startsWith("pc-")?"pc":r==="estimate"?"search":r;
+ const nav=NAV().map(([h,l,ic])=>({h,l,ic,on:(h.startsWith("pc-")?"pc":h)===cur}));
+ document.getElementById("ntop").innerHTML=nav.map(n=>`<a href="#${n.h}" class="${n.on?"on":""}">${esc(n.l)}</a>`).join("");
+ document.getElementById("nbot").innerHTML=nav.map(n=>`<a href="#${n.h}" class="${n.on?"on":""}"><span>${n.ic}</span>${esc(n.l.replace(/ \(\d+\)/,""))}</a>`).join("");
+ let h;
+ if(r.startsWith("pc-")){const id=r.slice(3);if(id!=="none"&&getModel(id)&&ST.lastViewed!==id){ST.lastViewed=id;persist();}h=vPc(id);}
+ else if(r==="plan")h=vPlan();else if(r==="my-pc")h=vMy();else if(r==="data")h=vData();else if(r==="estimate")h=vEst();else h=vSearch();
+ app.innerHTML=h;
+ if(downloads){const a=document.getElementById("dlPlan"),b=document.getElementById("dlJson");if(a)a.hidden=false;if(b)b.hidden=false;}
+}
+const exportJson=()=>JSON.stringify(Object.assign({app:"pcfit-pro",version:1,exportedAt:new Date().toISOString()},ST,{estimate:null}),null,2);
+const importJson=txt=>{const d=JSON.parse(txt);if(!d||typeof d!=="object")throw new Error("形式が違います");
+ update({userModels:Array.isArray(d.userModels)?d.userModels:[],userParts:Array.isArray(d.userParts)?d.userParts:[],plan:Array.isArray(d.plan)?d.plan:[],myPcs:Array.isArray(d.myPcs)?d.myPcs:[]});toast("バックアップを読み込みました");};
+const copy=async t=>{try{await navigator.clipboard.writeText(t);toast("コピーしました");}catch(e){toast("コピーできませんでした");}};
+const save=async(name,data)=>{if(!downloads)return;try{await downloads.save({filename:name,data});toast("保存しました");}catch(e){toast("保存はキャンセルされました");}};
+
+window.addEventListener("hashchange",()=>{UI.open=null;UI.err="";if(route()!=="data"){UI.edit=null;}window.scrollTo(0,0);render();});
+const app=document.getElementById("app");
+app.addEventListener("input",e=>{const t=e.target;
+ if(t.id==="q"){UI.q=t.value;const pos=t.selectionStart;render();const n=document.getElementById("q");n.focus();try{n.setSelectionRange(pos,pos);}catch(_){}}
+ else if(t.id==="myq"){UI.myQ=t.value;UI.myPick=null;const pos=t.selectionStart;render();const n=document.getElementById("myq");n.focus();try{n.setSelectionRange(pos,pos);}catch(_){}}
+ else if(t.dataset.pf&&t.tagName==="INPUT"){UI.pf[t.dataset.pf]=t.value;}});
+app.addEventListener("change",e=>{const t=e.target;
+ if(t.id==="mk"){UI.maker=t.value;render();}
+ else if(t.dataset.pf&&t.tagName==="SELECT"){UI.pf[t.dataset.pf]=t.value;if(t.dataset.pf==="category")render();}
+ else if(t.id==="upJson"&&t.files&&t.files[0]){t.files[0].text().then(importJson).catch(err=>toast("読み込めませんでした："+err.message));}});
+app.addEventListener("submit",e=>{e.preventDefault();const t=e.target;
+ if(t.id==="sf"){const {hits}=search(UI.q,UI.maker);if(hits.length===1)location.hash="pc-"+hits[0].m.id;return;}
+ if(t.id==="mf"){const isEst=route()==="estimate",prev=isEst?(UI.preset?null:ST.estimate):(UI.edit?getModel(UI.edit):null);
+  const res=readForm(t,prev,!isEst);if(typeof res==="string"){UI.err=res;render();return;}UI.err="";
+  if(isEst){res.id="estimate";UI.preset="";update({estimate:res});location.hash="pc-estimate";}
+  else{update(s=>({userModels:[res,...s.userModels.filter(x=>x.id!==res.id)]}));toast(UI.edit?"修正を保存しました":"型番を登録しました");UI.edit=null;UI.preset="";location.hash="pc-"+res.id;}}});
+app.addEventListener("click",e=>{const b=e.target.closest("button,[data-pick]");if(!b)return;const d=b.dataset;
+ if(d.q!==undefined){UI.q=d.q;render();return;}
+ if(d.ptab){UI.ptab=d.ptab;UI.open=null;render();return;}
+ if(d.dtab){UI.dtab=d.dtab;render();return;}
+ if(d.open){UI.open=UI.open===d.open?null:d.open;render();return;}
+ if(d.pick){const m=getModel(d.pick);UI.myPick=d.pick;UI.myQ=m?m.name:"";render();return;}
+ if(d.qty){update(s=>({plan:s.plan.map(p=>p.id===d.id?Object.assign({},p,{qty:Math.max(1,p.qty+Number(d.qty))}):p)}));return;}
+ switch(d.act){
+  case "toEst":UI.preset=UI.q;location.hash="estimate";break;
+  case "toReg":UI.preset=UI.q;UI.edit=null;UI.dtab="model";location.hash="data";break;
+  case "edit":UI.edit=d.id;UI.preset="";UI.dtab="model";location.hash="data";break;
+  case "addMy":{const m=getModel(d.id);update(s=>({myPcs:[...s.myPcs,{id:"my-"+Date.now(),nickname:m.name,modelId:m.id,memo:""}]}));toast("マイPCに登録しました");break;}
+  case "addMyForm":{const m=getModel(UI.myPick);if(!m)break;const nk=document.getElementById("mynick").value.trim(),mm=document.getElementById("mymemo").value;UI.myQ="";UI.myPick=null;update(s=>({myPcs:[...s.myPcs,{id:"my-"+Date.now(),nickname:nk||m.name,modelId:m.id,memo:mm}]}));toast("マイPCに登録しました");break;}
+  case "rmMy":update(s=>({myPcs:s.myPcs.filter(x=>x.id!==d.id)}));break;
+  case "addPlan":update(s=>({plan:[...s.plan,{id:"pl-"+Date.now(),modelId:d.m,partId:d.p,qty:1}]}));toast("費用プランに追加しました");break;
+  case "rmPlan":update(s=>({plan:s.plan.filter(x=>x.id!==d.id)}));break;
+  case "clearPlan":update({plan:[]});break;
+  case "copyPlan":copy(planText());break;
+  case "dlPlan":save(`upgrade-plan-${new Date().toISOString().slice(0,10)}.txt`,planText());break;
+  case "copyJson":copy(exportJson());break;
+  case "dlJson":save(`pcfit-backup-${new Date().toISOString().slice(0,10)}.json`,exportJson());break;
+  case "pasteJson":try{importJson(document.getElementById("pasteJson").value);}catch(err){toast("読み込めませんでした："+err.message);}break;
+  case "rmUM":update(s=>({userModels:s.userModels.filter(x=>x.id!==d.id)}));break;
+  case "rmUP":update(s=>({userParts:s.userParts.filter(x=>x.id!==d.id)}));break;
+  case "savePart":{const pf=UI.pf,c=pf.category||"memory";if(!String(pf.name||"").trim()||!pf.priceMin||!pf.priceMax){toast("パーツ名と価格帯（下限・上限）を入力してください");break;}
+   const p={id:"up-"+Date.now(),category:c,name:pf.name.trim(),priceMin:Number(pf.priceMin),priceMax:Number(pf.priceMax),userAdded:true};
+   if(c==="memory")Object.assign(p,{memType:pf.memType||"DDR4",memForm:pf.memForm||"DIMM",memSpeed:Number(pf.memSpeed||3200),moduleGB:Number(pf.moduleGB||16),modules:Number(pf.modules||1),ecc:pf.ecc==="yes"});
+   if(c==="ssd")Object.assign(p,{ssdIface:pf.ssdIface||"NVMe",ssdForm:pf.ssdForm||"2280"});
+   if(c==="gpu")Object.assign(p,{lowProfile:(pf.lowProfile||"yes")==="yes",tdpW:Number(pf.tdpW||0),needsAux:pf.needsAux==="yes"});
+   if(c==="psu")Object.assign(p,{psuType:pf.psuType||"ATX",psuWatt:Number(pf.psuWatt||0)});
+   UI.pf={category:c};update(s=>({userParts:[...s.userParts,p]}));toast("パーツを登録しました");break;}
+ }});
+render();
+(async()=>{try{if(window.claude&&window.claude.use){const dl=await window.claude.use("downloads");if(dl){downloads=dl;render();}}}catch(e){}})();
+}
+</script>
+</body>
+</html>
