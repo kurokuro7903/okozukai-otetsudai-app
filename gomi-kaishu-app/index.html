@@ -37,6 +37,7 @@ input,textarea{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:10
 #reportArea table{width:100%;border-collapse:collapse;font-size:13px;margin:6px 0 14px}
 #reportArea th,#reportArea td{border:1px solid #9ca3af;padding:5px 6px;text-align:right}
 #reportArea th:first-child,#reportArea td:first-child{text-align:left}
+.rep-bar-row{display:flex;align-items:center;gap:8px;margin:5px 0}.rep-bar-label{width:112px;font-size:12px;word-break:break-all}.rep-bar-track{flex:1;background:#f0fdf4;height:16px;border-radius:4px}.rep-bar-fill{height:100%;background:#22c55e;border-radius:4px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.rep-bar-val{width:60px;text-align:right;font-size:12px}
 #reportArea h2{font-size:18px;margin:0 0 6px}#reportArea h3{margin:14px 0 4px}
 @media print{header,.wrap,dialog{display:none!important}#reportArea{display:block!important;border:0;margin:0;max-width:none}.rep-actions{display:none!important}}
 .cal-nav{display:flex;align-items:center;gap:8px;margin:4px 0 10px}.cal-nav b{flex:1;text-align:center;font-size:18px}
@@ -83,7 +84,7 @@ dialog{border:0;border-radius:14px;padding:18px;width:min(92vw,480px)}dialog::ba
     </div>
     <div style="height:10px"></div>
     <div style="display:flex;gap:8px;margin:10px 0 4px"><button id="btnExcel" style="flex:1">📊 Excel出力</button><button id="btnPDF" class="sub" style="flex:1">📄 PDF出力</button></div>
-    <p class="muted" style="margin:0 0 8px">出力の対象は表示中の月です。Excelはファイルとして保存され、PDFは印刷画面から保存・印刷できます。</p>
+    <p class="muted" style="margin:0 0 8px">出力の対象は表示中の月です。グラフも一緒に出力されます。Excelはファイルとして保存され、PDFは印刷画面から保存・印刷できます。</p>
     <div class="cal-dow"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
     <div class="cal-grid" id="calGrid"></div>
     <p class="muted" style="margin:8px 0 0">日付ごとに記録した実際の袋数です。新しい日は0から始まります。日付をタップすると、その日の記録と、その日を含む週のまとめが表示されます。日曜は回収なしです。</p>
@@ -129,7 +130,7 @@ dialog{border:0;border-radius:14px;padding:18px;width:min(92vw,480px)}dialog::ba
   </div>
 
   <div id="list"></div>
-  <p class="muted" style="text-align:center;padding:12px">データはこの端末のブラウザに保存されます。<br>ホーム画面のアイコンから開いて使ってください。<br>バージョン10（Excel・PDF出力を追加）</p>
+  <p class="muted" style="text-align:center;padding:12px">データはこの端末のブラウザに保存されます。<br>ホーム画面のアイコンから開いて使ってください。<br>バージョン11（グラフも出力）</p>
 </div>
 
 <div id="reportArea"></div>
@@ -179,7 +180,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 </script>
 <script>
 const DAYS=[["mon","月"],["tue","火"],["wed","水"],["thu","木"],["fri","金"],["sat","土"]];
-const APP_VERSION=10;
+const APP_VERSION=11;
 async function checkUpdate(){try{const r=await fetch(location.pathname+"?check="+Date.now(),{cache:"no-store"});if(!r.ok)return;const t=await r.text();const m=t.match(/バージョン(\d+)/);if(m&&Number(m[1])>APP_VERSION){location.replace(location.pathname+"?v="+m[1]);}}catch(e){}}
 checkUpdate();
 const KEY="gomi-kaishu-home-v1";
@@ -322,18 +323,32 @@ document.getElementById("addBulk").onclick=()=>{const lines=document.getElementB
 function monthDates(){const dim=new Date(calY,calM+1,0).getDate();const out=[];for(let d=1;d<=dim;d++){const dt=new Date(calY,calM,d);out.push({iso:isoOf(dt),dt,dow:dt.getDay()})}return out}
 function facMonth(f){let total=0,days=0;monthDates().forEach(m=>{if(m.dow===0)return;if(dayEntries(f,m.iso).length){days++;total+=dayTotal(f,m.iso)}});return {total,days,avg:days?total/days:0}}
 function monthSummary(){let total=0,days=0;monthDates().forEach(m=>{if(m.dow===0)return;if(dateFacCount(m.iso)>0){days++;total+=dateTotalAll(m.iso)}});return {total,days,avg:days?total/days:0}}
+function weekdayMonth(){return DAYS.map(([code,label],idx)=>{const dow=idx+1;let total=0,days=0;monthDates().forEach(m=>{if(m.dow!==dow)return;total+=dateTotalAll(m.iso);if(dateFacCount(m.iso)>0)days++});return {code,label,total,days,avg:days?total/days:0}})}
+function barStr(v,max){if(!v||!max)return "";return "■".repeat(Math.max(1,Math.round(v/max*40)))}
+function repBars(rows){
+  const max=Math.max(1,...rows.map(r=>r[1]));
+  return rows.map(r=>`<div class="rep-bar-row"><div class="rep-bar-label">${esc(r[0])}</div><div class="rep-bar-track"><div class="rep-bar-fill" style="width:${r[1]?Math.max(2,Math.round(r[1]/max*100)):0}%"></div></div><div class="rep-bar-val">${r[1]}袋</div></div>`).join("");
+}
 function exportExcel(){
   if(typeof XLSX==="undefined"){alert("Excel用の部品が読み込めていません。開き直してから試してください。");return}
   const title=`${calY}年${calM+1}月`;
-  const facRows=[["施設名","月合計（袋）","回収日数","回収日平均（袋）"]];
-  data.facilities.map(f=>{const s=facMonth(f);return {name:f.name,total:s.total,days:s.days,avg:s.avg}}).sort((a,b)=>b.total-a.total).forEach(r=>facRows.push([r.name,r.total,r.days,Math.round(r.avg*10)/10]));
-  const sum=monthSummary(); facRows.push(["合計",sum.total,sum.days,Math.round(sum.avg*10)/10]);
+  const facData=data.facilities.map(f=>{const s=facMonth(f);return {name:f.name,total:s.total,days:s.days,avg:s.avg}}).sort((a,b)=>b.total-a.total);
+  const facMax=Math.max(1,...facData.map(r=>r.total));
+  const facRows=[["施設名","月合計（袋）","回収日数","回収日平均（袋）","グラフ"]];
+  facData.forEach(r=>facRows.push([r.name,r.total,r.days,Math.round(r.avg*10)/10,barStr(r.total,facMax)]));
+  const sum=monthSummary(); facRows.push(["合計",sum.total,sum.days,Math.round(sum.avg*10)/10,""]);
+  const wdData=weekdayMonth(); const wdMax=Math.max(1,...wdData.map(r=>r.total));
+  const wdRows=[["曜日","合計（袋）","記録があった日数","回収日平均（袋）","グラフ"]];
+  wdData.forEach(r=>wdRows.push([r.label+"曜日",r.total,r.days,Math.round(r.avg*10)/10,barStr(r.total,wdMax)]));
   const detailRows=[["日付","曜日","施設名","袋数","回数"]];
   monthDates().forEach(m=>{if(m.dow===0)return;data.facilities.map(f=>({name:f.name,t:dayTotal(f,m.iso),n:dayEntries(f,m.iso).length})).filter(x=>x.n>0).sort((a,b)=>b.t-a.t).forEach(x=>detailRows.push([m.iso,DOW_LABEL[m.dow],x.name,x.t,x.n]))});
-  const dayRows=[["日付","曜日","合計（袋）","施設数"]];
-  monthDates().forEach(m=>{if(m.dow===0)return;dayRows.push([m.iso,DOW_LABEL[m.dow],dateTotalAll(m.iso),dateFacCount(m.iso)])});
+  const dayData=monthDates().filter(m=>m.dow!==0).map(m=>({iso:m.iso,dow:m.dow,total:dateTotalAll(m.iso),fc:dateFacCount(m.iso)}));
+  const dayMax=Math.max(1,...dayData.map(r=>r.total));
+  const dayRows=[["日付","曜日","合計（袋）","施設数","グラフ"]];
+  dayData.forEach(r=>dayRows.push([r.iso,DOW_LABEL[r.dow],r.total,r.fc,barStr(r.total,dayMax)]));
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(facRows),"施設別集計");
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(wdRows),"曜日別集計");
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(detailRows),"日別明細");
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(dayRows),"日別合計");
   XLSX.writeFile(wb,`ゴミ回収_${title}.xlsx`);
@@ -345,6 +360,10 @@ function exportPDF(){
   const dayRows=monthDates().filter(m=>m.dow!==0&&dateFacCount(m.iso)>0);
   const now=new Date();
   let h=`<h2>ゴミ回収量 月次レポート（${title}）</h2><p>作成日：${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()} ／ 月合計 ${sum.total}袋 ・ 回収日数 ${sum.days}日 ・ 回収日平均 ${fmt(sum.avg)}袋</p>`;
+  h+=`<h3>曜日別グラフ（${title}の合計）</h3>`+repBars(weekdayMonth().map(r=>[r.label+"曜日",r.total]));
+  const facGraph=facRows.filter(r=>r.total>0);
+  h+=`<h3>施設別グラフ（月合計）</h3>`+(facGraph.length?repBars(facGraph.map(r=>[r.name,r.total])):`<p class="muted">記録がある施設がありません。</p>`);
+  h+=`<h3>日別グラフ（記録がある日）</h3>`+(dayRows.length?repBars(dayRows.map(m=>[`${m.dt.getMonth()+1}/${m.dt.getDate()}（${DOW_LABEL[m.dow]}）`,dateTotalAll(m.iso)])):`<p class="muted">記録がある日がありません。</p>`);
   h+=`<h3>施設別集計</h3><table><tr><th>施設名</th><th>月合計（袋）</th><th>回収日数</th><th>回収日平均（袋）</th></tr>`;
   facRows.forEach(r=>{h+=`<tr><td>${esc(r.name)}</td><td>${r.total}</td><td>${r.days}</td><td>${r.days?fmt(r.avg):"-"}</td></tr>`});
   h+=`<tr><td><b>合計</b></td><td><b>${sum.total}</b></td><td><b>${sum.days}</b></td><td><b>${sum.days?fmt(sum.avg):"-"}</b></td></tr></table>`;
