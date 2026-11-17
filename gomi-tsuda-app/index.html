@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ゴミ回収アプリ特別版</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ゴミ回収特別版">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2316a34a'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle'%3E%F0%9F%97%91%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2316a34a'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle'%3E%F0%9F%97%91%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;background:#f0fdf4;color:#14532d}
+header{background:#16a34a;color:#fff;padding:16px;position:sticky;top:0;z-index:10}header h1{margin:0;font-size:19px}header p{margin:4px 0 0;font-size:12px;opacity:.9}
+.wrap{max-width:720px;margin:0 auto;padding:12px 12px 32px}
+.card{background:#fff;border:1px solid #bbf7d0;border-radius:14px;padding:14px;margin:12px 0;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.card h2{margin:0 0 10px;font-size:17px}
+.stats{display:flex;gap:8px;flex-wrap:wrap}.stat{flex:1;min-width:100px;background:#f0fdf4;border-radius:10px;padding:10px;text-align:center}.stat b{display:block;font-size:22px;color:#15803d}.stat span{font-size:12px;color:#166534}
+button{border:0;border-radius:10px;padding:10px 14px;font-size:15px;background:#16a34a;color:#fff;cursor:pointer}button.sub{background:#e5e7eb;color:#111}button.danger{background:#fee2e2;color:#991b1b}button.small{padding:6px 10px;font-size:13px}
+input,textarea{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:10px;font-size:16px;background:#fff}
+.muted{color:#666;font-size:13px;line-height:1.6}
+.fac{border:1px solid #bbf7d0;border-radius:12px;padding:12px;margin:10px 0;background:#fbfdfc}
+.fac-head{display:flex;align-items:center;gap:8px}.fac-head b{flex:1;font-size:16px}
+.badge{font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:#e5e7eb;color:#555}.badge.done{background:#dcfce7;color:#15803d}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.chip{font-size:13px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:999px;padding:4px 10px}.chip b{color:#15803d}
+.memo-line{font-size:13px;color:#555;margin-top:6px;white-space:pre-wrap;word-break:break-word}
+.cal-nav{display:flex;align-items:center;gap:8px;margin:4px 0 10px}.cal-nav b{flex:1;text-align:center;font-size:18px}
+.cal-dow,.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal-dow div{text-align:center;font-size:12px;font-weight:700;color:#166534;padding:2px 0}.cal-dow div:first-child{color:#dc2626}.cal-dow div:last-child{color:#2563eb}
+.cal-cell{min-height:58px;border:1px solid #bbf7d0;border-radius:10px;padding:5px 4px;background:#fbfdfc;cursor:pointer;text-align:center}
+.cal-cell.empty{border:0;background:transparent;cursor:default;min-height:10px}
+.cal-cell .dnum{font-size:14px;font-weight:700}.cal-cell.sun .dnum{color:#dc2626}.cal-cell.satd .dnum{color:#2563eb}
+.cal-cell .mark{font-size:11px;color:#f59e0b;line-height:1}.cal-cell .bags{font-size:12px;font-weight:700;color:#15803d}
+.cal-cell.today{outline:2px solid #f59e0b;outline-offset:-2px}.cal-cell.selected{background:#dcfce7;border-color:#16a34a}
+.bar-row{display:flex;align-items:center;gap:8px;margin:7px 0}.bar-label{width:38%;font-size:13px;font-weight:600;word-break:break-all}.bar-track{flex:1;background:#f0fdf4;border-radius:8px;height:20px;overflow:hidden}.bar-fill{height:100%;background:#22c55e;border-radius:8px;min-width:2px}.bar-fill.max{background:#f97316}.bar-val{width:64px;text-align:right;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:7px 4px;border-bottom:1px solid #e5e7eb;text-align:right}th:first-child,td:first-child{text-align:left}
+.hist{border-bottom:1px solid #e5e7eb;padding:10px 0}.hist:last-child{border-bottom:0}
+.hist-head{display:flex;gap:8px;align-items:center}.hist-head b{flex:1}
+.cat-row{display:flex;align-items:center;gap:8px;margin:12px 0}.cat-row label{width:110px;font-weight:700;font-size:15px}
+.stepper{display:flex;align-items:center;gap:6px;flex:1}.stepper button{width:44px;height:44px;padding:0;font-size:20px;flex:none}.stepper input{text-align:center}
+dialog{border:0;border-radius:14px;padding:18px;width:min(92vw,480px)}dialog::backdrop{background:rgba(0,0,0,.4)}
+.version{text-align:center;color:#666;font-size:13px;padding:16px 8px 4px;line-height:1.7}
+</style>
+</head>
+<body>
+<header><h1>🗑️ ゴミ回収アプリ特別版</h1><p>施設5件 ／ 可燃・不燃・缶・瓶・ペット</p></header>
+<div class="wrap">
+
+  <div class="card">
+    <h2>📝 今日の記録</h2>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input type="date" id="dateInput" style="flex:1">
+      <button class="sub" id="btnToday" style="flex:none">今日</button>
+    </div>
+    <div style="height:10px"></div>
+    <div class="stats">
+      <div class="stat"><b id="dayTotal">0</b><span>この日の合計（袋）</span></div>
+      <div class="stat"><b id="dayDone">0/5件</b><span>回収済み施設</span></div>
+    </div>
+    <div id="facList"></div>
+    <p class="muted" style="margin:6px 0 0">施設の「記録する／編集する」から、その日の袋数を入力できます。データはこのiPhoneの中に保存されます（Muse保存版とは同期しません）。</p>
+  </div>
+
+  <div class="card">
+    <h2>📅 月間カレンダー</h2>
+    <div class="cal-nav">
+      <button class="sub small" id="calPrev">◀ 前月</button>
+      <b id="calTitle"></b>
+      <button class="sub small" id="calToday">今月</button>
+      <button class="sub small" id="calNext">次月 ▶</button>
+    </div>
+    <div class="cal-dow"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
+    <div class="cal-grid" id="calGrid"></div>
+    <p class="muted" style="margin:8px 0 0">● は記録がある日です。数字はその日の合計袋数。日付をタップすると、その日の記録に切り替わります。</p>
+  </div>
+
+  <div class="card">
+    <h2>📊 月次集計（<span id="sumMonthLabel"></span>）</h2>
+    <div class="stats">
+      <div class="stat"><b id="monthTotal">0</b><span>月の合計（袋）</span></div>
+      <div class="stat"><b id="monthDays">0</b><span>記録日数</span></div>
+    </div>
+    <h3 style="margin:16px 0 6px;font-size:15px">項目別合計</h3>
+    <div id="catSummary"></div>
+    <h3 style="margin:16px 0 6px;font-size:15px">施設別内訳</h3>
+    <div id="facSummary"></div>
+    <div style="overflow-x:auto;margin-top:10px"><table><thead><tr><th>施設</th><th>可燃</th><th>不燃</th><th>缶・瓶・ペット</th><th>合計</th></tr></thead><tbody id="sumBody"></tbody></table></div>
+  </div>
+
+  <div class="card">
+    <h2>📚 履歴</h2>
+    <div id="history"></div>
+  </div>
+
+  <p class="version">データはこの端末のブラウザに保存されます。<br>ホーム画面のアイコンから開いて使ってください。<br><b>バージョン1（ホーム画面版）</b></p>
+</div>
+
+<dialog id="editor">
+  <h3 id="edTitle" style="margin-top:0"></h3>
+  <p class="muted" style="margin-top:0">袋数を入力してください。新しい入力は空欄から始まります（空欄は0として扱います）。</p>
+  <div id="edCats"></div>
+  <label style="font-weight:700;font-size:15px">メモ</label>
+  <div style="height:6px"></div>
+  <textarea id="edMemo" rows="2" placeholder="メモ（任意）"></textarea>
+  <div style="height:12px"></div>
+  <button id="edSave" style="width:100%">記録する</button>
+  <div style="height:8px"></div>
+  <button id="edDelete" class="danger" style="width:100%">この記録を消す</button>
+  <div style="height:8px"></div>
+  <button id="edClose" class="sub" style="width:100%">閉じる</button>
+</dialog>
+
+<script>
+var KEY = 'gomi-tsuda-hachiman-home-v1';
+var FACILITIES = ['津田消防署','津田コミセン','八万交流会','八万コミセン','八万支所'];
+var CATS = [
+  {key:'burn', label:'可燃'},
+  {key:'nonburn', label:'不燃'},
+  {key:'cans', label:'缶・瓶・ペット'}
+];
+function pad(n){return (n<10?'0':'')+n;}
+function todayStr(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function load(){try{var v=JSON.parse(localStorage.getItem(KEY));return Array.isArray(v)?v:[];}catch(e){return[];}}
+function save(){localStorage.setItem(KEY, JSON.stringify(records));}
+var records = load();
+var selectedDate = todayStr();
+var calCursor = new Date(); calCursor.setDate(1);
+var editingFacility = null;
+
+function recTotal(r){return CATS.reduce(function(s,c){return s+(+r[c.key]||0);},0);}
+function findRec(date, fac){for(var i=0;i<records.length;i++){if(records[i].date===date&&records[i].facility===fac)return records[i];}return null;}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
+function fmtDate(ds){var p=ds.split('-');var d=new Date(+p[0],+p[1]-1,+p[2]);var dow=['日','月','火','水','木','金','土'][d.getDay()];return (+p[1])+'/'+(+p[2])+'（'+dow+'）';}
+
+function renderDay(){
+  document.getElementById('dateInput').value = selectedDate;
+  var total=0, done=0, html='';
+  FACILITIES.forEach(function(fac){
+    var r=findRec(selectedDate, fac);
+    if(r){done++; total+=recTotal(r);}
+    html+='<div class="fac"><div class="fac-head"><b>'+esc(fac)+'</b>';
+    html+='<span class="badge'+(r?' done':'')+'">'+(r?'記録済み':'未記録')+'</span>';
+    html+='<button class="small" data-fac="'+esc(fac)+'">'+(r?'編集する':'記録する')+'</button></div>';
+    if(r){
+      html+='<div class="chips">'+CATS.map(function(c){return '<span class="chip">'+c.label+' <b>'+(+r[c.key]||0)+'</b></span>';}).join('')+'<span class="chip">合計 <b>'+recTotal(r)+'</b></span></div>';
+      if(r.memo) html+='<div class="memo-line">📝 '+esc(r.memo)+'</div>';
+    }
+    html+='</div>';
+  });
+  document.getElementById('facList').innerHTML=html;
+  document.getElementById('dayTotal').textContent=total;
+  document.getElementById('dayDone').textContent=done+'/5件';
+  Array.prototype.forEach.call(document.querySelectorAll('#facList button[data-fac]'),function(b){
+    b.addEventListener('click',function(){openEditor(b.getAttribute('data-fac'));});
+  });
+}
+
+function renderCal(){
+  var y=calCursor.getFullYear(), m=calCursor.getMonth();
+  document.getElementById('calTitle').textContent=y+'年'+(m+1)+'月';
+  document.getElementById('sumMonthLabel').textContent=y+'年'+(m+1)+'月';
+  var firstDow=new Date(y,m,1).getDay();
+  var lastDay=new Date(y,m+1,0).getDate();
+  var today=todayStr(), html='';
+  for(var i=0;i<firstDow;i++) html+='<div class="cal-cell empty"></div>';
+  for(var d=1;d<=lastDay;d++){
+    var ds=y+'-'+pad(m+1)+'-'+pad(d);
+    var dow=new Date(y,m,d).getDay();
+    var dayRecs=records.filter(function(r){return r.date===ds;});
+    var tot=dayRecs.reduce(function(s,r){return s+recTotal(r);},0);
+    var cls='cal-cell'+(dow===0?' sun':'')+(dow===6?' satd':'')+(ds===today?' today':'')+(ds===selectedDate?' selected':'');
+    html+='<div class="'+cls+'" data-date="'+ds+'"><div class="dnum">'+d+'</div>';
+    if(dayRecs.length) html+='<div class="mark">●</div><div class="bags">'+tot+'袋</div>';
+    html+='</div>';
+  }
+  document.getElementById('calGrid').innerHTML=html;
+  Array.prototype.forEach.call(document.querySelectorAll('.cal-cell[data-date]'),function(c){
+    c.addEventListener('click',function(){selectedDate=c.getAttribute('data-date');renderAll();window.scrollTo({top:0,behavior:'smooth'});});
+  });
+  // 月次集計
+  var prefix=y+'-'+pad(m+1)+'-';
+  var mRecs=records.filter(function(r){return r.date.indexOf(prefix)===0;});
+  var mTotal=mRecs.reduce(function(s,r){return s+recTotal(r);},0);
+  var mDays={}; mRecs.forEach(function(r){mDays[r.date]=1;});
+  document.getElementById('monthTotal').textContent=mTotal;
+  document.getElementById('monthDays').textContent=Object.keys(mDays).length;
+  var catHtml='', catMax=0;
+  CATS.forEach(function(c){var t=mRecs.reduce(function(s,r){return s+(+r[c.key]||0);},0); if(t>catMax)catMax=t;});
+  CATS.forEach(function(c){
+    var t=mRecs.reduce(function(s,r){return s+(+r[c.key]||0);},0);
+    var pct=catMax?Math.max(2,Math.round(t/catMax*100)):0;
+    catHtml+='<div class="bar-row"><div class="bar-label">'+c.label+'</div><div class="bar-track"><div class="bar-fill'+(t===catMax&&t>0?' max':'')+'" style="width:'+pct+'%"></div></div><div class="bar-val">'+t+'袋</div></div>';
+  });
+  document.getElementById('catSummary').innerHTML=catHtml;
+  var facTotals=FACILITIES.map(function(fac){
+    var fr=mRecs.filter(function(r){return r.facility===fac;});
+    var o={facility:fac,total:fr.reduce(function(s,r){return s+recTotal(r);},0)};
+    CATS.forEach(function(c){o[c.key]=fr.reduce(function(s,r){return s+(+r[c.key]||0);},0);});
+    return o;
+  });
+  var fMax=0; facTotals.forEach(function(f){if(f.total>fMax)fMax=f.total;});
+  var facHtml='';
+  facTotals.forEach(function(f){
+    var pct=fMax?Math.max(2,Math.round(f.total/fMax*100)):0;
+    facHtml+='<div class="bar-row"><div class="bar-label">'+esc(f.facility)+'</div><div class="bar-track"><div class="bar-fill'+(f.total===fMax&&f.total>0?' max':'')+'" style="width:'+pct+'%"></div></div><div class="bar-val">'+f.total+'袋</div></div>';
+  });
+  document.getElementById('facSummary').innerHTML=facHtml;
+  document.getElementById('sumBody').innerHTML=facTotals.map(function(f){
+    return '<tr><td>'+esc(f.facility)+'</td><td>'+f.burn+'</td><td>'+f.nonburn+'</td><td>'+f.cans+'</td><td><b>'+f.total+'</b></td></tr>';
+  }).join('');
+}
+
+function renderHistory(){
+  var sorted=records.slice().sort(function(a,b){return a.date<b.date?1:(a.date>b.date?-1:FACILITIES.indexOf(a.facility)-FACILITIES.indexOf(b.facility));});
+  if(!sorted.length){document.getElementById('history').innerHTML='<p class="muted">まだ記録がありません。</p>';return;}
+  document.getElementById('history').innerHTML=sorted.map(function(r){
+    var chips=CATS.map(function(c){return c.label+' '+(+r[c.key]||0);}).join(' ／ ');
+    return '<div class="hist"><div class="hist-head"><b>'+esc(r.date)+' '+fmtDate(r.date)+' ・ '+esc(r.facility)+'</b><button class="sub small" data-edit="'+esc(r.date)+'|'+esc(r.facility)+'">編集</button><button class="danger small" data-del="'+esc(r.id)+'">削除</button></div>'
+      +'<div class="muted">'+esc(chips)+' ／ 合計 '+recTotal(r)+'袋</div>'
+      +(r.memo?'<div class="memo-line">📝 '+esc(r.memo)+'</div>':'')+'</div>';
+  }).join('');
+  Array.prototype.forEach.call(document.querySelectorAll('#history button[data-edit]'),function(b){
+    b.addEventListener('click',function(){var p=b.getAttribute('data-edit').split('|');selectedDate=p[0];renderAll();openEditor(p[1]);});
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('#history button[data-del]'),function(b){
+    b.addEventListener('click',function(){
+      if(!confirm('この記録を消しますか？'))return;
+      records=records.filter(function(r){return String(r.id)!==b.getAttribute('data-del');});
+      save(); renderAll();
+    });
+  });
+}
+
+function renderAll(){renderDay();renderCal();renderHistory();}
+
+function openEditor(fac){
+  editingFacility=fac;
+  var r=findRec(selectedDate, fac);
+  document.getElementById('edTitle').textContent=fac+'（'+selectedDate+' '+fmtDate(selectedDate)+'）';
+  document.getElementById('edCats').innerHTML=CATS.map(function(c){
+    var v=r?(+r[c.key]||0):0;
+    return '<div class="cat-row"><label>'+c.label+'</label><div class="stepper"><button type="button" data-step="'+c.key+'|-1">−</button><input type="number" inputmode="numeric" min="0" id="in-'+c.key+'" placeholder="0" value="'+(v>0?v:'')+'"><button type="button" data-step="'+c.key+'|1">＋</button></div></div>';
+  }).join('');
+  document.getElementById('edMemo').value=r?(r.memo||''):'';
+  document.getElementById('edDelete').style.display=r?'':'none';
+  document.getElementById('edSave').textContent=r?'更新する':'記録する';
+  Array.prototype.forEach.call(document.querySelectorAll('#edCats button[data-step]'),function(b){
+    b.addEventListener('click',function(){
+      var p=b.getAttribute('data-step').split('|');
+      var inp=document.getElementById('in-'+p[0]);
+      var cur=parseInt(inp.value,10); if(isNaN(cur))cur=0;
+      var nv=Math.max(0,cur+(+p[1]));
+      inp.value=nv>0?nv:'';
+    });
+  });
+  document.getElementById('editor').showModal();
+}
+
+document.getElementById('edSave').addEventListener('click',function(){
+  var vals={}, total=0;
+  CATS.forEach(function(c){var n=parseInt(document.getElementById('in-'+c.key).value,10); if(isNaN(n)||n<0)n=0; vals[c.key]=n; total+=n;});
+  var memo=document.getElementById('edMemo').value.trim();
+  var r=findRec(selectedDate, editingFacility);
+  if(total===0 && !memo){
+    if(r){records=records.filter(function(x){return x!==r;}); save();}
+    document.getElementById('editor').close(); renderAll(); return;
+  }
+  if(r){CATS.forEach(function(c){r[c.key]=vals[c.key];}); r.memo=memo;}
+  else{var nr={id:Date.now(),date:selectedDate,facility:editingFacility,memo:memo}; CATS.forEach(function(c){nr[c.key]=vals[c.key];}); records.push(nr);}
+  save(); document.getElementById('editor').close(); renderAll();
+});
+document.getElementById('edDelete').addEventListener('click',function(){
+  if(!confirm('この記録を消しますか？'))return;
+  records=records.filter(function(r){return !(r.date===selectedDate&&r.facility===editingFacility);});
+  save(); document.getElementById('editor').close(); renderAll();
+});
+document.getElementById('edClose').addEventListener('click',function(){document.getElementById('editor').close();});
+document.getElementById('dateInput').addEventListener('change',function(e){if(e.target.value){selectedDate=e.target.value;var p=selectedDate.split('-');calCursor=new Date(+p[0],+p[1]-1,1);renderAll();}});
+document.getElementById('btnToday').addEventListener('click',function(){selectedDate=todayStr();var d=new Date();calCursor=new Date(d.getFullYear(),d.getMonth(),1);renderAll();});
+document.getElementById('calPrev').addEventListener('click',function(){calCursor=new Date(calCursor.getFullYear(),calCursor.getMonth()-1,1);renderCal();});
+document.getElementById('calNext').addEventListener('click',function(){calCursor=new Date(calCursor.getFullYear(),calCursor.getMonth()+1,1);renderCal();});
+document.getElementById('calToday').addEventListener('click',function(){var d=new Date();calCursor=new Date(d.getFullYear(),d.getMonth(),1);renderCal();});
+renderAll();
+</script>
+</body>
+</html>
