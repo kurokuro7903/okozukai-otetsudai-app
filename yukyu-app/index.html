@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="有休管理">
+<meta name="theme-color" content="#2e7d6b">
+<title>有休管理（タブレット版）</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin:0; font-family: -apple-system, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif; background:#f4f6f5; color:#222; }
+  header { background:#2e7d6b; color:#fff; padding:14px 18px; }
+  header h1 { margin:0; font-size:22px; }
+  header p { margin:4px 0 0; font-size:13px; opacity:.9; }
+  main { max-width:1150px; margin:0 auto; padding:14px 16px 30px; }
+  .card { background:#fff; border-radius:12px; padding:14px 16px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,.08); }
+  .card h2 { margin:0 0 10px; font-size:16px; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { border:2px solid #2e7d6b; background:#fff; color:#2e7d6b; border-radius:999px; padding:9px 18px; font-size:16px; font-weight:600; cursor:pointer; }
+  .chip.selected { background:#2e7d6b; color:#fff; }
+  .stats { display:flex; gap:12px; flex-wrap:wrap; margin-top:12px; }
+  .stat { background:#eef5f2; border-radius:10px; padding:10px 16px; min-width:150px; }
+  .stat .label { font-size:12px; color:#555; }
+  .stat .value { font-size:22px; font-weight:700; }
+  .monthbar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .monthbar .title { font-size:22px; font-weight:700; margin:0 6px; }
+  .btn { border:1px solid #bbb; background:#fff; border-radius:8px; padding:9px 16px; font-size:15px; cursor:pointer; }
+  .btn.primary { background:#2e7d6b; border-color:#2e7d6b; color:#fff; font-weight:600; }
+  .btn.danger { background:#c62828; border-color:#c62828; color:#fff; }
+  .btn.small { padding:5px 10px; font-size:13px; }
+  table.cal { width:100%; border-collapse:collapse; table-layout:fixed; }
+  table.cal th { padding:8px 0; font-size:14px; border:1px solid #ddd; background:#fafafa; }
+  table.cal th.sun { color:#c62828; }
+  table.cal th.sat { color:#1565c0; }
+  table.cal td { border:1px solid #ddd; vertical-align:top; height:104px; padding:5px 6px; cursor:pointer; background:#fff; }
+  table.cal td.other { background:#f3f3f3; color:#aaa; cursor:default; }
+  table.cal td.today { outline:3px solid #f9a825; outline-offset:-3px; }
+  table.cal td .day { font-size:15px; font-weight:700; }
+  table.cal td.sun .day { color:#c62828; }
+  table.cal td.sat .day { color:#1565c0; }
+  .names { margin-top:3px; display:flex; flex-direction:column; gap:2px; }
+  .name-tag { font-size:13px; line-height:1.25; background:#e8f3ef; border-radius:4px; padding:1px 5px; word-break:break-all; }
+  .name-tag.half { background:#fff3e0; }
+  .name-tag.mine { background:#2e7d6b; color:#fff; font-weight:700; }
+  .overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; z-index:50; padding:16px; }
+  .overlay.open { display:flex; }
+  .dialog { background:#fff; border-radius:14px; padding:20px; width:100%; max-width:480px; max-height:90vh; overflow:auto; }
+  .dialog h3 { margin:0 0 6px; font-size:19px; }
+  .dialog .who { color:#2e7d6b; font-weight:700; margin-bottom:12px; }
+  .kindrow { display:flex; gap:8px; margin-bottom:12px; }
+  .kindbtn { flex:1; border:2px solid #bbb; background:#fff; border-radius:10px; padding:12px 4px; font-size:15px; font-weight:600; cursor:pointer; }
+  .kindbtn.selected { border-color:#2e7d6b; background:#e8f3ef; color:#2e7d6b; }
+  .dialog input[type=text], .dialog textarea { width:100%; border:1px solid #bbb; border-radius:8px; padding:10px; font-size:15px; margin-bottom:12px; }
+  .dialog .actions { display:flex; gap:8px; flex-wrap:wrap; }
+  .member-row { display:flex; align-items:center; gap:6px; padding:7px 0; border-bottom:1px solid #eee; }
+  .member-row .nm { flex:1; font-size:16px; font-weight:600; }
+  .addrow { display:flex; gap:8px; margin:12px 0; }
+  .addrow input { flex:1; border:1px solid #bbb; border-radius:8px; padding:10px; font-size:15px; }
+  textarea.bulk { width:100%; border:1px solid #bbb; border-radius:8px; padding:10px; font-size:15px; }
+  footer { text-align:center; color:#777; font-size:13px; padding:14px 0 22px; }
+  @media (max-width:700px) {
+    table.cal td { height:84px; }
+    .name-tag { font-size:11px; }
+    header h1 { font-size:19px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>📅 有休管理</h1>
+  <p>名前を選んで、日付をタップすると有休を登録できます</p>
+</header>
+<main>
+  <section class="card">
+    <h2>① 名前を選ぶ（タップ）</h2>
+    <div class="chips" id="chips"></div>
+    <div class="stats" id="stats"></div>
+    <div style="margin-top:12px;">
+      <button class="btn" id="manageBtn">⚙ 名前を管理（追加・編集・削除・並び替え）</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="monthbar">
+      <button class="btn" id="prevBtn">◀ 前月</button>
+      <span class="title" id="monthTitle"></span>
+      <button class="btn" id="nextBtn">翌月 ▶</button>
+      <button class="btn" id="todayBtn">今月</button>
+    </div>
+    <div style="height:10px"></div>
+    <table class="cal">
+      <thead><tr>
+        <th class="sun">日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th class="sat">土</th>
+      </tr></thead>
+      <tbody id="calBody"></tbody>
+    </table>
+    <p style="font-size:13px;color:#666;margin:10px 0 0;">② カレンダーの日付をタップ → 全日有休／午前半休／午後半休（オレンジ色）を選んで登録。半休は0.5日で集計します。</p>
+  </section>
+</main>
+<footer>有休管理アプリ　バージョン1（タブレット版）<br>データはこのタブレットの中に保存されます</footer>
+
+<!-- 有休入力ダイアログ -->
+<div class="overlay" id="leaveOverlay">
+  <div class="dialog">
+    <h3 id="dlgDate"></h3>
+    <div class="who" id="dlgWho"></div>
+    <div class="kindrow">
+      <button class="kindbtn" data-kind="full">全日有休</button>
+      <button class="kindbtn" data-kind="am">午前半休</button>
+      <button class="kindbtn" data-kind="pm">午後半休</button>
+    </div>
+    <input type="text" id="dlgMemo" placeholder="メモ（任意）">
+    <div class="actions">
+      <button class="btn primary" id="dlgSave">登録する</button>
+      <button class="btn danger" id="dlgDelete">取り消す</button>
+      <button class="btn" id="dlgClose">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<!-- 名前管理ダイアログ -->
+<div class="overlay" id="manageOverlay">
+  <div class="dialog" style="max-width:560px;">
+    <h3>名前を管理</h3>
+    <div id="memberList"></div>
+    <div class="addrow">
+      <input type="text" id="newName" placeholder="追加する名前（名字）">
+      <button class="btn primary" id="addBtn">追加</button>
+    </div>
+    <p style="font-size:13px;color:#555;margin:6px 0;">まとめて追加（1行に1名）</p>
+    <textarea class="bulk" id="bulkText" rows="4" placeholder="名字を1行に1名ずつ入力"></textarea>
+    <div class="actions" style="margin-top:10px;">
+      <button class="btn primary" id="bulkBtn">一括追加</button>
+      <button class="btn" id="manageClose">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var KEY = "yukyuTabletV1";
+  var KIND_LABEL = { full: "全日", am: "午前", pm: "午後" };
+  var KIND_VALUE = { full: 1, am: 0.5, pm: 0.5 };
+
+  function seed(){
+    var names = ["松村","三木","斎藤","森","坂田","上田","福田","小松","上野","境","松本","千田","野上","立野","藤本","青木"];
+    var members = names.map(function(n, i){ return { id: i + 1, name: n }; });
+    // 坂田は5番目（id=5）
+    var leaves = [
+      { memberId: 5, date: "2026-11-28", kind: "pm", memo: "" },
+      { memberId: 5, date: "2026-12-12", kind: "pm", memo: "" }
+    ];
+    return { members: members, leaves: leaves, nextId: 17 };
+  }
+  function load(){
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) { var d = JSON.parse(raw); if (d && d.members && d.leaves) return d; }
+    } catch(e) {}
+    var s = seed();
+    save(s);
+    return s;
+  }
+  function save(d){ try { localStorage.setItem(KEY, JSON.stringify(d)); } catch(e) {} }
+
+  var data = load();
+  var selectedId = data.members.length ? data.members[0].id : null;
+  var now = new Date();
+  var viewYear = now.getFullYear(), viewMonth = now.getMonth();
+  var dlgDateStr = null, dlgKind = "full";
+
+  function fmt(y, m, d){ return y + "-" + String(m + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0"); }
+  function memberName(id){ var m = data.members.find(function(x){ return x.id === id; }); return m ? m.name : ""; }
+  function leavesOn(dateStr){ return data.leaves.filter(function(l){ return l.date === dateStr; }); }
+  function findLeave(mid, dateStr){ return data.leaves.find(function(l){ return l.memberId === mid && l.date === dateStr; }); }
+  function totalFor(mid, year, month){
+    var sum = 0;
+    data.leaves.forEach(function(l){
+      if (l.memberId !== mid) return;
+      var p = l.date.split("-");
+      if (parseInt(p[0], 10) !== year) return;
+      if (month !== null && parseInt(p[1], 10) - 1 !== month) return;
+      sum += KIND_VALUE[l.kind] || 0;
+    });
+    return sum;
+  }
+  function fmtDays(v){ return (Math.round(v * 10) / 10).toString().replace(/\.0$/, "") + "日"; }
+
+  function renderChips(){
+    var wrap = document.getElementById("chips");
+    wrap.innerHTML = "";
+    data.members.forEach(function(m){
+      var b = document.createElement("button");
+      b.className = "chip" + (m.id === selectedId ? " selected" : "");
+      b.textContent = m.name;
+      b.addEventListener("click", function(){ selectedId = m.id; renderAll(); });
+      wrap.appendChild(b);
+    });
+    if (!data.members.length) wrap.innerHTML = "<span style='color:#888'>名前がまだ登録されていません。「名前を管理」から追加してください。</span>";
+    renderStats();
+  }
+  function renderStats(){
+    var el = document.getElementById("stats");
+    if (selectedId === null || !memberName(selectedId)) { el.innerHTML = ""; return; }
+    var mSum = totalFor(selectedId, viewYear, viewMonth);
+    var ySum = totalFor(selectedId, viewYear, null);
+    el.innerHTML =
+      "<div class='stat'><div class='label'>" + memberName(selectedId) + " さん ・ " + viewYear + "年" + (viewMonth + 1) + "月の取得</div><div class='value'>" + fmtDays(mSum) + "</div></div>" +
+      "<div class='stat'><div class='label'>" + memberName(selectedId) + " さん ・ " + viewYear + "年の取得</div><div class='value'>" + fmtDays(ySum) + "</div></div>";
+  }
+
+  function renderCalendar(){
+    document.getElementById("monthTitle").textContent = viewYear + "年 " + (viewMonth + 1) + "月";
+    var body = document.getElementById("calBody");
+    body.innerHTML = "";
+    var first = new Date(viewYear, viewMonth, 1);
+    var startDay = first.getDay();
+    var daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+    var daysInPrev = new Date(viewYear, viewMonth, 0).getDate();
+    var todayStr = fmt(now.getFullYear(), now.getMonth(), now.getDate());
+    var cellDate = 1 - startDay;
+    for (var week = 0; week < 6; week++){
+      var tr = document.createElement("tr");
+      for (var dow = 0; dow < 7; dow++){
+        var td = document.createElement("td");
+        var d = new Date(viewYear, viewMonth, cellDate);
+        var isOther = d.getMonth() !== viewMonth;
+        var ds = fmt(d.getFullYear(), d.getMonth(), d.getDate());
+        if (isOther) td.className = "other";
+        if (dow === 0) td.classList.add("sun");
+        if (dow === 6) td.classList.add("sat");
+        if (ds === todayStr && !isOther) td.classList.add("today");
+        var html = "<div class='day'>" + d.getDate() + "</div><div class='names'>";
+        leavesOn(ds).forEach(function(l){
+          var cls = "name-tag" + (l.kind !== "full" ? " half" : "") + (l.memberId === selectedId ? " mine" : "");
+          var suffix = l.kind === "full" ? "" : "（" + KIND_LABEL[l.kind] + "）";
+          html += "<span class='" + cls + "'>" + memberName(l.memberId) + suffix + "</span>";
+        });
+        html += "</div>";
+        td.innerHTML = html;
+        if (!isOther){
+          (function(dateStr){ td.addEventListener("click", function(){ openDialog(dateStr); }); })(ds);
+        }
+        tr.appendChild(td);
+        cellDate++;
+      }
+      body.appendChild(tr);
+      if (cellDate > daysInMonth && new Date(viewYear, viewMonth, cellDate).getDay() === 0) break;
+    }
+    renderStats();
+  }
+
+  function renderAll(){ renderChips(); renderCalendar(); }
+
+  // ---- 有休入力ダイアログ ----
+  var overlay = document.getElementById("leaveOverlay");
+  function openDialog(dateStr){
+    if (selectedId === null || !memberName(selectedId)) { alert("先に名前を選んでください"); return; }
+    dlgDateStr = dateStr;
+    var p = dateStr.split("-");
+    document.getElementById("dlgDate").textContent = parseInt(p[0],10) + "年" + parseInt(p[1],10) + "月" + parseInt(p[2],10) + "日";
+    document.getElementById("dlgWho").textContent = memberName(selectedId) + " さんの有休";
+    var existing = findLeave(selectedId, dateStr);
+    dlgKind = existing ? existing.kind : "full";
+    document.getElementById("dlgMemo").value = existing ? (existing.memo || "") : "";
+    document.getElementById("dlgDelete").style.display = existing ? "" : "none";
+    updateKindButtons();
+    overlay.classList.add("open");
+  }
+  function updateKindButtons(){
+    document.querySelectorAll(".kindbtn").forEach(function(b){
+      b.classList.toggle("selected", b.getAttribute("data-kind") === dlgKind);
+    });
+  }
+  document.querySelectorAll(".kindbtn").forEach(function(b){
+    b.addEventListener("click", function(){ dlgKind = b.getAttribute("data-kind"); updateKindButtons(); });
+  });
+  document.getElementById("dlgSave").addEventListener("click", function(){
+    var memo = document.getElementById("dlgMemo").value.trim();
+    var existing = findLeave(selectedId, dlgDateStr);
+    if (existing) { existing.kind = dlgKind; existing.memo = memo; }
+    else data.leaves.push({ memberId: selectedId, date: dlgDateStr, kind: dlgKind, memo: memo });
+    save(data);
+    overlay.classList.remove("open");
+    renderAll();
+  });
+  document.getElementById("dlgDelete").addEventListener("click", function(){
+    data.leaves = data.leaves.filter(function(l){ return !(l.memberId === selectedId && l.date === dlgDateStr); });
+    save(data);
+    overlay.classList.remove("open");
+    renderAll();
+  });
+  document.getElementById("dlgClose").addEventListener("click", function(){ overlay.classList.remove("open"); });
+  overlay.addEventListener("click", function(e){ if (e.target === overlay) overlay.classList.remove("open"); });
+
+  // ---- 月移動 ----
+  document.getElementById("prevBtn").addEventListener("click", function(){
+    viewMonth--; if (viewMonth < 0) { viewMonth = 11; viewYear--; } renderCalendar();
+  });
+  document.getElementById("nextBtn").addEventListener("click", function(){
+    viewMonth++; if (viewMonth > 11) { viewMonth = 0; viewYear++; } renderCalendar();
+  });
+  document.getElementById("todayBtn").addEventListener("click", function(){
+    viewYear = now.getFullYear(); viewMonth = now.getMonth(); renderCalendar();
+  });
+
+  // ---- 名前管理 ----
+  var manageOverlay = document.getElementById("manageOverlay");
+  function renderMemberList(){
+    var wrap = document.getElementById("memberList");
+    wrap.innerHTML = "";
+    data.members.forEach(function(m, idx){
+      var row = document.createElement("div");
+      row.className = "member-row";
+      var nm = document.createElement("span");
+      nm.className = "nm"; nm.textContent = (idx + 1) + ". " + m.name;
+      row.appendChild(nm);
+      function mkBtn(label, fn){
+        var b = document.createElement("button");
+        b.className = "btn small"; b.textContent = label;
+        b.addEventListener("click", fn);
+        return b;
+      }
+      row.appendChild(mkBtn("↑", function(){
+        if (idx === 0) return;
+        var t = data.members[idx - 1]; data.members[idx - 1] = data.members[idx]; data.members[idx] = t;
+        save(data); renderMemberList(); renderAll();
+      }));
+      row.appendChild(mkBtn("↓", function(){
+        if (idx === data.members.length - 1) return;
+        var t = data.members[idx + 1]; data.members[idx + 1] = data.members[idx]; data.members[idx] = t;
+        save(data); renderMemberList(); renderAll();
+      }));
+      row.appendChild(mkBtn("編集", function(){
+        var v = prompt("名前を変更", m.name);
+        if (v && v.trim()) { m.name = v.trim(); save(data); renderMemberList(); renderAll(); }
+      }));
+      var del = mkBtn("削除", function(){
+        if (!confirm(m.name + " さんを削除しますか？（有休の記録も消えます）")) return;
+        data.leaves = data.leaves.filter(function(l){ return l.memberId !== m.id; });
+        data.members = data.members.filter(function(x){ return x.id !== m.id; });
+        if (selectedId === m.id) selectedId = data.members.length ? data.members[0].id : null;
+        save(data); renderMemberList(); renderAll();
+      });
+      del.classList.add("danger");
+      row.appendChild(del);
+      wrap.appendChild(row);
+    });
+    if (!data.members.length) wrap.innerHTML = "<p style='color:#888'>まだ登録がありません。</p>";
+  }
+  document.getElementById("manageBtn").addEventListener("click", function(){
+    renderMemberList();
+    manageOverlay.classList.add("open");
+  });
+  document.getElementById("manageClose").addEventListener("click", function(){ manageOverlay.classList.remove("open"); });
+  manageOverlay.addEventListener("click", function(e){ if (e.target === manageOverlay) manageOverlay.classList.remove("open"); });
+  document.getElementById("addBtn").addEventListener("click", function(){
+    var v = document.getElementById("newName").value.trim();
+    if (!v) return;
+    if (data.members.some(function(m){ return m.name === v; })) { alert("同じ名前がすでにあります"); return; }
+    data.members.push({ id: data.nextId++, name: v });
+    document.getElementById("newName").value = "";
+    save(data); renderMemberList(); renderAll();
+  });
+  document.getElementById("bulkBtn").addEventListener("click", function(){
+    var lines = document.getElementById("bulkText").value.split(/\r?\n/).map(function(s){ return s.trim(); }).filter(Boolean);
+    var added = 0;
+    lines.forEach(function(v){
+      if (!data.members.some(function(m){ return m.name === v; })) {
+        data.members.push({ id: data.nextId++, name: v }); added++;
+      }
+    });
+    document.getElementById("bulkText").value = "";
+    save(data); renderMemberList(); renderAll();
+    alert(added + "名を追加しました");
+  });
+
+  renderAll();
+})();
+</script>
+</body>
+</html>
