@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>下道派診断</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
+<style>
+:root {
+--bg: #eef4f1;
+--bg-grad: #dfeee6;
+--surface: #ffffff;
+--surface-2: #f2f7f4;
+--ink: #16302a;
+--ink-soft: #47635b;
+--line: #cfdfd6;
+--sign-blue: #1256a0;
+--sign-blue-dark: #0d427c;
+--sign-green: #0e7a4f;
+--accent: #f5a623;
+--accent-ink: #6b4500;
+--danger: #c2452d;
+--shadow: 0 10px 30px rgba(18, 60, 45,.14);
+--radius: 18px;
+}
+@media (prefers-color-scheme: dark) {
+:root {
+--bg: #0d1a16;
+--bg-grad: #0a140f;
+--surface: #16261f;
+--surface-2: #1c2f27;
+--ink: #e8f2ec;
+--ink-soft: #a7c2b4;
+--line: #2c463a;
+--sign-blue: #3d8bdd;
+--sign-blue-dark: #2a6cb3;
+--sign-green: #2fae74;
+--accent: #f5b83d;
+--accent-ink: #ffd97a;
+--shadow: 0 10px 30px rgba(0, 0, 0,.45);
+}
+}
+* { box-sizing: border-box;}
+html { -webkit-text-size-adjust: 100%;}
+body {
+margin: 0;
+font-family: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", sans-serif;
+color: var(--ink);
+background: linear-gradient(180deg, var(--bg) 0%, var(--bg-grad) 100%);
+min-height: 100vh;
+}
+button { font-family: inherit; cursor: pointer;}
+.wrap { max-width: 640px; margin: 0 auto; padding: 20px 16px 48px;}
+
+/* ---------- start screen ---------- */
+.sign {
+background: var(--sign-blue);
+color: #fff;
+border: 4px solid #fff;
+outline: 3px solid var(--sign-blue);
+border-radius: 14px;
+padding: 26px 20px 22px;
+text-align: center;
+box-shadow: var(--shadow);
+}
+.sign .route-no {
+display: inline-block;
+border: 2.5px solid #fff;
+border-radius: 8px;
+padding: 2px 14px;
+font-family: "M PLUS Rounded 1c", sans-serif;
+font-weight: 800;
+letter-spacing:.12em;
+font-size: 15px;
+margin-bottom: 12px;
+}
+.sign h1 {
+margin: 0 0 8px;
+font-family: "M PLUS Rounded 1c", sans-serif;
+font-weight: 800;
+font-size: clamp(34px, 9vw, 46px);
+letter-spacing:.04em;
+}
+.sign p { margin: 0; font-size: 15px; line-height: 1.7; opacity:.95;}
+.lead { text-align: center; color: var(--ink-soft); font-size: 15px; line-height: 1.9; margin: 22px 4px 18px;}
+.lead strong { color: var(--ink);}
+.start-btn {
+display: block; width: 100%;
+min-height: 60px;
+border: none; border-radius: 999px;
+background: var(--sign-green); color: #fff;
+font-family: "M PLUS Rounded 1c", sans-serif;
+font-weight: 800; font-size: 20px; letter-spacing:.06em;
+box-shadow: var(--shadow);
+}
+.start-btn:active { transform: translateY(1px);}
+.points { display: grid; gap: 10px; margin-top: 22px;}
+.point {
+display: flex; gap: 12px; align-items: flex-start;
+background: var(--surface); border: 1px solid var(--line);
+border-radius: var(--radius); padding: 14px 16px;
+}
+.point .num {
+flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%;
+background: var(--sign-blue); color: #fff;
+display: grid; place-items: center;
+font-family: "M PLUS Rounded 1c", sans-serif; font-weight: 800; font-size: 15px;
+margin-top: 1px;
+}
+.point p { margin: 0; font-size: 14.5px; line-height: 1.7;}
+.point p b { display: block; font-size: 15.5px;}
+
+/* ---------- quiz ---------- */
+.progress-row { display: flex; align-items: center; gap: 12px; margin: 6px 2px 14px;}
+.progress-row .qcount {
+font-family: "M PLUS Rounded 1c", sans-serif; font-weight: 800;
+font-size: 15px; white-space: nowrap;
+}
+.progress-track { flex: 1; height: 12px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); overflow: hidden;}
+.progress-fill { height: 100%; background: var(--sign-green); border-radius: 999px; transition: width.35s ease;}
+.qcard {
+background: var(--surface); border: 1px solid var(--line);
+border-radius: var(--radius); box-shadow: var(--shadow);
+padding: 22px 18px 18px;
+}
+.qcard h2 { margin: 0 0 4px; font-size: 20px; line-height: 1.5; font-weight: 900;}
+.qcard .qsub { margin: 0 0 16px; color: var(--ink-soft); font-size: 13.5px;}
+.choices { display: grid; gap: 10px;}
+.choice {
+width: 100%; min-height: 56px; text-align: left;
+background: var(--surface-2); color: var(--ink);
+border: 2px solid var(--line); border-radius: 14px;
+padding: 13px 15px; font-size: 16px; font-weight: 700; line-height: 1.5;
+}
+.choice:active { border-color: var(--sign-green);}
+.back-btn {
+margin-top: 14px; min-height: 44px; padding: 0 18px;
+background: transparent; border: 1px solid var(--line); border-radius: 999px;
+color: var(--ink-soft); font-size: 14px; font-weight: 700;
+}
+
+/* ---------- result ---------- */
+.result-card {
+border-radius: 22px; overflow: hidden;
+box-shadow: var(--shadow); border: 1px solid var(--line);
+background: var(--surface);
+}
+.result-head {
+background: var(--sign-blue); color: #fff;
+padding: 20px 20px 18px; text-align: center;
+border-bottom: 5px dashed rgba(255,255,255,.55);
+}
+.result-head .label { font-size: 13px; letter-spacing:.22em; font-weight: 700; opacity:.9; margin: 0 0 6px;}
+.result-head .type-name {
+font-family: "M PLUS Rounded 1c", sans-serif; font-weight: 800;
+font-size: clamp(30px, 8.4vw, 40px); margin: 0; line-height: 1.25;
+}
+.score-row { display: flex; align-items: center; gap: 18px; padding: 20px;}
+.score-donut { flex: 0 0 auto; position: relative; width: 128px; height: 128px;}
+.score-donut svg { transform: rotate(-90deg); display: block;}
+.score-donut .score-num {
+position: absolute; inset: 0; display: grid; place-items: center; text-align: center;
+}
+.score-donut .score-num .big {
+font-family: "M PLUS Rounded 1c", sans-serif; font-weight: 800; font-size: 40px; line-height: 1;
+}
+.score-donut .score-num .unit { font-size: 14px; font-weight: 800; color: var(--ink-soft); }
+.score-desc { flex: 1; min-width: 0;}
+.score-desc h3 { margin: 0 0 6px; font-size: 17px; font-weight: 900;}
+.score-desc p { margin: 0; font-size: 14.5px; line-height: 1.8; color: var(--ink-soft);}
+.traits { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 20px 20px;}
+.trait {
+background: var(--surface-2); border: 1px solid var(--line);
+border-radius: 999px; padding: 7px 13px; font-size: 13.5px; font-weight: 700;
+}
+.advice {
+margin: 0 20px 20px; padding: 14px 16px;
+background: #fdf3dd; border-radius: 14px;
+font-size: 14.5px; line-height: 1.8; color: #5c4300;
+}
+@media (prefers-color-scheme: dark) {
+.advice { background: #33300f; color: #f0d48a;}
+}
+.advice b { display: block; margin-bottom: 2px;}
+
+section.sim {
+margin-top: 26px; background: var(--surface);
+border: 1px solid var(--line); border-radius: var(--radius);
+box-shadow: var(--shadow); padding: 20px 18px;
+}
+section.sim h2 {
+margin: 0 0 4px; font-family: "M PLUS Rounded 1c", sans-serif;
+font-weight: 800; font-size: 20px;
+}
+section.sim .sim-sub { margin: 0 0 16px; color: var(--ink-soft); font-size: 13.5px; line-height: 1.7;}
+.slider-block { margin-bottom: 18px;}
+.slider-block label { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; font-size: 15px; margin-bottom: 8px;}
+.slider-block label output {
+font-family: "M PLUS Rounded 1c", sans-serif; font-weight: 800;
+font-size: 19px; color: var(--sign-blue);
+}
+input[type="range"] { width: 100%; height: 36px; accent-color: var(--sign-green);}
+.sim-results { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px;}
+.sim-box { background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px; padding: 14px;}
+.sim-box.wide { grid-column: 1 / -1; background: var(--sign-green); color: #fff; border: none; text-align: center;}
+.sim-box .k { font-size: 12.5px; font-weight: 700; opacity:.85; margin: 0 0 4px;}
+.sim-box .v { font-family: "M PLUS Rounded 1c", sans-serif; font-weight: 800; font-size: 24px; margin: 0; line-height: 1.2;}
+.sim-box.wide .v { font-size: 34px;}
+.sim-box .note { font-size: 12px; margin: 4px 0 0; opacity:.85; line-height: 1.6;}
+.equiv { margin-top: 14px; font-size: 14.5px; line-height: 1.9;}
+.equiv b { color: var(--sign-green);}
+.sim-fineprint { margin: 12px 0 0; font-size: 11.5px; color: var(--ink-soft); line-height: 1.7;}
+
+.share-area { margin-top: 26px; display: grid; gap: 10px;}
+.share-btn {
+min-height: 54px; border-radius: 999px; border: none;
+font-family: "M PLUS Rounded 1c", sans-serif; font-weight: 800; font-size: 17px;
+display: flex; align-items: center; justify-content: center; gap: 8px;
+text-decoration: none; padding: 0 16px;
+}
+.share-btn.x { background: #000; color: #fff;}
+@media (prefers-color-scheme: dark) {.share-btn.x { background: #fff; color: #000;}}
+.share-btn.img { background: var(--accent); color: #3d2a00;}
+.share-btn.copy { background: var(--surface); color: var(--ink); border: 2px solid var(--line);}
+.share-btn.retry { background: transparent; color: var(--ink-soft); border: 1px solid var(--line); font-size: 15px; min-height: 48px;}
+.copied-msg { text-align: center; font-size: 13.5px; color: var(--sign-green); font-weight: 700; min-height: 20px; margin: 0;}
+
+.types-list { margin-top: 30px;}
+.types-list h2 { font-size: 17px; font-weight: 900; margin: 0 0 10px;}
+.types-list ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px;}
+.types-list li {
+background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+padding: 11px 14px; font-size: 14px; display: flex; justify-content: space-between; gap: 10px; align-items: center;
+}
+.types-list li .t { font-weight: 800;}
+.types-list li .r { color: var(--ink-soft); font-size: 12.5px; white-space: nowrap;}
+.types-list li.me { border-color: var(--sign-green); border-width: 2px;}
+.types-list li.me .r { color: var(--sign-green); font-weight: 800;}
+
+footer { margin-top: 34px; text-align: center; color: var(--ink-soft); font-size: 12px; line-height: 1.8;}
+.hidden { display: none!important;}
+@media (prefers-reduced-motion: reduce) {
+.progress-fill { transition: none;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ===== スタート画面 ===== -->
+<div id="screen-start">
+<div class="sign">
+<span class="route-no">国道 ？ 号線</span>
+<h1>下道派診断</h1>
+<p>高速道路は高い。だから下道でゆく。<br />あなたの「下道派度」を5つの質問で判定します。</p>
+</div>
+<p class="lead">
+ナビの設定、料金所での気持ち、寄り道への愛…。<br />
+答えるだけで <strong>下道派度（%）</strong> と <strong>あなたのタイプ</strong> が分かります。<br />
+さらに、高速を使わないと <strong>年間いくら浮くか</strong> まで計算できます。
+</p>
+<button class="start-btn" id="btn-start" type="button">診断をはじめる</button>
+<div class="points">
+<div class="point"><span class="num">1</span><p><b>5つの質問にタップで回答</b>所要時間は30秒ほど。直感で選ぶのがコツです。</p></div>
+<div class="point"><span class="num">2</span><p><b>下道派度とタイプを判定</b>「下道マスター型」から「ワープ型」まで全5タイプ。</p></div>
+<div class="point"><span class="num">3</span><p><b>年間節約額シミュレーター</b>よく行く距離を入れると、浮くお金と増える時間が一発表示。</p></div>
+</div>
+</div>
+
+<!-- ===== 診断画面 ===== -->
+<div id="screen-quiz" class="hidden">
+<div class="progress-row">
+<span class="qcount" id="qcount">Q1 / 5</span>
+<div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:20%"></div></div>
+</div>
+<div class="qcard">
+<h2 id="q-text"></h2>
+<p class="qsub">いちばん近いものを1つ選んでください</p>
+<div class="choices" id="choices"></div>
+</div>
+<button class="back-btn hidden" id="btn-back" type="button">← 前の質問にもどる</button>
+</div>
+
+<!-- ===== 結果画面 ===== -->
+<div id="screen-result" class="hidden">
+<div class="result-card">
+<div class="result-head">
+<p class="label">あなたのタイプは</p>
+<p class="type-name" id="r-type"></p>
+</div>
+<div class="score-row">
+<div class="score-donut">
+<svg width="128" height="128" viewBox="0 0 128 128" aria-hidden="true">
+<circle cx="64" cy="64" r="54" fill="none" stroke="var(--line)" stroke-width="14"></circle>
+<circle id="donut-arc" cx="64" cy="64" r="54" fill="none" stroke="var(--sign-green)" stroke-width="14" stroke-linecap="round" stroke-dasharray="339.3" stroke-dashoffset="339.3"></circle>
+</svg>
+<div class="score-num"><div><span class="big" id="r-score">0</span><span class="unit">%</span><div class="unit">下道派度</div></div></div>
+</div>
+<div class="score-desc">
+<h3 id="r-catch"></h3>
+<p id="r-desc"></p>
+</div>
+</div>
+<div class="traits" id="r-traits"></div>
+<div class="advice"><b>ワンポイント</b><span id="r-advice"></span></div>
+</div>
+
+<section class="sim" aria-label="高速代節約シミュレーター">
+<h2>高速代 節約シミュレーター</h2>
+<p class="sim-sub">よく行くお出かけ先までの距離と回数を合わせると、全部下道で行った場合の節約額と、増える所要時間を計算します。</p>
+<div class="slider-block">
+<label for="sim-dist">片道の距離 <output id="out-dist">80 km</output></label>
+<input type="range" id="sim-dist" min="10" max="300" step="5" value="80" />
+</div>
+<div class="slider-block">
+<label for="sim-trips">月に何往復する？ <output id="out-trips">月 2 往復</output></label>
+<input type="range" id="sim-trips" min="1" max="12" step="1" value="2" />
+</div>
+<div class="sim-results">
+<div class="sim-box wide">
+<p class="k">全部下道なら、年間で浮く高速代</p>
+<p class="v" id="sim-year">¥0</p>
+<p class="note" id="sim-once"></p>
+</div>
+<div class="sim-box">
+<p class="k">その代わり増える時間（年間）</p>
+<p class="v" id="sim-time">0時間</p>
+<p class="note" id="sim-time-note"></p>
+</div>
+<div class="sim-box">
+<p class="k">浮くお金 ÷ 増える時間</p>
+<p class="v" id="sim-wage">¥0</p>
+<p class="note">下道ドライブの「時給」換算</p>
+</div>
+</div>
+<p class="equiv" id="sim-equiv"></p>
+<p class="sim-fineprint">※高速料金は普通車の目安（約24.6円/km、100円単位に切り上げ）で計算しています。実際の料金は路線・割引で変わります。所要時間は高速の平均85km/h、下道の平均40km/hとして概算しています。</p>
+</section>
+
+<div class="share-area">
+<a class="share-btn x" id="btn-x" href="#" target="_blank" rel="noopener">Xで結果をシェアする</a>
+<button class="share-btn img" id="btn-img" type="button">結果カードを画像で保存</button>
+<button class="share-btn copy" id="btn-copy" type="button">シェア文をコピーする</button>
+<p class="copied-msg" id="copied-msg" role="status"></p>
+<button class="share-btn retry" id="btn-retry" type="button">もう一度診断する</button>
+</div>
+
+<div class="types-list">
+<h2>タイプ一覧</h2>
+<ul id="types-ul"></ul>
+</div>
+</div>
+
+<footer>
+下道派診断 バージョン1（GitHub Pages版）／ 高速は「時間をお金で買う」もの。下道は寄り道も楽しみのうち。
+</footer>
+</div>
+
+<canvas id="card-canvas" width="1200" height="630" class="hidden"></canvas>
+
+<script>
+"use strict";
+
+var QUESTIONS = [
+{
+text: "遠出をするとき、ナビの設定は？",
+choices: [
+{ label: "最初から「高速を使わない」に設定", score: 3},
+{ label: "下道優先ルートで様子を見る", score: 2},
+{ label: "時間優先。でも料金はチラッと見る", score: 1},
+{ label: "最速ルート一択。迷いはない", score: 0}
+]
+},
+{
+text: "高速料金の表示を見たときの本音は？",
+choices: [
+{ label: "「この金額あれば、アレが買えるのに…」と換算してしまう", score: 3},
+{ label: "ちょっと高いな〜と思いながら払う", score: 2},
+{ label: "仕方ない出費。あまり考えない", score: 1},
+{ label: "料金？ 見たことないかも", score: 0}
+]
+},
+{
+text: "下道ドライブの楽しみ、ある？",
+choices: [
+{ label: "道の駅・地元グルメ・寄り道こそが本命", score: 3},
+{ label: "景色や街並みの変化を楽しめる", score: 2},
+{ label: "渋滞さえなければ悪くない", score: 1},
+{ label: "特にない。一秒でも早く着きたい", score: 0}
+]
+},
+{
+text: "下道で渋滞にハマったとき、あなたは？",
+choices: [
+{ label: "「まあ、景色でも見るか」と切り替えられる", score: 3},
+{ label: "音楽やラジオでのんびり凌ぐ", score: 2},
+{ label: "正直、少しイライラする", score: 1},
+{ label: "高速に乗らなかった自分を責める", score: 0}
+]
+},
+{
+text: "片道2時間ほどの距離。どう行く？",
+choices: [
+{ label: "もちろん下道。余裕でしょ", score: 3},
+{ label: "天気や気分、懐事情で決める", score: 2},
+{ label: "急ぎの用事なら高速を使う", score: 1},
+{ label: "高速一択。時間はお金で買うもの", score: 0}
+]
+}
+];
+
+var TYPES = [
+{
+min: 90, name: "下道マスター型",
+catch: "高速は存在しないものとして生きている",
+desc: "ナビの「高速を使わない」は標準装備。料金所の前で心が揺れることもなく、道の駅のスタンプ帳が相棒。もはや下道は節約ではなく、生き方そのものです。",
+traits: ["寄り道の達人", "道の駅に詳しい", "料金換算クセあり"],
+advice: "その節約術、周りに教えると感謝されます。ただし長距離の連戦は体力勝負。疲れたら素直に休憩を。"
+},
+{
+min: 70, name: "下道職人型",
+catch: "コスパと楽しさ、両方わかっている",
+desc: "基本は下道、でも無理はしない。裏道の抜け道をいくつか持っていて、渋滞情報を見ながらルートを組むのが上手なタイプです。",
+traits: ["裏道キープ済み", "渋滞回避が上手い", "計画派ドライバー"],
+advice: "お気に入りの寄り道スポットをリスト化しておくと、ドライブの満足度がさらに上がります。"
+},
+{
+min: 50, name: "使い分け上手型",
+catch: "下道も高速も、場面で選べるバランス派",
+desc: "時間があるときは下道で楽しみ、急ぐときは高速でワープ。損得だけでない「ちょうどいい判断」ができるタイプです。",
+traits: ["臨機応変", "判断が早い", "無理をしない"],
+advice: "シミュレーターで「自分の時給換算」を見ると、使い分けの基準がもっとハッキリします。"
+},
+{
+min: 30, name: "時短プラグマ型",
+catch: "高速メイン。でも下道の良さも知っている",
+desc: "基本的には時間を買う派。ただ、たまにの下道ドライブで「意外と楽しい」と気づき始めている頃かもしれません。",
+traits: ["効率重視", "予定はきっちり", "実はドライブ好き"],
+advice: "片道30分以内の近場こそ、下道の旨味が出ます。週末の近場ドライブから試してみては。"
+},
+{
+min: 0, name: "ワープ型",
+catch: "時間はお金で買う。迷いなき高速派",
+desc: "目的地に最速で着くことが正義。高速代は「時間を買うチケット」として潔く払うタイプ。下道の渋滞は天敵です。",
+traits: ["最速主義", "決断が速い", "時間を大切にする"],
+advice: "年間で払っている高速代、シミュレーターで一度見てみてください。数字を見ると少し考えが変わるかも…？"
+}
+];
+
+var state = { q: 0, answers: [], scorePct: 0, type: null};
+
+var el = function (id) { return document.getElementById(id);};
+var screens = { start: el("screen-start"), quiz: el("screen-quiz"), result: el("screen-result")};
+function show(name) {
+screens.start.classList.toggle("hidden", name!== "start");
+screens.quiz.classList.toggle("hidden", name!== "quiz");
+screens.result.classList.toggle("hidden", name!== "result");
+window.scrollTo(0, 0);
+}
+
+function renderQuestion() {
+var q = QUESTIONS[state.q];
+el("qcount").textContent = "Q" + (state.q + 1) + " / " + QUESTIONS.length;
+el("progress-fill").style.width = ((state.q + 1) / QUESTIONS.length * 100) + "%";
+el("q-text").textContent = q.text;
+el("btn-back").classList.toggle("hidden", state.q === 0);
+var box = el("choices");
+box.innerHTML = "";
+q.choices.forEach(function (c) {
+var b = document.createElement("button");
+b.type = "button";
+b.className = "choice";
+b.textContent = c.label;
+b.addEventListener("click", function () {
+state.answers[state.q] = c.score;
+if (state.q < QUESTIONS.length - 1) {
+state.q++;
+renderQuestion();
+} else {
+showResult();
+}
+});
+box.appendChild(b);
+});
+}
+
+function typeFor(pct) {
+for (var i = 0; i < TYPES.length; i++) {
+if (pct >= TYPES[i].min) return TYPES[i];
+}
+return TYPES[TYPES.length - 1];
+}
+
+function showResult() {
+var total = state.answers.reduce(function (a, b) { return a + b;}, 0);
+var pct = Math.round(total / (QUESTIONS.length * 3) * 100);
+state.scorePct = pct;
+state.type = typeFor(pct);
+var t = state.type;
+el("r-type").textContent = t.name;
+el("r-score").textContent = pct;
+el("r-catch").textContent = t.catch;
+el("r-desc").textContent = t.desc;
+el("r-advice").textContent = t.advice;
+var traits = el("r-traits");
+traits.innerHTML = "";
+t.traits.forEach(function (s) {
+var span = document.createElement("span");
+span.className = "trait";
+span.textContent = s;
+traits.appendChild(span);
+});
+var circ = 339.3;
+el("donut-arc").style.strokeDashoffset = String(circ * (1 - pct / 100));
+// タイプ一覧
+var ul = el("types-ul");
+ul.innerHTML = "";
+TYPES.forEach(function (ty) {
+var li = document.createElement("li");
+if (ty.name === t.name) li.className = "me";
+var ranges = { "下道マスター型": "90〜100%", "下道職人型": "70〜89%", "使い分け上手型": "50〜69%", "時短プラグマ型": "30〜49%", "ワープ型": "0〜29%"};
+li.innerHTML = "";
+var s1 = document.createElement("span"); s1.className = "t"; s1.textContent = ty.name;
+var s2 = document.createElement("span"); s2.className = "r";
+s2.textContent = (ty.name === t.name? "あなたはコレ → ": "") + "下道派度 " + ranges[ty.name];
+li.appendChild(s1); li.appendChild(s2);
+ul.appendChild(li);
+});
+updateSim();
+updateShareLinks();
+show("result");
+}
+
+/* ---------- simulator ---------- */
+function yen(n) { return "¥" + Math.round(n).toLocaleString("ja-JP");}
+function tollOneWay(km) {
+// 普通車 約24.6円/km、100円単位に切り上げ
+return Math.ceil(km * 24.6 / 100) * 100;
+}
+var sim = { dist: 80, trips: 2, yearly: 0, hours: 0};
+function updateSim() {
+sim.dist = Number(el("sim-dist").value);
+sim.trips = Number(el("sim-trips").value);
+el("out-dist").textContent = sim.dist + " km";
+el("out-trips").textContent = "月 " + sim.trips + " 往復";
+var once = tollOneWay(sim.dist) * 2; // 往復
+var yearly = once * sim.trips * 12;
+sim.yearly = yearly;
+var extraPerRound = sim.dist * 2 * (1 / 40 - 1 / 85); // 時間
+var hours = extraPerRound * sim.trips * 12;
+sim.hours = hours;
+el("sim-year").textContent = yen(yearly);
+el("sim-once").textContent = "1往復あたり " + yen(once) + " の節約（片道の高速代 約" + yen(tollOneWay(sim.dist)) + "）";
+el("sim-time").textContent = (Math.round(hours * 10) / 10).toLocaleString("ja-JP") + "時間";
+var days = hours / 24;
+el("sim-time-note").textContent = days >= 1? "丸 " + (Math.round(days * 10) / 10) + " 日ぶんのドライブ時間": "映画 約" + Math.max(1, Math.round(hours / 2)) + " 本ぶんの時間";
+el("sim-wage").textContent = hours > 0? yen(yearly / hours) + "/時": "—";
+var ramen = Math.floor(yearly / 900);
+var gas = Math.floor(yearly / 170);
+var equiv = "";
+if (ramen >= 1) equiv += "浮いたお金は、ラーメン約 <b>" + ramen.toLocaleString("ja-JP") + "杯</b> 分、";
+equiv += "ガソリン約 <b>" + gas.toLocaleString("ja-JP") + "L</b> 分に相当します。";
+el("sim-equiv").innerHTML = equiv;
+updateShareLinks();
+}
+
+/* ---------- share ---------- */
+function shareText() {
+var t = state.type;
+var txt = "私の下道派度は" + state.scorePct + "%！でした。\n" +
+"全部下道で行くと年間 約" + Math.round(sim.yearly).toLocaleString("ja-JP") + "円 浮く計算です。\n" +
+"あなたは何%？ #下道派診断 #下道派";
+return txt;
+}
+function updateShareLinks() {
+if (!state.type) return;
+el("btn-x").href = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareText());
+}
+
+el("btn-copy").addEventListener("click", function () {
+var msg = el("copied-msg");
+function done() { msg.textContent = "シェア文をコピーしました！";}
+function fallback() {
+var ta = document.createElement("textarea");
+ta.value = shareText();
+document.body.appendChild(ta);
+ta.select();
+try { document.execCommand("copy"); done();} catch (e) { msg.textContent = "コピーできませんでした";}
+document.body.removeChild(ta);
+}
+if (navigator.clipboard && navigator.clipboard.writeText) {
+navigator.clipboard.writeText(shareText()).then(done, fallback);
+} else { fallback();}
+});
+
+el("btn-img").addEventListener("click", function () {
+var cv = el("card-canvas");
+var ctx = cv.getContext("2d");
+var W = 1200, H = 630;
+// 背景（道路標識ブルー）
+ctx.fillStyle = "#1256a0";
+ctx.fillRect(0, 0, W, H);
+ctx.strokeStyle = "#ffffff";
+ctx.lineWidth = 10;
+ctx.strokeRect(24, 24, W - 48, H - 48);
+// 破線（車線イメージ）
+ctx.strokeStyle = "rgba(255,255,255,.5)";
+ctx.lineWidth = 6;
+ctx.setLineDash([26, 22]);
+ctx.beginPath(); ctx.moveTo(60, H - 92); ctx.lineTo(W - 60, H - 92); ctx.stroke();
+ctx.setLineDash([]);
+ctx.fillStyle = "#ffffff";
+ctx.textAlign = "center";
+ctx.font = "700 34px 'Zen Kaku Gothic New', sans-serif";
+ctx.fillText("下 道 派 診 断", W / 2, 118);
+ctx.font = "800 96px 'M PLUS Rounded 1c', sans-serif";
+ctx.fillText(state.type.name, W / 2, 248);
+ctx.font = "800 150px 'M PLUS Rounded 1c', sans-serif";
+ctx.fillStyle = "#f5b83d";
+ctx.fillText(state.scorePct + "%", W / 2, 420);
+ctx.fillStyle = "#ffffff";
+ctx.font = "700 36px 'Zen Kaku Gothic New', sans-serif";
+ctx.fillText("下道派度", W / 2, 478);
+ctx.font = "700 40px 'Zen Kaku Gothic New', sans-serif";
+ctx.fillText("全部下道なら年間 約" + Math.round(sim.yearly).toLocaleString("ja-JP") + "円 浮く計算", W / 2, 566);
+var a = document.createElement("a");
+a.download = "shitamichi-diagnosis.png";
+a.href = cv.toDataURL("image/png");
+a.click();
+el("copied-msg").textContent = "結果カード画像を保存しました！";
+});
+
+/* ---------- wiring ---------- */
+el("btn-start").addEventListener("click", function () {
+state.q = 0; state.answers = [];
+renderQuestion();
+show("quiz");
+});
+el("btn-back").addEventListener("click", function () {
+if (state.q > 0) { state.q--; renderQuestion();}
+});
+el("btn-retry").addEventListener("click", function () {
+state.q = 0; state.answers = [];
+show("start");
+});
+el("sim-dist").addEventListener("input", updateSim);
+el("sim-trips").addEventListener("input", updateSim);
+</script>
+</body>
+</html>
