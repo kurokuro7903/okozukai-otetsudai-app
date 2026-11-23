@@ -42,7 +42,7 @@
   table.cal td.sun .day { color:#c62828; }
   table.cal td.sat .day { color:#1565c0; }
   .names { margin-top:3px; display:flex; flex-direction:column; gap:2px; }
-  .name-tag { font-size:13px; line-height:1.25; background:#e8f3ef; border-radius:4px; padding:1px 5px; word-break:break-all; }
+  .name-tag { font-size:13px; line-height:1.25; background:#e8f3ef; border-radius:4px; padding:1px 5px; word-break:break-all; cursor:pointer; text-decoration:underline dotted; }
   .name-tag.half { background:#fff3e0; }
   .name-tag.mine { background:#2e7d6b; color:#fff; font-weight:700; }
   .overlay { position:fixed; top:0; left:0; right:0; bottom:0; width:100%; height:100%; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; z-index:50; padding:16px; }
@@ -97,7 +97,7 @@
       </tr></thead>
       <tbody id="calBody"></tbody>
     </table>
-    <p style="font-size:13px;color:#666;margin:10px 0 0;">② カレンダーの日付をタップ → 全日有休／午前半休／午後半休（オレンジ色）を選んで登録。半休は0.5日で集計します。</p>
+    <p style="font-size:13px;color:#666;margin:10px 0 0;">② カレンダーの日付をタップ → 全日有休／午前半休／午後半休（オレンジ色）を選んで登録。半休は0.5日で集計します。<br>登録済みの名前をタップすると、その人の有休をそのまま編集・取り消しできます。</p>
   </section>
 
   <section class="card">
@@ -109,7 +109,7 @@
     </div>
   </section>
 </main>
-<footer>有休管理アプリ　バージョン3（タブレット版）<br>データはこのタブレットの中に保存されます</footer>
+<footer>有休管理アプリ　バージョン4（タブレット版）<br>データはこのタブレットの中に保存されます</footer>
 
 <!-- 有休入力ダイアログ -->
 <div class="overlay" id="leaveOverlay">
@@ -196,7 +196,7 @@
   var selectedId = data.members.length ? data.members[0].id : null;
   var now = new Date();
   var viewYear = now.getFullYear(), viewMonth = now.getMonth();
-  var dlgDateStr = null, dlgKind = "full";
+  var dlgDateStr = null, dlgKind = "full", dlgMemberId = null;
 
   function pad2(n){ return (n < 10 ? "0" : "") + n; }
   function fmt(y, m, d){ return y + "-" + pad2(m + 1) + "-" + pad2(d); }
@@ -261,7 +261,8 @@
         if (dow === 6) td.classList.add("sat");
         if (ds === todayStr && !isOther) td.classList.add("today");
         var html = "<div class='day'>" + d.getDate() + "</div><div class='names'>";
-        leavesOn(ds).forEach(function(l){
+        var dayLeaves = leavesOn(ds);
+        dayLeaves.forEach(function(l){
           var cls = "name-tag" + (l.kind !== "full" ? " half" : "") + (l.memberId === selectedId ? " mine" : "");
           var suffix = l.kind === "full" ? "" : "（" + KIND_LABEL[l.kind] + "）";
           html += "<span class='" + cls + "'>" + memberName(l.memberId) + suffix + "</span>";
@@ -270,6 +271,15 @@
         td.innerHTML = html;
         if (!isOther){
           (function(dateStr){ td.addEventListener("click", function(){ openDialog(dateStr); }); })(ds);
+          var tags = td.querySelectorAll(".name-tag");
+          for (var ti = 0; ti < tags.length && ti < dayLeaves.length; ti++){
+            (function(tag, mid, dateStr){
+              tag.addEventListener("click", function(e){
+                if (e && e.stopPropagation) e.stopPropagation();
+                openDialogFor(mid, dateStr);
+              });
+            })(tags[ti], dayLeaves[ti].memberId, ds);
+          }
         }
         tr.appendChild(td);
         cellDate++;
@@ -284,13 +294,15 @@
 
   // ---- 有休入力ダイアログ ----
   var overlay = document.getElementById("leaveOverlay");
-  function openDialog(dateStr){
-    if (selectedId === null || !memberName(selectedId)) { alert("先に名前を選んでください"); return; }
+  function openDialog(dateStr){ openDialogFor(selectedId, dateStr); }
+  function openDialogFor(mid, dateStr){
+    if (mid === null || mid === undefined || !memberName(mid)) { alert("先に名前を選んでください"); return; }
+    dlgMemberId = mid;
     dlgDateStr = dateStr;
     var p = dateStr.split("-");
     document.getElementById("dlgDate").textContent = parseInt(p[0],10) + "年" + parseInt(p[1],10) + "月" + parseInt(p[2],10) + "日";
-    document.getElementById("dlgWho").textContent = memberName(selectedId) + " さんの有休";
-    var existing = findLeave(selectedId, dateStr);
+    document.getElementById("dlgWho").textContent = memberName(dlgMemberId) + " さんの有休";
+    var existing = findLeave(dlgMemberId, dateStr);
     dlgKind = existing ? existing.kind : "full";
     document.getElementById("dlgMemo").value = existing ? (existing.memo || "") : "";
     document.getElementById("dlgDelete").style.display = existing ? "" : "none";
@@ -312,16 +324,18 @@
   })();
   document.getElementById("dlgSave").addEventListener("click", function(){
     var memo = document.getElementById("dlgMemo").value.trim();
-    var existing = findLeave(selectedId, dlgDateStr);
+    var existing = findLeave(dlgMemberId, dlgDateStr);
     if (existing) { existing.kind = dlgKind; existing.memo = memo; }
-    else data.leaves.push({ memberId: selectedId, date: dlgDateStr, kind: dlgKind, memo: memo });
+    else data.leaves.push({ memberId: dlgMemberId, date: dlgDateStr, kind: dlgKind, memo: memo });
     save(data);
+    if (dlgMemberId !== null) selectedId = dlgMemberId;
     overlay.classList.remove("open");
     renderAll();
   });
   document.getElementById("dlgDelete").addEventListener("click", function(){
-    data.leaves = data.leaves.filter(function(l){ return !(l.memberId === selectedId && l.date === dlgDateStr); });
+    data.leaves = data.leaves.filter(function(l){ return !(l.memberId === dlgMemberId && l.date === dlgDateStr); });
     save(data);
+    if (dlgMemberId !== null) selectedId = dlgMemberId;
     overlay.classList.remove("open");
     renderAll();
   });
