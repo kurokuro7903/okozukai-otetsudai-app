@@ -21,6 +21,7 @@
   .chips { display:flex; flex-wrap:wrap; gap:8px; }
   .chip { border:2px solid #2e7d6b; background:#fff; color:#2e7d6b; border-radius:999px; padding:9px 18px; font-size:16px; font-weight:600; cursor:pointer; }
   .chip.selected { background:#2e7d6b; color:#fff; }
+  .chip.mini { padding:6px 13px; font-size:14px; border-width:1px; }
   .stats { display:flex; gap:12px; flex-wrap:wrap; margin-top:12px; }
   .stat { background:#eef5f2; border-radius:10px; padding:10px 16px; min-width:150px; }
   .stat .label { font-size:12px; color:#555; }
@@ -97,7 +98,7 @@
       </tr></thead>
       <tbody id="calBody"></tbody>
     </table>
-    <p style="font-size:13px;color:#666;margin:10px 0 0;">② カレンダーの日付をタップ → 全日有休／午前半休／午後半休（オレンジ色）を選んで登録。半休は0.5日で集計します。<br>登録済みの名前をタップすると、その人の有休をそのまま編集・取り消しできます。</p>
+    <p style="font-size:13px;color:#666;margin:10px 0 0;">② カレンダーの日付をタップ → 開いた画面のリストから名前を選んで、全日有休／午前半休／午後半休（オレンジ色）を選んで登録。半休は0.5日で集計します。<br>登録済みの名前をタップすると、その人の有休をそのまま編集・取り消しできます。</p>
   </section>
 
   <section class="card">
@@ -109,13 +110,15 @@
     </div>
   </section>
 </main>
-<footer>有休管理アプリ　バージョン4（タブレット版）<br>データはこのタブレットの中に保存されます</footer>
+<footer>有休管理アプリ　バージョン5（タブレット版）<br>データはこのタブレットの中に保存されます</footer>
 
 <!-- 有休入力ダイアログ -->
 <div class="overlay" id="leaveOverlay">
   <div class="dialog">
     <h3 id="dlgDate"></h3>
     <div class="who" id="dlgWho"></div>
+    <p style="font-size:13px;color:#555;margin:0 0 6px;">名前を選ぶ（タップ）</p>
+    <div class="chips" id="dlgNames" style="margin-bottom:12px;"></div>
     <div class="kindrow">
       <button class="kindbtn" data-kind="full">全日有休</button>
       <button class="kindbtn" data-kind="am">午前半休</button>
@@ -295,18 +298,34 @@
   // ---- 有休入力ダイアログ ----
   var overlay = document.getElementById("leaveOverlay");
   function openDialog(dateStr){ openDialogFor(selectedId, dateStr); }
-  function openDialogFor(mid, dateStr){
-    if (mid === null || mid === undefined || !memberName(mid)) { alert("先に名前を選んでください"); return; }
-    dlgMemberId = mid;
-    dlgDateStr = dateStr;
-    var p = dateStr.split("-");
-    document.getElementById("dlgDate").textContent = parseInt(p[0],10) + "年" + parseInt(p[1],10) + "月" + parseInt(p[2],10) + "日";
+  function renderDlgNames(){
+    var wrap = document.getElementById("dlgNames");
+    wrap.innerHTML = "";
+    data.members.forEach(function(m){
+      var b = document.createElement("button");
+      b.className = "chip mini" + (m.id === dlgMemberId ? " selected" : "");
+      b.textContent = m.name;
+      b.addEventListener("click", function(){ dlgMemberId = m.id; refreshDialogForMember(); });
+      wrap.appendChild(b);
+    });
+    if (!data.members.length) wrap.innerHTML = "<span style='color:#888'>名前がまだ登録されていません。</span>";
+  }
+  function refreshDialogForMember(){
     document.getElementById("dlgWho").textContent = memberName(dlgMemberId) + " さんの有休";
-    var existing = findLeave(dlgMemberId, dateStr);
+    var existing = findLeave(dlgMemberId, dlgDateStr);
     dlgKind = existing ? existing.kind : "full";
     document.getElementById("dlgMemo").value = existing ? (existing.memo || "") : "";
     document.getElementById("dlgDelete").style.display = existing ? "" : "none";
     updateKindButtons();
+    renderDlgNames();
+  }
+  function openDialogFor(mid, dateStr){
+    if (!data.members.length) { alert("先に「名前を管理」から名前を追加してください"); return; }
+    dlgMemberId = (mid === null || mid === undefined || !memberName(mid)) ? data.members[0].id : mid;
+    dlgDateStr = dateStr;
+    var p = dateStr.split("-");
+    document.getElementById("dlgDate").textContent = parseInt(p[0],10) + "年" + parseInt(p[1],10) + "月" + parseInt(p[2],10) + "日";
+    refreshDialogForMember();
     overlay.classList.add("open");
   }
   function updateKindButtons(){
