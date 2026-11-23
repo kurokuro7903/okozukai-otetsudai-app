@@ -45,7 +45,7 @@
   .name-tag { font-size:13px; line-height:1.25; background:#e8f3ef; border-radius:4px; padding:1px 5px; word-break:break-all; }
   .name-tag.half { background:#fff3e0; }
   .name-tag.mine { background:#2e7d6b; color:#fff; font-weight:700; }
-  .overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; z-index:50; padding:16px; }
+  .overlay { position:fixed; top:0; left:0; right:0; bottom:0; width:100%; height:100%; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; z-index:50; padding:16px; }
   .overlay.open { display:flex; }
   .dialog { background:#fff; border-radius:14px; padding:20px; width:100%; max-width:480px; max-height:90vh; overflow:auto; }
   .dialog h3 { margin:0 0 6px; font-size:19px; }
@@ -109,7 +109,7 @@
     </div>
   </section>
 </main>
-<footer>有休管理アプリ　バージョン2（タブレット版）<br>データはこのタブレットの中に保存されます</footer>
+<footer>有休管理アプリ　バージョン3（タブレット版）<br>データはこのタブレットの中に保存されます</footer>
 
 <!-- 有休入力ダイアログ -->
 <div class="overlay" id="leaveOverlay">
@@ -198,10 +198,11 @@
   var viewYear = now.getFullYear(), viewMonth = now.getMonth();
   var dlgDateStr = null, dlgKind = "full";
 
-  function fmt(y, m, d){ return y + "-" + String(m + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0"); }
-  function memberName(id){ var m = data.members.find(function(x){ return x.id === id; }); return m ? m.name : ""; }
+  function pad2(n){ return (n < 10 ? "0" : "") + n; }
+  function fmt(y, m, d){ return y + "-" + pad2(m + 1) + "-" + pad2(d); }
+  function memberName(id){ for (var i = 0; i < data.members.length; i++){ if (data.members[i].id === id) return data.members[i].name; } return ""; }
   function leavesOn(dateStr){ return data.leaves.filter(function(l){ return l.date === dateStr; }); }
-  function findLeave(mid, dateStr){ return data.leaves.find(function(l){ return l.memberId === mid && l.date === dateStr; }); }
+  function findLeave(mid, dateStr){ for (var i = 0; i < data.leaves.length; i++){ if (data.leaves[i].memberId === mid && data.leaves[i].date === dateStr) return data.leaves[i]; } return undefined; }
   function totalFor(mid, year, month){
     var sum = 0;
     data.leaves.forEach(function(l){
@@ -297,13 +298,18 @@
     overlay.classList.add("open");
   }
   function updateKindButtons(){
-    document.querySelectorAll(".kindbtn").forEach(function(b){
-      b.classList.toggle("selected", b.getAttribute("data-kind") === dlgKind);
-    });
+    var btns = document.querySelectorAll(".kindbtn");
+    for (var i = 0; i < btns.length; i++){
+      if (btns[i].getAttribute("data-kind") === dlgKind) btns[i].classList.add("selected");
+      else btns[i].classList.remove("selected");
+    }
   }
-  document.querySelectorAll(".kindbtn").forEach(function(b){
-    b.addEventListener("click", function(){ dlgKind = b.getAttribute("data-kind"); updateKindButtons(); });
-  });
+  (function(){
+    var btns = document.querySelectorAll(".kindbtn");
+    for (var i = 0; i < btns.length; i++){
+      (function(b){ b.addEventListener("click", function(){ dlgKind = b.getAttribute("data-kind"); updateKindButtons(); }); })(btns[i]);
+    }
+  })();
   document.getElementById("dlgSave").addEventListener("click", function(){
     var memo = document.getElementById("dlgMemo").value.trim();
     var existing = findLeave(selectedId, dlgDateStr);
@@ -453,7 +459,7 @@
         var a = document.createElement("a");
         var t = new Date();
         a.href = url;
-        a.download = "yukyu-backup-" + t.getFullYear() + String(t.getMonth() + 1).padStart(2, "0") + String(t.getDate()).padStart(2, "0") + ".json";
+        a.download = "yukyu-backup-" + fmt(t.getFullYear(), t.getMonth(), t.getDate()).replace(/-/g, "") + ".json";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
