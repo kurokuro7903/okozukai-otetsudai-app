@@ -99,8 +99,17 @@
     </table>
     <p style="font-size:13px;color:#666;margin:10px 0 0;">② カレンダーの日付をタップ → 全日有休／午前半休／午後半休（オレンジ色）を選んで登録。半休は0.5日で集計します。</p>
   </section>
+
+  <section class="card">
+    <h2>③ データのバックアップ・復元</h2>
+    <p style="font-size:13px;color:#555;margin:0 0 10px;">データはこの端末の中だけに保存されます。ときどきバックアップを保存しておくと、端末を替えるときや万一のときに復元できます。</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn primary" id="exportBtn">💾 バックアップを保存</button>
+      <button class="btn" id="importBtn">📥 復元する</button>
+    </div>
+  </section>
 </main>
-<footer>有休管理アプリ　バージョン1（タブレット版）<br>データはこのタブレットの中に保存されます</footer>
+<footer>有休管理アプリ　バージョン2（タブレット版）<br>データはこのタブレットの中に保存されます</footer>
 
 <!-- 有休入力ダイアログ -->
 <div class="overlay" id="leaveOverlay">
@@ -135,6 +144,22 @@
     <div class="actions" style="margin-top:10px;">
       <button class="btn primary" id="bulkBtn">一括追加</button>
       <button class="btn" id="manageClose">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<!-- バックアップ・復元ダイアログ -->
+<div class="overlay" id="backupOverlay">
+  <div class="dialog" style="max-width:560px;">
+    <h3 id="backupTitle">バックアップ</h3>
+    <p style="font-size:13px;color:#555;margin:0 0 8px;" id="backupHelp"></p>
+    <textarea id="backupText" rows="8" style="width:100%;border:1px solid #bbb;border-radius:8px;padding:10px;font-size:12px;" placeholder="ここにバックアップの文字が表示／貼り付けされます"></textarea>
+    <div style="margin:10px 0;">
+      <label style="font-size:14px;">ファイルから選ぶ： <input type="file" id="backupFile" accept=".json,application/json,text/plain"></label>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="backupDoBtn">実行</button>
+      <button class="btn" id="backupClose">閉じる</button>
     </div>
   </div>
 </div>
@@ -377,6 +402,90 @@
     document.getElementById("bulkText").value = "";
     save(data); renderMemberList(); renderAll();
     alert(added + "名を追加しました");
+  });
+
+  // ---- バックアップ・復元 ----
+  var backupOverlay = document.getElementById("backupOverlay");
+  var backupMode = "export"; // "export" or "import"
+  function backupPayload(){
+    return JSON.stringify({ app: "yukyuTablet", version: 2, exportedAt: new Date().toISOString(), data: data }, null, 2);
+  }
+  function openBackup(mode){
+    backupMode = mode;
+    var ta = document.getElementById("backupText");
+    document.getElementById("backupFile").value = "";
+    if (mode === "export") {
+      document.getElementById("backupTitle").textContent = "バックアップを保存";
+      document.getElementById("backupHelp").textContent = "下のボタンでファイルに保存します。うまく保存できないときは、この文字を全部コピーしてメモ帳などに貼って保管してください。";
+      ta.value = backupPayload();
+      ta.readOnly = true;
+      document.getElementById("backupDoBtn").textContent = "ファイルに保存";
+    } else {
+      document.getElementById("backupTitle").textContent = "バックアップから復元";
+      document.getElementById("backupHelp").textContent = "ファイルを選ぶか、バックアップの文字を貼り付けて「復元する」を押してください。今のデータは上書きされます。";
+      ta.value = "";
+      ta.readOnly = false;
+      document.getElementById("backupDoBtn").textContent = "復元する";
+    }
+    backupOverlay.classList.add("open");
+  }
+  document.getElementById("exportBtn").addEventListener("click", function(){ openBackup("export"); });
+  document.getElementById("importBtn").addEventListener("click", function(){ openBackup("import"); });
+  document.getElementById("backupClose").addEventListener("click", function(){ backupOverlay.classList.remove("open"); });
+  backupOverlay.addEventListener("click", function(e){ if (e.target === backupOverlay) backupOverlay.classList.remove("open"); });
+  document.getElementById("backupFile").addEventListener("change", function(){
+    var f = this.files && this.files[0];
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+      document.getElementById("backupText").value = String(reader.result || "");
+      if (backupMode === "export") { backupMode = "import"; document.getElementById("backupTitle").textContent = "バックアップから復元"; document.getElementById("backupDoBtn").textContent = "復元する"; document.getElementById("backupText").readOnly = false; }
+    };
+    reader.onerror = function(){ alert("ファイルを読めませんでした"); };
+    reader.readAsText(f);
+  });
+  document.getElementById("backupDoBtn").addEventListener("click", function(){
+    if (backupMode === "export") {
+      var text = document.getElementById("backupText").value;
+      try {
+        var blob = new Blob([text], { type: "application/json" });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        var t = new Date();
+        a.href = url;
+        a.download = "yukyu-backup-" + t.getFullYear() + String(t.getMonth() + 1).padStart(2, "0") + String(t.getDate()).padStart(2, "0") + ".json";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+      } catch(e) {
+        alert("ファイル保存ができないブラウザです。文字を全部コピーして保管してください。");
+      }
+      return;
+    }
+    // 復元
+    var raw = document.getElementById("backupText").value.trim();
+    if (!raw) { alert("ファイルを選ぶか、バックアップの文字を貼り付けてください"); return; }
+    var parsed;
+    try { parsed = JSON.parse(raw); } catch(e) { alert("バックアップの形式が違います（読めませんでした）"); return; }
+    var d = (parsed && parsed.data) ? parsed.data : parsed;
+    if (!d || !(d.members instanceof Array) || !(d.leaves instanceof Array)) { alert("バックアップの形式が違います（名前と有休の記録が見つかりません）"); return; }
+    var ok = true, maxId = 0;
+    d.members.forEach(function(m){ if (!m || typeof m.id !== "number" || !m.name) ok = false; if (m && m.id > maxId) maxId = m.id; });
+    d.leaves.forEach(function(l){
+      if (!l || typeof l.memberId !== "number" || !/^\d{4}-\d{2}-\d{2}$/.test(l.date || "")) ok = false;
+      if (l && l.kind !== "full" && l.kind !== "am" && l.kind !== "pm") l.kind = "full";
+      if (l && typeof l.memo !== "string") l.memo = "";
+    });
+    if (!ok) { alert("バックアップの内容に不完全な部分があります。復元を中止しました"); return; }
+    if (!confirm("今のデータをバックアップの内容（名前" + d.members.length + "名・有休" + d.leaves.length + "件）で上書きします。よろしいですか？")) return;
+    d.nextId = (typeof d.nextId === "number" && d.nextId > maxId) ? d.nextId : maxId + 1;
+    data = d;
+    save(data);
+    selectedId = data.members.length ? data.members[0].id : null;
+    backupOverlay.classList.remove("open");
+    renderAll();
+    alert("復元しました（名前" + data.members.length + "名・有休" + data.leaves.length + "件）");
   });
 
   renderAll();
