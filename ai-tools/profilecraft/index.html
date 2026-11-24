@@ -1,0 +1,32 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>プロフィールAI職人 | ProfileCraft AI</title><style>*{box-sizing:border-box}body{margin:0;font-family:-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;background:#0d2136;color:#eef6ff}header{background:linear-gradient(135deg,#2563eb,#06b6d4);padding:22px 16px;text-align:center}header h1{margin:0;font-size:24px}header p{margin:8px 0 0;font-size:13px;line-height:1.6}.wrap{max-width:860px;margin:0 auto;padding:14px}.card{background:#173656;border:1px solid #2c507a;border-radius:14px;padding:16px;margin-bottom:14px}.card h2{font-size:16px;margin:0 0 10px}label{display:block;font-size:13px;margin:12px 0 6px;color:#d7e9ff}input,select,textarea{width:100%;padding:11px;border-radius:10px;border:1px solid #35608f;background:#102740;color:#fff;font-size:15px}textarea{min-height:58px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.grid{grid-template-columns:1fr}}button{cursor:pointer;border:0;border-radius:10px;padding:12px;font-weight:700}.main{width:100%;background:linear-gradient(135deg,#2563eb,#db2777);color:#fff;font-size:17px;padding:15px}.sub{background:#2c507a;color:#fff;font-size:13px}.copy{background:#374151;color:#fff;font-size:12px;padding:8px 10px}.out{white-space:pre-wrap;background:#102740;border:1px solid #2c507a;border-radius:10px;padding:12px;font-size:14px;line-height:1.75}.row{display:flex;justify-content:space-between;align-items:center;margin:14px 0 6px}.hint{font-size:12px;color:#a9c6e8;line-height:1.7}footer{text-align:center;font-size:11px;color:#789;padding:10px 0 24px}</style></head><body>
+<header><h1>👤 プロフィールAI職人</h1><p>「自己紹介が書けない」を解決。<b>フリマ・X・ココナラ用のプロフィールを3媒体分生成</b></p></header>
+<div class="wrap"><div class="card"><h2>① あなたの材料を入力</h2>
+<div class="grid"><div><label>名前・屋号 *</label><input id="name" placeholder="例）かーくんのお店"></div>
+<div><label>肩書き・職業</label><input id="job" placeholder="例）会社員／個人開発者"></div></div>
+<label>得意なこと・売っているもの</label><textarea id="skill" placeholder="例）便利アプリの開発、中古PCやホビー用品の販売"></textarea>
+<label>実績・数字（盛らずに事実で）</label><input id="proof" placeholder="例）アプリ24本公開、フリマ取引100件以上">
+<label>人柄・大切にしていること</label><input id="mind" placeholder="例）丁寧な梱包と正直な状態説明を心がけています">
+<div class="grid"><div><label>トーン</label><select id="tone"><option>信頼感・丁寧</option><option>元気・親しみ</option><option>プロフェッショナル</option></select></div>
+<div><label>NG・載せたくないこと</label><input id="ng" placeholder="例）顔出し、住所など個人情報"></div></div>
+<p><button class="sub" id="demo">サンプルを入れる</button></p>
+<button class="main" id="gen">🚀 プロフィールを3媒体分生成</button>
+<p class="hint">実績は確認できる事実だけを使ってください。外部送信なし・端末内生成。</p></div>
+<div class="card" id="outCard" style="display:none"><h2>② 生成結果</h2>
+<div class="row"><b>フリマ用（信頼重視）</b><button class="copy" data-t="a">コピー</button></div><div class="out" id="a"></div>
+<div class="row"><b>X用（短文・160字目安）</b><button class="copy" data-t="b">コピー</button></div><div class="out" id="b"></div>
+<div class="row"><b>ココナラ／お仕事用</b><button class="copy" data-t="c">コピー</button></div><div class="out" id="c"></div></div></div>
+<footer>ProfileCraft AI v1（試作版）</footer>
+<script>
+function v(id){return document.getElementById(id).value.trim()}
+document.getElementById('gen').onclick=function(){
+var name=v('name'); if(!name){alert('名前・屋号を入れてね');return}
+var job=v('job'),skill=v('skill'),proof=v('proof'),mind=v('mind');
+document.getElementById('a').textContent='はじめまして、'+name+'です。ご覧いただきありがとうございます。\n'+(skill?'主に'+skill+'を取り扱っています。\n':'')+(proof?'実績：'+proof+'\n':'')+(mind||'状態は正直にお伝えし、丁寧に梱包してお届けします。')+'\n気になる点は購入前にコメントください。よろしくお願いいたします。';
+var b=(job?job+'｜':'')+name+'\n'+(skill||'')+(proof?'\n'+proof:'')+'\n'+(mind||'丁寧な対応を心がけています');
+document.getElementById('b').textContent=b.length>170?b.slice(0,170):b;
+document.getElementById('c').textContent='\n'+name+(job?'（'+job+'）':'')+'です。\n\n\n'+(skill||'ご相談内容に合わせて対応します')+'\n\n\n'+(proof||'個人活動を中心に実績を積んでいます')+'\n\n\n'+(mind||'納期と連絡の丁寧さを大切にします')+'\n\nまずはお気軽にご相談ください。';
+document.getElementById('outCard').style.display='block';document.getElementById('outCard').scrollIntoView({behavior:'smooth'});
+};
+document.getElementById('demo').onclick=function(){document.getElementById('name').value='かーくんのお店';document.getElementById('job').value='会社員／個人開発者';document.getElementById('skill').value='暮らしと副業に役立つWebアプリの開発、中古PC・ホビー用品の販売';document.getElementById('proof').value='自作アプリ24本を公開中';document.getElementById('mind').value='状態は正直に、梱包は丁寧に。買ってよかったと思える取引を心がけています';};
+var cs=document.querySelectorAll('.copy');for(var i=0;i<cs.length;i++){cs[i].onclick=function(){var t=document.getElementById(this.getAttribute('data-t')).textContent;navigator.clipboard&&navigator.clipboard.writeText(t);this.textContent='コピー済み';var b=this;setTimeout(function(){b.textContent='コピー'},1200)}}
+</script></body></html>

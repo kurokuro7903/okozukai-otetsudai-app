@@ -1,0 +1,37 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>神対応返信AI職人 | ReplyCraft AI</title><style>*{box-sizing:border-box}body{margin:0;font-family:-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;background:#0f241c;color:#eefaf3}header{background:linear-gradient(135deg,#059669,#0ea5e9);padding:22px 16px;text-align:center}header h1{margin:0;font-size:24px}header p{margin:8px 0 0;font-size:13px;line-height:1.6;opacity:.95}.wrap{max-width:860px;margin:0 auto;padding:14px}.card{background:#173529;border:1px solid #285943;border-radius:14px;padding:16px;margin-bottom:14px}.card h2{font-size:16px;margin:0 0 10px}label{display:block;font-size:13px;margin:12px 0 6px;color:#d2f2df}input,select,textarea{width:100%;padding:11px;border-radius:10px;border:1px solid #2f6b4e;background:#102a20;color:#fff;font-size:15px}textarea{min-height:60px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.grid{grid-template-columns:1fr}}button{cursor:pointer;border:0;border-radius:10px;padding:12px;font-weight:700}.main{width:100%;background:linear-gradient(135deg,#059669,#db2777);color:#fff;font-size:17px;padding:15px}.sub{background:#285943;color:#fff;font-size:13px}.copy{background:#374151;color:#fff;font-size:12px;padding:8px 10px}.out{white-space:pre-wrap;background:#102a20;border:1px solid #285943;border-radius:10px;padding:12px;font-size:14px;line-height:1.75}.row{display:flex;justify-content:space-between;align-items:center;margin:14px 0 6px}.hint{font-size:12px;color:#a7d8bc;line-height:1.7}footer{text-align:center;font-size:11px;color:#7fa892;padding:10px 0 24px;line-height:1.7}</style></head><body>
+<header><h1>💬 神対応返信AI職人</h1><p>困ったメッセージに、<b>角を立てず・信頼を落とさない返信を3案生成</b><br>値下げ・クレーム・遅延・キャンセル…悩む時間をゼロに</p></header>
+<div class="wrap"><div class="card"><h2>① 状況を選ぶ</h2>
+<div class="grid"><div><label>状況 *</label><select id="sit"><option>値下げ交渉が来た</option><option>商品にキズがあったと言われた</option><option>発送が遅れている</option><option>キャンセルしたいと言われた</option><option>購入のお礼を伝えたい</option><option>スペック・サイズの質問が来た</option><option>購入後に無言で評価だけ来た</option></select></div>
+<div><label>トーン</label><select id="tone"><option>丁寧・誠実</option><option>フレンドリー</option><option>しっかり・毅然</option></select></div></div>
+<label>商品名</label><input id="item" placeholder="例）富士通 ESPRIMO D588/T">
+<label>相手に伝えたい事実・こちらの事情</label><textarea id="fact" placeholder="例）送料込みのため大きな値下げは難しい／明日発送予定／写真で状態を確認したい"></textarea>
+<p><button class="sub" id="demo">サンプルを入れる</button></p>
+<button class="main" id="gen">🚀 返信を3案生成</button>
+<p class="hint">事実と違う約束は入れないでください。返金・補償など金銭が関わる場合は、各プラットフォームのルール確認が先です。外部送信なし。</p></div>
+<div class="card" id="outCard" style="display:none"><h2>② 返信案</h2>
+<div class="row"><b>返信案（丁寧／バランス／短文）</b><button class="copy" data-t="out">コピー</button></div><div class="out" id="out"></div>
+<div class="row"><b>⚠️ 送る前にチェック</b></div><div class="out" id="warn"></div></div></div>
+<footer>ReplyCraft AI v1（試作版）</footer>
+<script>
+function v(id){return document.getElementById(id).value.trim()}
+var base={
+'値下げ交渉が来た':['ご検討いただきありがとうございます。{f}そのため大幅なお値下げは難しいのですが、気持ちとして少しお値引きした専用ページをお作りできます。ご希望でしたらお知らせください。','コメントありがとうございます！{f}この価格が今の精一杯なのですが、本日中にご購入いただける場合は優先して対応します。','ありがとうございます。申し訳ありませんが、現状の価格でのご案内となります。ご縁がありましたらよろしくお願いいたします。'],
+'商品にキズがあったと言われた':['ご連絡ありがとうございます。大変申し訳ありません。{f}まずはお手数ですが、該当箇所のお写真をお送りいただけますでしょうか。確認のうえ、誠実に対応いたします。','ご迷惑をおかけし申し訳ありません。{f}写真で状態を確認させていただき、対応方法をご相談させてください。','申し訳ありませんでした。{f}状況を確認したいので、お写真をお願いできますでしょうか。確認後すぐご連絡いたします。'],
+'発送が遅れている':['ご連絡ありがとうございます。発送が遅れており大変申し訳ありません。{f}準備が整い次第すぐ発送し、発送後に改めてご連絡いたします。','お待たせして申し訳ありません。{f}もう少しだけお時間をいただけますと幸いです。','申し訳ありません。{f}発送でき次第、追跡情報とあわせてご連絡いたします。'],
+'キャンセルしたいと言われた':['ご連絡ありがとうございます。承知いたしました。{f}発送前であればキャンセル手続きを進めますので、このままお待ちください。','かしこまりました。{f}手続きの状況を確認して改めてご連絡いたします。','承知いたしました。{f}確認のうえ対応いたします。'],
+'購入のお礼を伝えたい':['ご購入いただきありがとうございます！{f}丁寧に梱包して発送いたします。到着まで楽しみにお待ちください。','ありがとうございます。{f}大切に梱包してお届けします。何かあればお気軽にご連絡ください。','ご購入ありがとうございます！{f}まもなく発送いたします。'],
+'スペック・サイズの質問が来た':['ご質問ありがとうございます。{f}他にも気になる点があれば、購入前に何でもお聞きください。写真の追加も可能です。','ご質問ありがとうございます！{f}分からない点は遠慮なくどうぞ。','ありがとうございます。{f}必要でしたら実測・追加写真も対応します。'],
+'購入後に無言で評価だけ来た':['この度はお取引ありがとうございました。{f}またご縁がありましたらよろしくお願いいたします。','ありがとうございました！{f}今後ともよろしくお願いいたします。','お取引ありがとうございました。{f}']}
+var warns='・相手の名前や注文内容など、事実を確認してから送る\n・「絶対」「必ず大丈夫」など断定しすぎる表現は避ける\n・怒りを感じたら即返信せず、10分置いてからこの文をベースに送る\n・金銭トラブルはプラットフォームの公式ルールとサポートを優先する';
+document.getElementById('gen').onclick=function(){
+var sit=v('sit'),item=v('item'),fact=v('fact')||'詳細は確認のうえ対応いたします。';
+if(fact.slice(-1)!=='。'&&fact.slice(-1)!=='す')fact+='。';
+var arr=(base[sit]||[]).map(function(s){return s.replace('{f}',fact)+(item?'\n（商品：'+item+'）':'')});
+document.getElementById('out').textContent='\n'+arr[0]+'\n\n\n'+arr[1]+'\n\n\n'+arr[2];
+document.getElementById('warn').textContent=warns;
+document.getElementById('outCard').style.display='block';document.getElementById('outCard').scrollIntoView({behavior:'smooth'});
+try{var h=JSON.parse(localStorage.getItem('replycraft_hist')||'[]');h.unshift({d:new Date().toLocaleString('ja-JP'),t:sit});localStorage.setItem('replycraft_hist',JSON.stringify(h.slice(0,20)))}catch(e){}
+};
+document.getElementById('demo').onclick=function(){document.getElementById('item').value='富士通 ESPRIMO D588/T';document.getElementById('fact').value='送料込みで設定しているため大きな値下げは難しいのですが、500円のお値引きでしたら対応できます';};
+var cs=document.querySelectorAll('.copy');for(var i=0;i<cs.length;i++){cs[i].onclick=function(){var t=document.getElementById(this.getAttribute('data-t')).textContent;navigator.clipboard&&navigator.clipboard.writeText(t);this.textContent='コピー済み';var b=this;setTimeout(function(){b.textContent='コピー'},1200)}}
+</script></body></html>

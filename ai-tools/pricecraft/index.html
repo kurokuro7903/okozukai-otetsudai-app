@@ -1,0 +1,32 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>値付けAI職人 | PriceCraft AI</title><style>*{box-sizing:border-box}body{margin:0;font-family:-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;background:#26160b;color:#fff7ed}header{background:linear-gradient(135deg,#d97706,#dc2626);padding:22px 16px;text-align:center}header h1{margin:0;font-size:24px}header p{margin:8px 0 0;font-size:13px;line-height:1.6}.wrap{max-width:860px;margin:0 auto;padding:14px}.card{background:#3a2412;border:1px solid #6b4423;border-radius:14px;padding:16px;margin-bottom:14px}.card h2{font-size:16px;margin:0 0 10px}label{display:block;font-size:13px;margin:12px 0 6px;color:#ffedd5}input,select{width:100%;padding:11px;border-radius:10px;border:1px solid #8a5a2b;background:#2a1a0c;color:#fff;font-size:15px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.grid{grid-template-columns:1fr}}button{cursor:pointer;border:0;border-radius:10px;padding:12px;font-weight:700}.main{width:100%;background:linear-gradient(135deg,#d97706,#db2777);color:#fff;font-size:17px;padding:15px}.sub{background:#6b4423;color:#fff;font-size:13px}.out{white-space:pre-wrap;background:#2a1a0c;border:1px solid #6b4423;border-radius:10px;padding:12px;font-size:14px;line-height:1.8}.big{font-size:26px;font-weight:900;color:#fbbf24}.hint{font-size:12px;color:#e7c9a9;line-height:1.7}footer{text-align:center;font-size:11px;color:#a98;padding:10px 0 24px}</style></head><body>
+<header><h1>🏷️ 値付けAI職人</h1><p>「いくらで出せばいい？」に即答。<b>開始価格・即決・下限の3点セット＋値下げ計画</b>まで自動計算</p></header>
+<div class="wrap"><div class="card"><h2>① 商品の条件を入力</h2>
+<div class="grid"><div><label>定価・新品価格（円）*</label><input id="list" type="number" inputmode="numeric" placeholder="30000"></div>
+<div><label>仕入れ値・手放す最低ライン（円）</label><input id="cost" type="number" inputmode="numeric" placeholder="0（不用品なら0）"></div></div>
+<div class="grid"><div><label>状態</label><select id="cond"><option value="0.85">新品・未使用</option><option value="0.7">未使用に近い</option><option value="0.6" selected>美品・動作確認済み</option><option value="0.45">やや傷や汚れあり</option><option value="0.25">ジャンク・部品取り</option></select></div>
+<div><label>人気・需要</label><select id="demand"><option value="1.15">人気・探している人が多い</option><option value="1" selected>普通</option><option value="0.85">ニッチ・売れるまで時間がかかる</option></select></div></div>
+<div class="grid"><div><label>売りたい速さ</label><select id="speed"><option value="1.1">高く売りたい（1ヶ月OK）</option><option value="1" selected>バランス（2週間）</option><option value="0.9">早く売りたい（3日以内）</option></select></div>
+<div><label>出品先</label><select id="plat"><option value="0.10">メルカリ（手数料10%）</option><option value="0.05">ヤフーフリマ（手数料5%）</option><option value="0.10">ヤフオク（手数料10%）</option></select></div></div>
+<label>送料（出品者負担の場合・円）</label><input id="ship" type="number" inputmode="numeric" placeholder="800">
+<p><button class="sub" id="demo">サンプルを入れる</button></p>
+<button class="main" id="gen">🚀 値付けを計算する</button>
+<p class="hint">相場データそのものではなく、定価・状態・需要からの計算モデルです。実際の売れ行きは各フリマの sold 検索でも確認してください。</p></div>
+<div class="card" id="outCard" style="display:none"><h2>② おすすめ価格</h2><div class="out" id="out"></div><h2 style="margin-top:14px">📉 値下げ計画</h2><div class="out" id="plan"></div></div></div>
+<footer>PriceCraft AI v1（試作版）</footer>
+<script>
+function v(id){return document.getElementById(id).value}
+function n(id){return parseInt(v(id),10)||0}
+function yen(x){return Math.round(x).toLocaleString('ja-JP')+'円'}
+function round10(x){return Math.round(x/10)*10}
+document.getElementById('gen').onclick=function(){
+ var list=n('list'); if(!list){alert('定価・新品価格を入れてね');return}
+ var cost=n('cost'),ship=n('ship'),fee=parseFloat(v('plat'));
+ var base=list*parseFloat(v('cond'))*parseFloat(v('demand'))*parseFloat(v('speed'));
+ var start=round10(base*1.05), sok=round10(base*1.18), floor=Math.max(round10(base*0.85), cost? round10((cost+ship)/(1-fee)) : 0);
+ function profit(p){return Math.round(p-p*fee-ship)}
+ document.getElementById('out').innerHTML='開始価格（まず出す）\n<span class="big">'+yen(start)+'</span>　手取り目安 '+yen(profit(start))+'\n\n即決・強気価格 '+yen(sok)+'　手取り目安 '+yen(profit(sok))+'\n下限ライン（これ以下は損） '+yen(floor)+'　手取り目安 '+yen(profit(floor));
+ document.getElementById('plan').textContent='1日目：'+yen(start)+'で出品。いいねが付くか観察\n3日目：反応が薄ければ写真1枚目とタイトルだけ直す（値下げはまだ）\n7日目：'+yen(round10(start*0.95))+'へ小幅値下げ＋再宣伝\n14日目：'+yen(floor)+'まで段階的に。ここで止める\n\nコツ：値下げより先に「1枚目の写真」と「タイトル先頭」を直す方が売れやすさが上がることが多いです。';
+ document.getElementById('outCard').style.display='block';document.getElementById('outCard').scrollIntoView({behavior:'smooth'});
+};
+document.getElementById('demo').onclick=function(){document.getElementById('list').value='45000';document.getElementById('cost').value='0';document.getElementById('ship').value='1200';};
+</script></body></html>

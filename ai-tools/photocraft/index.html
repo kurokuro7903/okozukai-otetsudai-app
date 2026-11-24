@@ -1,0 +1,33 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>売れる写真AIコーチ | PhotoCraft AI</title><style>*{box-sizing:border-box}body{margin:0;font-family:-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;background:#101820;color:#f2f7fb}header{background:linear-gradient(135deg,#0ea5e9,#22c55e);padding:22px 16px;text-align:center}header h1{margin:0;font-size:24px}header p{margin:8px 0 0;font-size:13px;line-height:1.6}.wrap{max-width:860px;margin:0 auto;padding:14px}.card{background:#1b2836;border:1px solid #30465e;border-radius:14px;padding:16px;margin-bottom:14px}.card h2{font-size:16px;margin:0 0 10px}label{display:block;font-size:14px;margin:10px 0;padding:10px;background:#141f2b;border-radius:10px;line-height:1.6}input[type=checkbox]{transform:scale(1.3);margin-right:8px}select{width:100%;padding:11px;border-radius:10px;border:1px solid #3a5a7a;background:#141f2b;color:#fff;font-size:15px;margin-bottom:10px}button{cursor:pointer;border:0;border-radius:10px;padding:12px;font-weight:700}.main{width:100%;background:linear-gradient(135deg,#0ea5e9,#22c55e);color:#fff;font-size:17px;padding:15px}.score{font-size:40px;font-weight:900;text-align:center}.bar{height:12px;background:#141f2b;border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,#f59e0b,#22c55e);width:0%}.out{white-space:pre-wrap;background:#141f2b;border:1px solid #30465e;border-radius:10px;padding:12px;font-size:14px;line-height:1.8}.hint{font-size:12px;color:#a9bfd3;line-height:1.7}footer{text-align:center;font-size:11px;color:#789;padding:10px 0 24px}</style></head><body>
+<header><h1>📸 売れる写真AIコーチ</h1><p>売れるかどうかは写真で決まる。<b>カテゴリ別の撮影リスト＋自己採点スコア</b>で「なんとなく撮影」を卒業</p></header>
+<div class="wrap"><div class="card"><h2>① カテゴリを選ぶ</h2>
+<select id="cat"><option>PC・家電</option><option>ファッション</option><option>ホビー・模型・コレクション</option><option>ハンドメイド</option><option>日用品・インテリア</option></select>
+<button class="main" id="listBtn">📋 撮影リストを作る</button>
+<div class="out" id="list" style="margin-top:12px">カテゴリを選んでボタンを押すと、撮る順番つきリストが出ます。</div></div>
+<div class="card"><h2>② 撮れたらチェック → スコア表示</h2>
+<div id="checks">
+<label><input type="checkbox" class="ck" value="15">1枚目は一番良い全体写真（明るい・ピント合っている）</label>
+<label><input type="checkbox" class="ck" value="10">背景がゴチャついていない（白い布や無地の壁）</label>
+<label><input type="checkbox" class="ck" value="10">自然光か明るい照明で、色が実物に近い</label>
+<label><input type="checkbox" class="ck" value="15">キズ・汚れの箇所も隠さず撮った</label>
+<label><input type="checkbox" class="ck" value="10">大きさが分かる写真がある（手・定規・コイン等と比較）</label>
+<label><input type="checkbox" class="ck" value="10">付属品を全部並べて撮った</label>
+<label><input type="checkbox" class="ck" value="10">型番・ロゴ・ラベルのアップがある</label>
+<label><input type="checkbox" class="ck" value="10">使う場面のイメージ写真がある</label>
+<label><input type="checkbox" class="ck" value="10">縦横が揃っていて、余白が多すぎない</label>
+</div>
+<div class="score" id="score">0点</div><div class="bar"><i id="bar"></i></div>
+<p class="hint" id="msg">チェックを入れるとスコアが上がります。80点以上で出品OKラインです。</p></div></div>
+<footer>PhotoCraft AI v1（試作版）</footer>
+<script>
+var lists={
+'PC・家電':'撮る順番（8枚）\n1. 全体（正面・電源ONで画面点灯）\n2. 全体（背面・端子側）\n3. 型番ラベル・シリアル付近\n4. キーボード／操作部アップ\n5. 端子・ポート全部\n6. キズ箇所のアップ（正直に）\n7. 付属品一式を並べて\n8. 梱包イメージ or 起動画面',
+'ファッション':'撮る順番（8枚）\n1. 全体（ハンガー or 平置き・明るく）\n2. 背面全体\n3. 生地・柄のアップ\n4. タグ（ブランド・サイズ・素材）\n5. 袖・裾・ボタンの状態\n6. 汚れ・毛玉など気になる箇所\n7. サイズ実測（定規つき）\n8. コーデイメージ（持ち物と合わせて）',
+'ホビー・模型・コレクション':'撮る順番（8枚）\n1. 全体（正面・一番映える角度）\n2. 側面・背面\n3. 細部のアップ（顔・ロゴ・刻印）\n4. 可動部・付属パーツ全部\n5. 箱・ケース（ある場合）\n6. 欠け・塗装ハゲなど状態箇所\n7. 手に持って大きさ比較\n8. 飾った場面のイメージ',
+'ハンドメイド':'撮る順番（8枚）\n1. 全体（世界観が伝わる背景で）\n2. 別角度\n3. 質感のアップ（編み目・縫い目・素材）\n4. 裏側・仕上げ部分\n5. 手に持って大きさ比較\n6. ラッピング状態\n7. 使う場面（身につける・置く）\n8. バリエーション集合写真',
+'日用品・インテリア':'撮る順番（8枚）\n1. 全体（置く場所のイメージと一緒に）\n2. 別角度・背面\n3. 素材・質感アップ\n4. ロゴ・型番・注意書きラベル\n5. キズ・汚れ箇所\n6. 付属品一式\n7. 手・家具と大きさ比較\n8. 実際に使う場面'};
+document.getElementById('listBtn').onclick=function(){document.getElementById('list').textContent=lists[document.getElementById('cat').value]||''};
+var cks=document.querySelectorAll('.ck');
+function upd(){var s=0;for(var i=0;i<cks.length;i++){if(cks[i].checked)s+=parseInt(cks[i].value,10)}document.getElementById('score').textContent=s+'点';document.getElementById('bar').style.width=s+'%';document.getElementById('msg').textContent=s>=80?'✅ 出品OKライン到達。この写真セットなら自信を持って出せます。':(s>=50?'あと少し。「キズを隠さず撮る」と「大きさ比較」が効きます。':'まずは1枚目と明るさから直すと一気に良くなります。')}
+for(var i=0;i<cks.length;i++){cks[i].onchange=upd}
+</script></body></html>

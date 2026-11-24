@@ -1,0 +1,31 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>副業目標AIプランナー | MoneyCraft AI</title><style>*{box-sizing:border-box}body{margin:0;font-family:-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;background:#141126;color:#f5f2ff}header{background:linear-gradient(135deg,#7c3aed,#059669);padding:22px 16px;text-align:center}header h1{margin:0;font-size:24px}header p{margin:8px 0 0;font-size:13px;line-height:1.6}.wrap{max-width:860px;margin:0 auto;padding:14px}.card{background:#241a45;border:1px solid #453371;border-radius:14px;padding:16px;margin-bottom:14px}.card h2{font-size:16px;margin:0 0 10px}label{display:block;font-size:13px;margin:12px 0 6px;color:#e2d9ff}input,select{width:100%;padding:11px;border-radius:10px;border:1px solid #55448a;background:#1a1332;color:#fff;font-size:15px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.grid{grid-template-columns:1fr}}button{cursor:pointer;border:0;border-radius:10px;padding:12px;font-weight:700}.main{width:100%;background:linear-gradient(135deg,#7c3aed,#059669);color:#fff;font-size:17px;padding:15px}.sub{background:#453371;color:#fff;font-size:13px}.out{white-space:pre-wrap;background:#1a1332;border:1px solid #453371;border-radius:10px;padding:12px;font-size:14px;line-height:1.85}.hint{font-size:12px;color:#bfb2e8;line-height:1.7}footer{text-align:center;font-size:11px;color:#887fb0;padding:10px 0 24px;line-height:1.7}</style></head><body>
+<header><h1>🎯 副業目標AIプランナー</h1><p>目標金額を入れると、<b>「何を何個売れば届くか」まで逆算</b>して毎日の行動に落とす</p></header>
+<div class="wrap"><div class="card"><h2>① 目標と使える時間を入力</h2>
+<div class="grid"><div><label>目標金額（円）*</label><input id="goal" type="number" inputmode="numeric" placeholder="30000"></div>
+<div><label>期間</label><select id="period"><option value="30">1ヶ月</option><option value="90">3ヶ月</option><option value="7">1週間（一回だけ作りたい用）</option></select></div></div>
+<div class="grid"><div><label>1日に使える時間</label><select id="time"><option value="0.5">30分</option><option value="1" selected>1時間</option><option value="2">2時間</option><option value="3">3時間以上</option></select></div>
+<div><label>得意・使える手段</label><select id="skill"><option>物販＋デジタル商品</option><option>物販中心</option><option>デジタル商品・SNS中心</option><option>受注・スキル販売中心</option></select></div></div>
+<p><button class="sub" id="demo">サンプル（月3万円）を入れる</button></p>
+<button class="main" id="gen">🚀 逆算プランを作る</button>
+<p class="hint">収益を保証するものではありません。数字は行動量を決めるための目安です。借入や初期投資を勧める内容は出しません。</p></div>
+<div class="card" id="outCard" style="display:none"><h2>② あなたの逆算プラン</h2><div class="out" id="out"></div><h2 style="margin-top:14px">📅 毎日の行動</h2><div class="out" id="daily"></div></div></div>
+<footer>MoneyCraft AI v1（試作版）</footer>
+<script>
+function n(id){return parseInt(document.getElementById(id).value,10)||0}
+function f(id){return parseFloat(document.getElementById(id).value)}
+function yen(x){return Math.round(x).toLocaleString('ja-JP')+'円'}
+document.getElementById('gen').onclick=function(){
+var g=n('goal'); if(!g){alert('目標金額を入れてね');return}
+var days=parseInt(document.getElementById('period').value,10), hrs=f('time'), skill=document.getElementById('skill').value;
+var perDay=g/days;
+var digital=Math.round(g*0.4/1980), busan=Math.round(g*0.35/5000), juchu=Math.round(g*0.25/10000);
+if(skill==='物販中心'){busan=Math.round(g*0.7/5000);digital=Math.round(g*0.3/1980);juchu=0}
+if(skill==='デジタル商品・SNS中心'){digital=Math.round(g*0.7/1980);busan=Math.round(g*0.3/5000);juchu=0}
+if(skill==='受注・スキル販売中心'){juchu=Math.round(g*0.6/10000);digital=Math.round(g*0.4/1980);busan=0}
+document.getElementById('out').textContent='目標 '+yen(g)+'（'+days+'日）＝ 1日あたり約 '+yen(perDay)+'\n\n\n・デジタル商品（1,980円）× 約'+digital+'個 ＝ '+yen(digital*1980)+'\n・物販（手取り5,000円目安）× 約'+busan+'件 ＝ '+yen(busan*5000)+'\n・受注（10,000円）× 約'+juchu+'件 ＝ '+yen(juchu*10000)+'\n\nポイント：1つの柱に頼らず、2〜3本に分けると1つが止まっても崩れません。まず一番早くお金になる柱から着手してください。';
+document.getElementById('daily').textContent='使える時間は1日'+hrs+'時間。配分目安：\n・出品／商品づくり：'+Math.round(hrs*60*0.5)+'分\n・SNS投稿／宣伝：'+Math.round(hrs*60*0.3)+'分\n・数字の確認と改善：'+Math.round(hrs*60*0.2)+'分\n\n今日やること（最初の1つだけ決める）\n1. 売れる物を1つ選ぶ or 商品ページを1つ直す\n2. 投稿を1本出す\n3. 寝る前に数字を1行メモする\n\n小さく毎日が、結局一番速いです。';
+document.getElementById('outCard').style.display='block';document.getElementById('outCard').scrollIntoView({behavior:'smooth'});
+try{localStorage.setItem('moneycraft_last',JSON.stringify({g:g,d:new Date().toLocaleString('ja-JP')}))}catch(e){}
+};
+document.getElementById('demo').onclick=function(){document.getElementById('goal').value='30000';};
+</script></body></html>

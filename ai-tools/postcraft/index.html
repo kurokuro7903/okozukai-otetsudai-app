@@ -1,0 +1,41 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SNS投稿AI職人 | PostCraft AI</title><style>*{box-sizing:border-box}body{margin:0;font-family:-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;background:#0b1526;color:#f4f6ff}header{background:linear-gradient(135deg,#0284c7,#7c3aed);padding:22px 16px;text-align:center}header h1{margin:0;font-size:24px}header p{margin:8px 0 0;font-size:13px;line-height:1.6;opacity:.95}.wrap{max-width:860px;margin:0 auto;padding:14px}.card{background:#16203a;border:1px solid #2a3a5f;border-radius:14px;padding:16px;margin-bottom:14px}.card h2{font-size:16px;margin:0 0 10px}label{display:block;font-size:13px;margin:12px 0 6px;color:#dbe4ff}input,select,textarea{width:100%;padding:11px;border-radius:10px;border:1px solid #35507e;background:#0e1830;color:#fff;font-size:15px}textarea{min-height:60px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.grid{grid-template-columns:1fr}}button{cursor:pointer;border:0;border-radius:10px;padding:12px;font-weight:700}.main{width:100%;background:linear-gradient(135deg,#0284c7,#db2777);color:#fff;font-size:17px;padding:15px}.sub{background:#2a3a5f;color:#fff;font-size:13px}.copy{background:#374151;color:#fff;font-size:12px;padding:8px 10px}.out{white-space:pre-wrap;background:#0e1830;border:1px solid #2a3a5f;border-radius:10px;padding:12px;font-size:14px;line-height:1.7}.row{display:flex;justify-content:space-between;align-items:center;margin:14px 0 6px}.hint{font-size:12px;color:#9fb;line-height:1.6;color:#a9b8d8}footer{text-align:center;font-size:11px;color:#889;padding:10px 0 24px;line-height:1.7}</style></head><body>
+<header><h1>📱 SNS投稿AI職人</h1><p>ネタを入れるだけ。<b>X・Instagram・Threads・TikTok台本を一括生成</b><br>毎日の「何を投稿しよう…」を1分で終わらせる</p></header>
+<div class="wrap"><div class="card"><h2>① 投稿の材料を入力</h2>
+<label>テーマ・商品・出来事 *</label><input id="theme" placeholder="例）メルカリでPCが売れた／新作アプリ公開／絶景の滝に行った">
+<label>一番伝えたいメリット・結果</label><textarea id="benefit" placeholder="例）出品から2日で売れた、手取りは約13,000円だった"></textarea>
+<label>読者にやってほしいこと</label><input id="cta" placeholder="例）プロフィールのリンクから見てね／コメントで教えて">
+<div class="grid"><div><label>ジャンル</label><select id="genre"><option>副業・物販</option><option>アプリ・ガジェット</option><option>絶景・旅行・癒し</option><option>ハンドメイド</option><option>日常・暮らし</option><option>グルメ</option></select></div>
+<div><label>トーン</label><select id="tone"><option>元気・ワクワク</option><option>丁寧・信頼感</option><option>静か・癒し</option><option>おもしろ・くだけた</option></select></div></div>
+<p><button class="sub" id="demo">サンプルを入れる</button></p>
+<button class="main" id="gen">🚀 4媒体分を一括生成</button>
+<p class="hint">ハッシュタグは各媒体とも5個までに厳選。Xは文字数を自動チェックします。外部送信なし・端末内生成。</p></div>
+<div class="card" id="outCard" style="display:none"><h2>② 生成結果</h2>
+<div class="row"><b>X投稿文</b><button class="copy" data-t="x">コピー</button></div><div class="out" id="x"></div><p class="hint" id="xcount"></p>
+<div class="row"><b>Instagramキャプション</b><button class="copy" data-t="ig">コピー</button></div><div class="out" id="ig"></div>
+<div class="row"><b>Threads投稿文</b><button class="copy" data-t="th">コピー</button></div><div class="out" id="th"></div>
+<div class="row"><b>TikTok／リール台本（30秒・BGMのみ＋字幕想定）</b><button class="copy" data-t="tt">コピー</button></div><div class="out" id="tt"></div>
+<div class="row"><b>投稿時間のヒント</b></div><div class="out" id="time"></div></div></div>
+<footer>PostCraft AI v1（試作版）／数字や実績は事実だけを使ってください</footer>
+<script>
+function v(id){return document.getElementById(id).value.trim()}
+var tags={'副業・物販':['#副業','#メルカリ','#物販','#会社員','#収入アップ'],'アプリ・ガジェット':['#アプリ開発','#ガジェット','#便利アプリ','#個人開発','#時短'],'絶景・旅行・癒し':['#絶景','#癒し','#旅行好き','#日本の風景','#ドライブ'],'ハンドメイド':['#ハンドメイド','#一点もの','#手作り','#プレゼント','#作家さんと繋がりたい'],'日常・暮らし':['#暮らし','#日常','#便利グッズ','#一人暮らし','#丁寧な暮らし'],'グルメ':['#グルメ','#ランチ','#美味しい','#食べ歩き','#ごはん']};
+var openers={'元気・ワクワク':'やりました✨','丁寧・信頼感':'ご報告です。','静か・癒し':'そっと、お届けします。','おもしろ・くだけた':'ちょっと聞いてください笑'};
+document.getElementById('gen').onclick=function(){
+var th=v('theme'); if(!th){alert('テーマを入れてね');return}
+var be=v('benefit'),cta=v('cta')||'気になったら保存してね',g=v('genre'),tone=v('tone'),tag=(tags[g]||[]).join(' ');
+var op=openers[tone]||'';
+var x=op+'\n'+th+'\n'+(be?be+'\n':'')+cta+'\n'+tag;
+document.getElementById('x').textContent=x;
+// X換算: 日本語等は2カウント、半角英数は1として280上限で概算
+var cnt=0; for(var i=0;i<x.length;i++){cnt+= (x.charCodeAt(i)>255?2:1)}
+document.getElementById('xcount').textContent='X換算 約'+cnt+'/280文字 '+(cnt<=280?'✅ 投稿OK':'⚠️ 長いので削ってください');
+document.getElementById('ig').textContent=th+'\n\n'+(be||'')+'\n\n見てくれてありがとうございます。\n'+cta+'\n\n'+tag;
+document.getElementById('th').textContent=th+'\n'+(be?be+'。':'')+'\nみんなはどうしてる？コメントで教えてほしいな。';
+document.getElementById('tt').textContent='字幕：'+th+'\n一番良い場面／商品のアップ。字幕：'+(be||'ここがポイント')+'\n結果・数字・ビフォーアフターを見せる\n字幕：'+cta+'＋フェードアウト\nBGM：内容に合う静かめ〜明るめを小さめ音量で';
+document.getElementById('time').textContent='平日：昼12時台と夜20-22時が反応が良い傾向。副業系は夜21時前後、絶景・癒し系は夜21-23時（寝る前）がおすすめ。まず週2本、同じ時間帯で続けて反応を見てください。';
+document.getElementById('outCard').style.display='block'; document.getElementById('outCard').scrollIntoView({behavior:'smooth'});
+try{var h=JSON.parse(localStorage.getItem('postcraft_hist')||'[]');h.unshift({d:new Date().toLocaleString('ja-JP'),t:th});localStorage.setItem('postcraft_hist',JSON.stringify(h.slice(0,20)))}catch(e){}
+};
+document.getElementById('demo').onclick=function(){document.getElementById('theme').value='新作ツール「売れる出品文AI職人」が完成しました';document.getElementById('benefit').value='出品文づくりが約20分→1分に。売れやすさスコア付き';document.getElementById('cta').value='気になる方はプロフィールのお店から見てね';};
+var cs=document.querySelectorAll('.copy');for(var i=0;i<cs.length;i++){cs[i].onclick=function(){var t=document.getElementById(this.getAttribute('data-t')).textContent;navigator.clipboard&&navigator.clipboard.writeText(t);this.textContent='コピー済み';var b=this;setTimeout(function(){b.textContent='コピー'},1200)}}
+</script></body></html>

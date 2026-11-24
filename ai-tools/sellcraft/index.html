@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>売れる出品文AI職人 | SellCraft AI</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;background:#0f1226;color:#f4f4f8}
+header{background:linear-gradient(135deg,#6d28d9,#db2777);padding:22px 16px;text-align:center}
+header h1{margin:0;font-size:24px}header p{margin:8px 0 0;opacity:.92;font-size:13px;line-height:1.6}
+.wrap{max-width:860px;margin:0 auto;padding:14px}
+.card{background:#1b1f3a;border:1px solid #2e335c;border-radius:14px;padding:16px;margin-bottom:14px}
+.card h2{font-size:16px;margin:0 0 12px}.hint{font-size:12px;color:#aab;line-height:1.6}
+label{display:block;font-size:13px;margin:12px 0 6px;color:#d9dbff}
+input,select,textarea{width:100%;padding:11px;border-radius:10px;border:1px solid #3a3f6b;background:#12152e;color:#fff;font-size:15px}
+textarea{min-height:64px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.grid{grid-template-columns:1fr}}
+button{cursor:pointer;border:0;border-radius:10px;padding:12px 14px;font-size:15px;font-weight:700}
+.main{width:100%;background:linear-gradient(135deg,#f59e0b,#db2777);color:#fff;font-size:17px;padding:15px}
+.sub{background:#2e335c;color:#fff;font-size:13px}.copy{background:#374151;color:#fff;font-size:12px;padding:8px 10px}
+.score{font-size:42px;font-weight:900;text-align:center}.bar{height:12px;background:#12152e;border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,#f59e0b,#22c55e);width:0%}
+.out{white-space:pre-wrap;background:#12152e;border:1px solid #2e335c;border-radius:10px;padding:12px;font-size:14px;line-height:1.7;min-height:60px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:14px 0 6px}.row b{font-size:14px}
+ul{margin:6px 0;padding-left:18px;font-size:13px;line-height:1.7;color:#d9dbff}
+.badge{display:inline-block;background:#f59e0b;color:#111;border-radius:99px;padding:3px 9px;font-size:11px;font-weight:800}
+footer{text-align:center;font-size:11px;color:#889;padding:10px 0 24px;line-height:1.7}
+</style></head><body>
+<header><h1>✨ 売れる出品文AI職人</h1><p>商品情報を入れるだけ。<b>20分かかる出品作業を、約1分に。</b><br>タイトル3案・説明文・キーワード・値下げ返信・宣伝文まで一括生成</p></header>
+<div class="wrap">
+<div class="card"><h2>① 商品情報を入力 <span class="badge">入力が多いほどスコアUP</span></h2>
+<label>商品名 *</label><input id="name" placeholder="例）富士通 ESPRIMO D588/T Core i3 / 8GB / SSD256GB">
+<div class="grid"><div><label>カテゴリ</label><select id="cat"><option>PC・家電</option><option>ゲーム・ホビー・模型</option><option>ファッション</option><option>ハンドメイド</option><option>本・CD・DVD</option><option>日用品・インテリア</option><option>その他</option></select></div>
+<div><label>状態</label><select id="cond"><option>美品・動作確認済み</option><option>目立った傷や汚れなし</option><option>やや傷や汚れあり</option><option>未使用に近い</option><option>新品・未使用</option><option>ジャンク・部品取り</option></select></div></div>
+<label>スペック・サイズ・型番</label><textarea id="spec" placeholder="例）Windows 11 Pro、メモリ8GB、SSD256GB、初期化済み"></textarea>
+<label>付属品</label><input id="acc" placeholder="例）電源ケーブル、箱、説明書">
+<label>キズ・注意点（正直に書くほど信頼UP）</label><textarea id="flaw" placeholder="例）天板に小さな擦り傷あり。動作には問題ありません"></textarea>
+<label>イチオシ・購入した理由・思い出</label><textarea id="appeal" placeholder="例）起動が速く、在宅ワークや普段使いにぴったりです"></textarea>
+<div class="grid"><div><label>希望価格（円）</label><input id="price" type="number" inputmode="numeric" placeholder="9800"></div>
+<div><label>送料目安（円）</label><input id="ship" type="number" inputmode="numeric" placeholder="800"></div></div>
+<div class="grid"><div><label>出品先</label><select id="platform"><option value="mercari">メルカリ（手数料10%）</option><option value="yahoo_flea">ヤフーフリマ（手数料5%）</option><option value="yahoo_auc">ヤフオク（手数料10%）</option><option value="booth">BOOTH（手数料5.6%目安）</option></select></div>
+<div><label>送料負担</label><select id="shipType"><option>送料込み（出品者負担）</option><option>送料別（購入者負担）</option></select></div></div>
+<p><button class="sub" id="demo">サンプルを入れて試す</button></p>
+<button class="main" id="gen">🚀 AI生成する（無料・登録不要）</button>
+<p class="hint">※これは端末内で文章を組み立てるAI風ジェネレーターです。外部サーバーへ入力内容を送信しません。</p></div>
+
+<div class="card" id="result" style="display:none"><h2>② 売れやすさスコア</h2><div class="score" id="score">0</div><div class="bar"><i id="bar"></i></div><ul id="advice"></ul>
+<h2 style="margin-top:16px">💰 手取りシミュレーション</h2><div class="out" id="profit"></div></div>
+
+<div class="card" id="outputs" style="display:none"><h2>③ 生成結果（タップでコピー）</h2>
+<div class="row"><b>タイトル案（3つ）</b><button class="copy" data-t="titles">コピー</button></div><div class="out" id="titles"></div>
+<div class="row"><b>出品説明文</b><button class="copy" data-t="desc">コピー</button></div><div class="out" id="desc"></div>
+<div class="row"><b>検索キーワード</b><button class="copy" data-t="keys">コピー</button></div><div class="out" id="keys"></div>
+<div class="row"><b>値下げ交渉への返信（3種）</b><button class="copy" data-t="nego">コピー</button></div><div class="out" id="nego"></div>
+<div class="row"><b>X・Instagram宣伝文</b><button class="copy" data-t="sns">コピー</button></div><div class="out" id="sns"></div>
+<p><button class="sub" id="save">この生成を履歴に保存</button> <button class="sub" id="allcopy">全部まとめてコピー</button></p>
+<h2>履歴</h2><ul id="history"></ul></div>
+</div><footer>SellCraft AI v1（試作版）<br>生成文は必ず内容を確認し、実際の状態と違う表現は直してから出品してください。</footer>
+<script>
+function v(id){return document.getElementById(id).value.trim()}
+function yen(n){return Math.round(n).toLocaleString('ja-JP')+'円'}
+var feeMap={mercari:0.10,yahoo_flea:0.05,yahoo_auc:0.10,booth:0.056};
+var catKeys={'PC・家電':['動作確認済み','初期化済み','即発送','在宅ワーク'],'ゲーム・ホビー・模型':['コレクション','レア','動作確認済み','コレクター'],'ファッション':['美品','即購入OK','着画なし','人気ブランド'],'ハンドメイド':['ハンドメイド','一点もの','心を込めて','プレゼントにも'],'本・CD・DVD':['美品','帯付き','まとめ売り可','即発送'],'日用品・インテリア':['未使用に近い','おしゃれ','一人暮らし','即発送'],'その他':['美品','即購入OK','即発送']};
+function generate(){
+var name=v('name'); if(!name){alert('商品名を入れてね');return}
+var cat=v('cat'),cond=v('cond'),spec=v('spec'),acc=v('acc'),flaw=v('flaw'),appeal=v('appeal');
+var price=parseInt(v('price'),10)||0, ship=parseInt(v('ship'),10)||0, plat=v('platform'), shipType=v('shipType');
+var keys=(catKeys[cat]||[]).slice(); var words=name.replace(/[／\/・、]/g,' ').split(/\s+/).filter(function(w){return w.length>1}); keys=words.concat(keys);
+var titles=[
+''+name,
+name+'｜'+(spec?spec.split('、')[0]:cond)+'｜即発送OK',
+''+name+' '+cond
+].map(function(t){return t.length>60?t.slice(0,60):t});
+document.getElementById('titles').textContent=titles.map(function(t,i){return (i+1)+'. '+t+'（'+t.length+'文字）'}).join('\n');
+var desc='ご覧いただきありがとうございます。\n\n■商品名\n'+name+'\n\n■状態\n'+cond+'\n'+(spec?'\n■スペック・仕様\n'+spec+'\n':'')+(acc?'\n■付属品\n'+acc+'\n':'')+(flaw?'\n■キズ・注意点（正直にお伝えします）\n'+flaw+'\n':'\n■キズ・注意点\n写真でご確認ください。気になる点はコメントでお気軽にどうぞ。\n')+(appeal?'\n■おすすめポイント\n'+appeal+'\n':'')+'\n■発送\n'+shipType+'。購入後は丁寧に梱包して発送します。\n\n中古品にご理解のある方、よろしくお願いいたします。気になる点があれば購入前にコメントください。';
+document.getElementById('desc').textContent=desc;
+document.getElementById('keys').textContent=keys.slice(0,12).join(' / ');
+document.getElementById('nego').textContent='1. 丁寧に少しだけOK\nご検討ありがとうございます。送料込みのため大幅なお値下げは難しいのですが、'+(price?yen(price*0.95):'少し')+'でしたら本日中に対応できます。ご検討よろしくお願いいたします。\n\n2. 気持ちよく断る\nコメントありがとうございます。価格は相場と状態を見て設定しており、現状この価格でのご案内になります。タイミングが合えばぜひご検討ください。\n\n3. 即決を促す\nありがとうございます！本日ご購入いただける場合は優先的に対応いたします。専用ページも作成できますので、お気軽にお声がけください。';
+document.getElementById('sns').textContent='出品しました✨\n'+name+'\n'+cond+(price?'／'+yen(price):'')+'\n'+(appeal||'気になる方はお早めにどうぞ！')+'\n#フリマ #出品中 #副業 #お得 #掘り出し物';
+var score=30, adv=[];
+if(name.length>=12){score+=15}else{adv.push('タイトル・商品名に型番や特徴を足すと検索で見つかりやすくなります')}
+if(spec){score+=15}else{adv.push('スペック・サイズ・型番を入れると購入率が上がります')}
+if(flaw){score+=15}else{adv.push('キズや注意点を正直に書くと信頼され、トラブルも減ります')}
+if(acc){score+=10}else{adv.push('付属品の有無を明記してください')}
+if(appeal){score+=10}else{adv.push('おすすめポイント・使う場面を1行足してください')}
+if(price>0){score+=5}else{adv.push('希望価格を入れると手取り計算ができます')}
+if(adv.length===0)adv.push('必要な情報が揃っています。あとは写真を明るく撮って、1枚目に一番良い写真を置いてください');
+document.getElementById('score').textContent=score+'点';
+document.getElementById('bar').style.width=score+'%';
+document.getElementById('advice').innerHTML=adv.map(function(a){return '<li>'+a+'</li>'}).join('');
+var fee=price*(feeMap[plat]||0.1); var shipCost=(shipType.indexOf('込み')>=0?ship:0); var profit=price-fee-shipCost;
+document.getElementById('profit').textContent=price?('販売価格 '+yen(price)+'\n手数料目安 -'+yen(fee)+'\n送料（出品者負担の場合） -'+yen(shipCost)+'\n＝ 手取り目安 '+yen(profit)+'\n\n下限ライン目安：手取りを確保したい場合は '+yen(price*0.9)+' までの値下げが現実的です。'):'価格を入れると手取りを計算します';
+document.getElementById('result').style.display='block'; document.getElementById('outputs').style.display='block';
+document.getElementById('outputs').scrollIntoView({behavior:'smooth'});
+window._last={name:name,date:new Date().toLocaleString('ja-JP'),titles:document.getElementById('titles').textContent,desc:desc};
+}
+document.getElementById('gen').onclick=generate;
+document.getElementById('demo').onclick=function(){document.getElementById('name').value='富士通 ESPRIMO D588/T Core i3 / SSD搭載';document.getElementById('spec').value='Windows 11、メモリ8GB、SSD256GB、初期化済み、BIOS起動確認済み';document.getElementById('acc').value='電源ケーブル';document.getElementById('flaw').value='側面に小さな擦り傷あり。動作には問題ありません';document.getElementById('appeal').value='起動が速く、テレワークや普段使いのサブPCにぴったりです';document.getElementById('price').value='14800';document.getElementById('ship').value='1200';};
+var copies=document.querySelectorAll('.copy'); for(var i=0;i<copies.length;i++){copies[i].onclick=function(){var t=document.getElementById(this.getAttribute('data-t')).textContent; navigator.clipboard&&navigator.clipboard.writeText(t); this.textContent='コピー済み'; var b=this; setTimeout(function(){b.textContent='コピー'},1200);}}
+document.getElementById('allcopy').onclick=function(){var s=['titles','desc','keys','nego','sns'].map(function(id){return document.getElementById(id).textContent}).join('\n\n---\n\n'); navigator.clipboard&&navigator.clipboard.writeText(s); alert('全部コピーしました');};
+function renderHist(){var h=[]; try{h=JSON.parse(localStorage.getItem('sellcraft_hist')||'[]')}catch(e){} document.getElementById('history').innerHTML=h.map(function(x){return '<li>'+x.date+'：'+x.name+'</li>'}).join('')||'<li>まだありません</li>'}
+document.getElementById('save').onclick=function(){if(!window._last)return; var h=[]; try{h=JSON.parse(localStorage.getItem('sellcraft_hist')||'[]')}catch(e){} h.unshift(window._last); h=h.slice(0,20); localStorage.setItem('sellcraft_hist',JSON.stringify(h)); renderHist(); alert('履歴に保存しました');};
+renderHist();
+</script></body></html>

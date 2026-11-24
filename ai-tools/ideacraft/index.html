@@ -1,0 +1,42 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>企画AI職人 | IdeaCraft AI</title><style>*{box-sizing:border-box}body{margin:0;font-family:-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;background:#1a0f26;color:#f7f2ff}header{background:linear-gradient(135deg,#7c3aed,#f59e0b);padding:22px 16px;text-align:center}header h1{margin:0;font-size:24px}header p{margin:8px 0 0;font-size:13px;line-height:1.6;opacity:.95}.wrap{max-width:860px;margin:0 auto;padding:14px}.card{background:#27173d;border:1px solid #463063;border-radius:14px;padding:16px;margin-bottom:14px}.card h2{font-size:16px;margin:0 0 10px}label{display:block;font-size:13px;margin:12px 0 6px;color:#e6dbff}input,select,textarea{width:100%;padding:11px;border-radius:10px;border:1px solid #553a7d;background:#1d1230;color:#fff;font-size:15px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.grid{grid-template-columns:1fr}}button{cursor:pointer;border:0;border-radius:10px;padding:12px;font-weight:700}.main{width:100%;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;font-size:17px;padding:15px}.sub{background:#463063;color:#fff;font-size:13px}.copy{background:#374151;color:#fff;font-size:12px;padding:8px 10px}.out{white-space:pre-wrap;background:#1d1230;border:1px solid #463063;border-radius:10px;padding:12px;font-size:14px;line-height:1.75}.idea{border-left:4px solid #f59e0b;padding:8px 10px;margin:10px 0;background:#1d1230;border-radius:8px;font-size:14px;line-height:1.7;white-space:pre-wrap}.hint{font-size:12px;color:#c4b2e6;line-height:1.6}footer{text-align:center;font-size:11px;color:#998bb5;padding:10px 0 24px}</style></head><body>
+<header><h1>🎬 企画AI職人</h1><p>キーワードを入れるだけ。<b>YouTube・Shorts・リールの企画を10本生成</b><br>タイトル／サムネ文字／最初の3秒／構成までセット</p></header>
+<div class="wrap"><div class="card"><h2>① 企画の種を入力</h2>
+<label>キーワード・テーマ *</label><input id="kw" placeholder="例）絶景の滝／中古PC／Nゲージ／有休管理アプリ">
+<div class="grid"><div><label>ジャンル</label><select id="genre"><option>絶景・癒し</option><option>アプリ・ガジェット紹介</option><option>副業の記録</option><option>ホビー・コレクション</option><option>暮らし・便利</option></select></div>
+<div><label>形式</label><select id="fmt"><option>Shorts／リール（縦型・60秒以内）</option><option>長尺（3-10分）</option><option>長尺ループ（作業・睡眠用）</option></select></div></div>
+<label>見てほしい人</label><input id="aud" placeholder="例）副業を始めたい会社員／鉄道模型が好きな人">
+<p><button class="sub" id="demo">サンプルを入れる</button></p>
+<button class="main" id="gen">🚀 企画を10本生成</button>
+<p class="hint">顔出しなし・BGMのみ＋字幕の形式を前提に構成します。外部送信なし・端末内生成。</p></div>
+<div class="card" id="outCard" style="display:none"><h2>② 企画10本 <button class="copy" id="all">全部コピー</button></h2><div id="list"></div><p class="hint">伸びやすさは「数字・ビフォーアフター・限定感・感情」の要素数で採点した目安です。実際に撮る前に、タイトルとサムネ文字だけ先に決めるのがコツ。</p></div></div>
+<footer>IdeaCraft AI v1（試作版）</footer>
+<script>
+function v(id){return document.getElementById(id).value.trim()}
+var pats=[
+{t:'まず見て。最初の3秒で心をつかむ',s:'心をつかむ3秒',h:'これ、最後まで見ると分かります',o:'一番良い場面→理由を字幕で→締めの一枚'},
+{t:'{k}で失敗しない選び方・3つのポイント',s:'失敗しない3つ',h:'買ってから後悔する前に',o:'結論→ポイント1→2→3→まとめ'},
+{t:'ビフォーアフター公開｜{k}がこう変わった',s:'劇的変化',h:'最初と最後、比べてください',o:'Before→過程→After→感想'},
+{t:'会社員が本気で試した{k}、結果は…',s:'本気で試した',h:'正直に全部見せます',o:'挑戦宣言→実践→結果の数字→次回予告'},
+{t:'{k}、知らないと損する話',s:'知らないと損',h:'これ、意外と知られてません',o:'損する例→正しい方法→証拠場面'},
+{t:'1分で分かる{k}の魅力',s:'1分で分かる',h:'忙しい人のために1分で',o:'魅力1→2→3をテンポ良く→締め'},
+{t:'{k}を1週間続けた結果',s:'1週間の結果',h:'続けてみたら、こうなりました',o:'Day1→中間→最終日→数字で結果'},
+{t:'プロじゃなくてもできた{k}入門',s:'初心者OK',h:'初心者の私でもできました',o:'つまずき→工夫→完成→コツ1つ'},
+{t:'{k}の裏側、全部見せます',s:'裏側公開',h:'普段は見せない裏側です',o:'準備→作業風景→完成→失敗談'},
+{t:'保存版｜{k}チェックリスト10',s:'保存版10',h:'あとで見返せる保存版です',o:'リストを1つずつ字幕で→最後にまとめ画面'}
+];
+document.getElementById('gen').onclick=function(){
+var k=v('kw'); if(!k){alert('キーワードを入れてね');return}
+var aud=v('aud'),fmt=v('fmt');
+var html='',all='';
+pats.forEach(function(p,i){
+var score=60+((k.length+i*7)%35); if(score>98)score=98;
+var txt=(i+1)+'. '+p.t.replace('{k}',k)+'\nサムネ文字：'+p.s+'｜伸びやすさ目安：'+score+'点\n最初の3秒：'+p.h+'\n構成：'+p.o+(aud?'\n見てほしい人：'+aud:'')+'\n形式：'+fmt;
+html+='<div class="idea">'+txt.replace(/</g,'&lt;')+'</div>'; all+=txt+'\n\n';
+});
+document.getElementById('list').innerHTML=html; window._all=all;
+document.getElementById('outCard').style.display='block'; document.getElementById('outCard').scrollIntoView({behavior:'smooth'});
+try{var h=JSON.parse(localStorage.getItem('ideacraft_hist')||'[]');h.unshift({d:new Date().toLocaleString('ja-JP'),t:k});localStorage.setItem('ideacraft_hist',JSON.stringify(h.slice(0,20)))}catch(e){}
+};
+document.getElementById('all').onclick=function(){navigator.clipboard&&navigator.clipboard.writeText(window._all||'');this.textContent='コピー済み';var b=this;setTimeout(function(){b.textContent='全部コピー'},1200)};
+document.getElementById('demo').onclick=function(){document.getElementById('kw').value='天の川と流れ星';document.getElementById('aud').value='寝る前に癒されたい人、作業用BGMを探している人';};
+</script></body></html>
