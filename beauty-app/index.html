@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>美容在庫・使い切り管理アプリ</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif; background:#f7f3ee; color:#333; }
+  header { background:#7a9b76; color:#fff; padding:14px 16px; }
+  header h1 { margin:0; font-size:18px; }
+  header p { margin:4px 0 0; font-size:12px; opacity:.9; }
+  main { max-width:720px; margin:0 auto; padding:12px; }
+  .card { background:#fff; border-radius:12px; padding:14px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,.08); }
+  .card h2 { margin:0 0 10px; font-size:15px; color:#55704f; }
+  .stats { display:flex; flex-wrap:wrap; gap:8px; }
+  .stat { flex:1 1 30%; background:#eef4ec; border-radius:10px; padding:10px; text-align:center; }
+  .stat b { display:block; font-size:19px; color:#3f5a3a; }
+  .stat span { font-size:11px; color:#666; }
+  .alert { background:#fdf0ec; border:1px solid #e8b4a6; color:#8a3b26; border-radius:10px; padding:10px; font-size:13px; margin-bottom:12px; }
+  label { display:block; font-size:12px; color:#666; margin:8px 0 4px; }
+  input, select, textarea { width:100%; padding:9px; border:1px solid #ccc; border-radius:8px; font-size:14px; background:#fff; }
+  textarea { min-height:64px; }
+  .row { display:flex; gap:8px; }
+  .row > div { flex:1; }
+  button { border:none; border-radius:8px; padding:10px 14px; font-size:14px; cursor:pointer; }
+  .primary { background:#7a9b76; color:#fff; width:100%; margin-top:12px; }
+  .sub { background:#e8e2d9; color:#444; }
+  .danger { background:#f3d9d2; color:#8a3b26; }
+  .item { border:1px solid #e3ddd2; border-radius:10px; padding:10px; margin-bottom:8px; }
+  .item .name { font-weight:bold; font-size:14px; }
+  .item .meta { font-size:12px; color:#777; margin-top:2px; }
+  .item .ops { margin-top:8px; display:flex; gap:6px; flex-wrap:wrap; }
+  .item .ops button { padding:6px 10px; font-size:12px; }
+  .badge { display:inline-block; background:#eef4ec; color:#3f5a3a; border-radius:999px; padding:1px 8px; font-size:11px; margin-right:4px; }
+  .badge.warn { background:#fdf0ec; color:#8a3b26; }
+  .badge.done { background:#dfe9dc; color:#3f5a3a; }
+  .rec { font-size:13px; border-bottom:1px solid #eee; padding:8px 0; }
+  .rec:last-child { border-bottom:none; }
+  .small { font-size:12px; color:#888; }
+  .cond { display:flex; gap:6px; flex-wrap:wrap; }
+  .cond button { background:#e8e2d9; }
+  .cond button.on { background:#7a9b76; color:#fff; }
+  #postText { white-space:pre-wrap; background:#f7f3ee; border-radius:8px; padding:10px; font-size:13px; }
+  .hidden { display:none; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🌿 美容在庫・使い切り管理</h1>
+  <p>肌のコンディションで使い分けて、使い切るまで記録する</p>
+</header>
+<main>
+  <div id="alertBox"></div>
+
+  <section class="card">
+    <h2>いまの状況</h2>
+    <div class="stats">
+      <div class="stat"><b id="stSheets">-</b><span>在庫の合計（枚・個）</span></div>
+      <div class="stat"><b id="stKinds">-</b><span>在庫の種類</span></div>
+      <div class="stat"><b id="stUsedMonth">-</b><span>今月使った数</span></div>
+      <div class="stat"><b id="stDone">-</b><span>使い切り達成</span></div>
+      <div class="stat"><b id="stValue">-</b><span>在庫の金額めやす</span></div>
+      <div class="stat"><b id="stSpent">-</b><span>登録した購入額の合計</span></div>
+    </div>
+    <p class="small">※枚数が「未設定」の商品は合計に含まれません。在庫カードの「編集」から入れられます。</p>
+  </section>
+
+  <section class="card">
+    <h2>今日のパックを選ぶ</h2>
+    <label>今日の肌コンディション</label>
+    <div class="cond" id="condBtns">
+      <button data-cond="ゆらぎ">ゆらぎ</button>
+      <button data-cond="乾燥">乾燥</button>
+      <button data-cond="ビタミン">ビタミン系の日</button>
+      <button data-cond="週末スペシャル">週末スペシャル</button>
+      <button data-cond="ふつう">ふつう</button>
+    </div>
+    <div id="suggest" style="margin-top:10px;"></div>
+    <label>使う商品</label>
+    <select id="useItem"></select>
+    <label>体感メモ（任意）</label>
+    <input id="useNote" placeholder="例：しっとりした、香りが好き">
+    <button class="primary" id="useBtn">使った！で記録する</button>
+  </section>
+
+  <section class="card">
+    <h2>在庫リスト</h2>
+    <div id="itemList"></div>
+  </section>
+
+  <section class="card">
+    <h2 id="formTitle">商品を追加</h2>
+    <input type="hidden" id="fId">
+    <label>商品名</label>
+    <input id="fName" placeholder="例：VT CICAデイリーマスク">
+    <div class="row">
+      <div>
+        <label>カテゴリ</label>
+        <select id="fCat">
+          <option>シートパック</option><option>パッド</option><option>化粧水</option>
+          <option>美容液</option><option>クリーム</option><option>付録</option><option>その他</option>
+        </select>
+      </div>
+      <div>
+        <label>系統</label>
+        <select id="fLine">
+          <option>CICA系</option><option>保湿系</option><option>ビタミン系</option>
+          <option>スペシャルケア</option><option>なし</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div><label>総数（枚・個）</label><input id="fTotal" type="number" min="0" placeholder="不明なら空"></div>
+      <div><label>残り</label><input id="fRemain" type="number" min="0" placeholder="不明なら空"></div>
+    </div>
+    <div class="row">
+      <div><label>購入価格（円・任意）</label><input id="fPrice" type="number" min="0" placeholder="例：2420"></div>
+      <div><label>開封日（任意）</label><input id="fOpened" type="date"></div>
+    </div>
+    <label>使用期限（任意）</label>
+    <input id="fExpiry" type="date">
+    <label>メモ（任意）</label>
+    <input id="fMemo" placeholder="例：楽天公式で購入">
+    <button class="primary" id="saveBtn">保存する</button>
+    <button class="sub hidden" id="cancelEdit" style="width:100%;margin-top:8px;">編集をやめる</button>
+  </section>
+
+  <section class="card">
+    <h2>使用記録</h2>
+    <div id="recList"></div>
+    <h2 style="margin-top:16px;">投稿文を作る</h2>
+    <p class="small">最新の使用記録から、X／Threads用の下書きを作ります（タグ5個）。</p>
+    <button class="sub" id="postBtn" style="width:100%;">最新の記録から投稿文を作る</button>
+    <div id="postText" class="hidden" style="margin-top:10px;"></div>
+    <button class="sub hidden" id="copyBtn" style="width:100%;margin-top:8px;">投稿文をコピー</button>
+  </section>
+
+  <section class="card">
+    <h2>バックアップ</h2>
+    <p class="small">データはこの端末のブラウザに保存されます。機種変更や別のブラウザで使うときは、書き出して移してください。</p>
+    <button class="sub" id="exportBtn" style="width:100%;">バックアップを書き出す</button>
+    <textarea id="backupText" placeholder="ここにバックアップが表示されます。復元するときは貼り付けて下のボタンを押してください。"></textarea>
+    <button class="sub" id="importBtn" style="width:100%;margin-top:8px;">貼り付けた内容で復元する</button>
+  </section>
+</main>
+
+<script>
+var KEY = 'beautyAppV1';
+var COND_LINE = { 'ゆらぎ':'CICA系', '乾燥':'保湿系', 'ビタミン':'ビタミン系', '週末スペシャル':'スペシャルケア', 'ふつう':'' };
+var state = load();
+
+function seed() {
+  return {
+    items: [
+      { id: id(), name: '35枚入りデイリーマスク（VOCE 2021年11月号掲載）', cat: 'シートパック', line: 'CICA系', total: 35, remain: 35, price: null, opened: '', expiry: '', memo: '一番古い在庫。カテゴリが合う日に優先' },
+      { id: id(), name: 'VT CICA×HYALON デイリースージングマスク', cat: 'シートパック', line: 'CICA系', total: 30, remain: 30, price: null, opened: '', expiry: '', memo: '未開封。楽天VT公式で2,420円（2026-11-26確認）' },
+      { id: id(), name: 'VITA+ ビタミンC パンテノールマスク', cat: 'シートパック', line: 'ビタミン系', total: 30, remain: 30, price: null, opened: '', expiry: '', memo: '30枚入りと見える（要確認）。楽天では990円' },
+      { id: id(), name: 'ハトムギ美容マスク', cat: 'シートパック', line: '保湿系', total: null, remain: null, price: null, opened: '', expiry: '', memo: '枚数は未確認。楽天の同名商品は32枚入り' },
+      { id: id(), name: 'PURE5 ESSENCE MASK', cat: 'シートパック', line: 'なし', total: null, remain: null, price: null, opened: '', expiry: '', memo: '枚数は未確認' },
+      { id: id(), name: '発酵プラセンタマスク', cat: 'シートパック', line: 'スペシャルケア', total: 10, remain: 10, price: null, opened: '', expiry: '', memo: '' },
+      { id: id(), name: 'VT リードルS 3ステップマスク', cat: 'シートパック', line: 'スペシャルケア', total: 20, remain: 20, price: null, opened: '', expiry: '', memo: '目視20枚以上ある最低数で登録' },
+      { id: id(), name: 'MEDIHEAL マデカッソシド ブレミッシュパッド', cat: 'パッド', line: 'CICA系', total: 100, remain: 100, price: null, opened: '', expiry: '', memo: '100枚表記' },
+      { id: id(), name: 'VT SKINPACK luminous', cat: 'シートパック', line: 'なし', total: null, remain: null, price: null, opened: '', expiry: '', memo: '枚数は未確認' },
+      { id: id(), name: 'VOCE 2025年12月号 肌管理コンプリートBOX', cat: '付録', line: 'なし', total: null, remain: null, price: null, opened: '', expiry: '', memo: '全13アイテム。もったいなくて使えない枠' }
+    ],
+    records: []
+  };
+}
+function id() { return 'i' + Date.now().toString(36) + Math.floor(Math.random() * 100000).toString(36); }
+function load() {
+  try {
+    var raw = localStorage.getItem(KEY);
+    if (raw) { var s = JSON.parse(raw); if (s && s.items) return s; }
+  } catch (e) {}
+  return seed();
+}
+function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) { return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]; }); }
+function yen(n) { return n == null ? '—' : n.toLocaleString('ja-JP') + '円'; }
+function todayStr() { var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+
+function render() {
+  renderStats(); renderAlerts(); renderItems(); renderUseSelect(); renderRecords();
+}
+function renderStats() {
+  var sheets = 0, value = 0, spent = 0, done = 0;
+  state.items.forEach(function(it) {
+    if (it.remain != null) sheets += it.remain;
+    if (it.price != null) {
+      spent += it.price;
+      if (it.total && it.remain != null) value += Math.round(it.price * it.remain / it.total);
+    }
+    if (it.remain === 0) done++;
+  });
+  var ym = todayStr().slice(0, 7);
+  var usedMonth = state.records.filter(function(r) { return r.date.slice(0, 7) === ym; }).length;
+  document.getElementById('stSheets').textContent = sheets;
+  document.getElementById('stKinds').textContent = state.items.filter(function(i){ return i.remain !== 0; }).length;
+  document.getElementById('stUsedMonth').textContent = usedMonth;
+  document.getElementById('stDone').textContent = done;
+  document.getElementById('stValue').textContent = yen(value);
+  document.getElementById('stSpent').textContent = yen(spent);
+}
+function expiryStatus(it) {
+  if (!it.expiry) return null;
+  var now = new Date(todayStr() + 'T00:00:00');
+  var ex = new Date(it.expiry + 'T00:00:00');
+  var days = Math.round((ex - now) / 86400000);
+  if (days < 0) return { label: '期限切れ', days: days };
+  if (days <= 30) return { label: '期限まで' + days + '日', days: days };
+  return null;
+}
+function renderAlerts() {
+  var box = document.getElementById('alertBox');
+  var list = [];
+  state.items.forEach(function(it) {
+    var st = expiryStatus(it);
+    if (st && it.remain !== 0) list.push('⚠ ' + it.name + '（' + st.label + '）');
+  });
+  box.innerHTML = list.length ? '<div class="alert"><b>期限が近いもの</b><br>' + list.map(esc).join('<br>') + '</div>' : '';
+}
+function renderItems() {
+  var el = document.getElementById('itemList');
+  if (!state.items.length) { el.innerHTML = '<p class="small">在庫がありません。下のフォームから追加してください。</p>'; return; }
+  el.innerHTML = state.items.map(function(it) {
+    var st = expiryStatus(it);
+    var unit = (it.price != null && it.total) ? Math.round(it.price / it.total) : null;
+    var badges = '<span class="badge">' + esc(it.cat) + '</span>' +
+      (it.line !== 'なし' ? '<span class="badge">' + esc(it.line) + '</span>' : '') +
+      (it.remain === 0 ? '<span class="badge done">使い切り達成🎉</span>' : '') +
+      (st ? '<span class="badge warn">' + esc(st.label) + '</span>' : '');
+    var meta = '残り：' + (it.remain == null ? '未設定' : it.remain) + (it.total != null ? ' / ' + it.total : '') +
+      (unit != null ? ' ・ 1つ約' + unit + '円' : '') +
+      (it.opened ? ' ・ 開封 ' + it.opened : '') + (it.expiry ? ' ・ 期限 ' + it.expiry : '');
+    return '<div class="item"><div class="name">' + esc(it.name) + '</div>' +
+      '<div>' + badges + '</div><div class="meta">' + esc(meta) + '</div>' +
+      (it.memo ? '<div class="meta">' + esc(it.memo) + '</div>' : '') +
+      '<div class="ops"><button class="sub" onclick="quickUse(\'' + it.id + '\')">使った</button>' +
+      '<button class="sub" onclick="editItem(\'' + it.id + '\')">編集</button>' +
+      '<button class="danger" onclick="delItem(\'' + it.id + '\')">削除</button></div></div>';
+  }).join('');
+}
+function renderUseSelect() {
+  var sel = document.getElementById('useItem');
+  var cur = sel.value;
+  sel.innerHTML = state.items.filter(function(i) { return i.remain !== 0; }).map(function(it) {
+    return '<option value="' + it.id + '">' + esc(it.name) + '（残り' + (it.remain == null ? '未設定' : it.remain) + '）</option>';
+  }).join('');
+  if (cur) sel.value = cur;
+}
+function renderRecords() {
+  var el = document.getElementById('recList');
+  if (!state.records.length) { el.innerHTML = '<p class="small">まだ記録がありません。</p>'; return; }
+  var sorted = state.records.slice().sort(function(a, b) { return b.ts - a.ts; });
+  el.innerHTML = sorted.slice(0, 30).map(function(r) {
+    return '<div class="rec"><b>' + esc(r.date) + '</b> ' + esc(r.itemName) +
+      ' <span class="badge">' + esc(r.cond) + '</span>' +
+      (r.note ? '<br><span class="small">' + esc(r.note) + '</span>' : '') +
+      ' <button class="danger" style="padding:2px 8px;font-size:11px;float:right;" onclick="delRecord(\'' + r.id + '\')">取消</button></div>';
+  }).join('');
+}
+
+var curCond = 'ふつう';
+document.getElementById('condBtns').addEventListener('click', function(e) {
+  if (e.target.tagName !== 'BUTTON') return;
+  curCond = e.target.getAttribute('data-cond');
+  var btns = this.querySelectorAll('button');
+  for (var i = 0; i < btns.length; i++) btns[i].className = btns[i] === e.target ? 'on' : '';
+  suggest();
+});
+function suggest() {
+  var line = COND_LINE[curCond];
+  var box = document.getElementById('suggest');
+  if (!line) { box.innerHTML = '<p class="small">在庫から自由に選んでください。</p>'; return; }
+  var cand = state.items.filter(function(i) { return i.line === line && i.remain !== 0; });
+  cand.sort(function(a, b) { return (a.expiry || '9999') < (b.expiry || '9999') ? -1 : 1; });
+  if (!cand.length) { box.innerHTML = '<p class="small">' + esc(line) + 'の在庫がありません。</p>'; return; }
+  box.innerHTML = '<p class="small">おすすめ（' + esc(line) + '）：</p>' + cand.map(function(it) {
+    return '<div class="item"><div class="name">' + esc(it.name) + '</div><div class="meta">残り ' +
+      (it.remain == null ? '未設定' : it.remain) + (it.expiry ? ' ・ 期限 ' + it.expiry : '') +
+      '</div><div class="ops"><button class="sub" onclick="pickItem(\'' + it.id + '\')">これにする</button></div></div>';
+  }).join('');
+}
+function pickItem(itemId) { document.getElementById('useItem').value = itemId; }
+function doUse(itemId, cond, note) {
+  var it = null;
+  state.items.forEach(function(i) { if (i.id === itemId) it = i; });
+  if (!it) { alert('商品を選んでください'); return; }
+  if (it.remain != null && it.remain > 0) it.remain -= 1;
+  state.records.push({ id: id(), ts: Date.now(), date: todayStr(), itemId: it.id, itemName: it.name, cond: cond, note: note || '' });
+  save(); render();
+  if (it.remain === 0) alert('🎉 ' + it.name + ' を使い切りました！');
+}
+function quickUse(itemId) { doUse(itemId, curCond, ''); }
+document.getElementById('useBtn').addEventListener('click', function() {
+  doUse(document.getElementById('useItem').value, curCond, document.getElementById('useNote').value.trim());
+  document.getElementById('useNote').value = '';
+});
+function delRecord(recId) {
+  var rec = null;
+  state.records = state.records.filter(function(r) { if (r.id === recId) { rec = r; return false; } return true; });
+  if (rec) state.items.forEach(function(i) { if (i.id === rec.itemId && i.remain != null) i.remain += 1; });
+  save(); render();
+}
+function delItem(itemId) {
+  if (!confirm('この商品を削除しますか？')) return;
+  state.items = state.items.filter(function(i) { return i.id !== itemId; });
+  save(); render();
+}
+function editItem(itemId) {
+  var it = null;
+  state.items.forEach(function(i) { if (i.id === itemId) it = i; });
+  if (!it) return;
+  document.getElementById('fId').value = it.id;
+  document.getElementById('fName').value = it.name;
+  document.getElementById('fCat').value = it.cat;
+  document.getElementById('fLine').value = it.line;
+  document.getElementById('fTotal').value = it.total == null ? '' : it.total;
+  document.getElementById('fRemain').value = it.remain == null ? '' : it.remain;
+  document.getElementById('fPrice').value = it.price == null ? '' : it.price;
+  document.getElementById('fOpened').value = it.opened || '';
+  document.getElementById('fExpiry').value = it.expiry || '';
+  document.getElementById('fMemo').value = it.memo || '';
+  document.getElementById('formTitle').textContent = '商品を編集';
+  document.getElementById('cancelEdit').className = 'sub';
+  document.getElementById('cancelEdit').style.width = '100%';
+  document.getElementById('cancelEdit').style.marginTop = '8px';
+  window.scrollTo(0, document.getElementById('formTitle').offsetTop - 20);
+}
+document.getElementById('cancelEdit').addEventListener('click', resetForm);
+function resetForm() {
+  ['fId','fName','fTotal','fRemain','fPrice','fOpened','fExpiry','fMemo'].forEach(function(f) { document.getElementById(f).value = ''; });
+  document.getElementById('formTitle').textContent = '商品を追加';
+  document.getElementById('cancelEdit').className = 'sub hidden';
+}
+document.getElementById('saveBtn').addEventListener('click', function() {
+  var name = document.getElementById('fName').value.trim();
+  if (!name) { alert('商品名を入れてください'); return; }
+  function num(v) { return v === '' ? null : parseInt(v, 10); }
+  var data = {
+    name: name,
+    cat: document.getElementById('fCat').value,
+    line: document.getElementById('fLine').value,
+    total: num(document.getElementById('fTotal').value),
+    remain: num(document.getElementById('fRemain').value),
+    price: num(document.getElementById('fPrice').value),
+    opened: document.getElementById('fOpened').value,
+    expiry: document.getElementById('fExpiry').value,
+    memo: document.getElementById('fMemo').value.trim()
+  };
+  var fid = document.getElementById('fId').value;
+  if (fid) {
+    state.items.forEach(function(i) { if (i.id === fid) { for (var k in data) i[k] = data[k]; } });
+  } else {
+    data.id = id();
+    if (data.remain == null && data.total != null) data.remain = data.total;
+    state.items.push(data);
+  }
+  save(); resetForm(); render();
+});
+document.getElementById('postBtn').addEventListener('click', function() {
+  if (!state.records.length) { alert('使用記録がまだありません'); return; }
+  var r = state.records.slice().sort(function(a, b) { return b.ts - a.ts; })[0];
+  var it = null;
+  state.items.forEach(function(i) { if (i.id === r.itemId) it = i; });
+  var remainTxt = it && it.remain != null ? '残り' + it.remain + '枚。' : '';
+  var text = '使い切り記録。\n今日の肌は「' + r.cond + '」だったので、' + r.itemName + 'を選びました。' +
+    (r.note ? r.note + '。' : '') + remainTxt + '\nコンディションで使い分けるのが、僕のやり方です。\n#メンズ美容 #シートパック #スキンケア #使い切り #美容';
+  var box = document.getElementById('postText');
+  box.textContent = text;
+  box.className = '';
+  document.getElementById('copyBtn').className = 'sub';
+  document.getElementById('copyBtn').style.width = '100%';
+  document.getElementById('copyBtn').style.marginTop = '8px';
+});
+document.getElementById('copyBtn').addEventListener('click', function() {
+  var t = document.getElementById('postText').textContent;
+  if (navigator.clipboard) navigator.clipboard.writeText(t).then(function() { alert('コピーしました'); });
+});
+document.getElementById('exportBtn').addEventListener('click', function() {
+  document.getElementById('backupText').value = JSON.stringify(state);
+  alert('バックアップを表示しました。コピーして安全な場所に保存してください。');
+});
+document.getElementById('importBtn').addEventListener('click', function() {
+  try {
+    var s = JSON.parse(document.getElementById('backupText').value);
+    if (!s || !s.items) throw new Error('bad');
+    state = s; save(); render();
+    alert('復元しました');
+  } catch (e) { alert('復元できませんでした。バックアップの内容を確認してください。'); }
+});
+
+render();
+</script>
+</body>
+</html>

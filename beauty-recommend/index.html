@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>今日のお肌おすすめケア診断</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif; background:#f7f3ee; color:#333; }
+  header { background:#7a9b76; color:#fff; padding:14px 16px; }
+  header h1 { margin:0; font-size:18px; }
+  header p { margin:4px 0 0; font-size:12px; opacity:.9; }
+  main { max-width:720px; margin:0 auto; padding:12px; }
+  .card { background:#fff; border-radius:12px; padding:14px; margin-bottom:12px; box-shadow:0 1px 4px rgba(0,0,0,.08); }
+  .card h2 { margin:0 0 10px; font-size:15px; color:#55704f; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { border:2px solid #d8d2c6; background:#fff; border-radius:999px; padding:9px 14px; font-size:14px; cursor:pointer; }
+  .chip.on { border-color:#7a9b76; background:#eef4ec; color:#3f5a3a; font-weight:bold; }
+  label { display:block; font-size:12px; color:#666; margin:10px 0 6px; }
+  select { width:100%; padding:9px; border:1px solid #ccc; border-radius:8px; font-size:14px; background:#fff; }
+  button.primary { background:#7a9b76; color:#fff; border:none; border-radius:8px; padding:12px 14px; font-size:15px; width:100%; cursor:pointer; margin-top:14px; }
+  button.sub { background:#e8e2d9; color:#444; border:none; border-radius:8px; padding:10px 14px; font-size:14px; width:100%; cursor:pointer; }
+  .rec { border:1px solid #e3ddd2; border-radius:10px; padding:12px; margin-bottom:10px; }
+  .rec .cat { font-size:12px; color:#7a9b76; font-weight:bold; letter-spacing:.05em; }
+  .rec .type { font-size:16px; font-weight:bold; margin:2px 0; }
+  .rec .why { font-size:13px; color:#555; }
+  .rec .own { font-size:12px; color:#3f5a3a; background:#eef4ec; border-radius:8px; padding:6px 8px; margin-top:8px; }
+  .tip { background:#fdf6ec; border:1px solid #ecd9ae; border-radius:10px; padding:10px; font-size:13px; margin-bottom:10px; }
+  .small { font-size:12px; color:#888; }
+  #shareText { white-space:pre-wrap; background:#f7f3ee; border-radius:8px; padding:10px; font-size:13px; }
+  .hidden { display:none; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🌿 今日のお肌おすすめケア診断</h1>
+  <p>コンディションを選ぶだけ。化粧水・美容液・パック・クリームの選び方を提案します</p>
+</header>
+<main>
+  <section class="card">
+    <h2>今日のお肌は？（複数えらべます）</h2>
+    <div class="chips" id="condChips">
+      <button class="chip" data-cond="dry">乾燥が気になる</button>
+      <button class="chip" data-cond="yuragi">ゆらぎ・敏感気味</button>
+      <button class="chip" data-cond="pore">毛穴・テカリ</button>
+      <button class="chip" data-cond="dull">くすみ・疲れ顔</button>
+      <button class="chip" data-cond="acne">ニキビが気になる</button>
+      <button class="chip" data-cond="special">スペシャルケアしたい</button>
+    </div>
+    <label>季節・シーン</label>
+    <select id="season">
+      <option value="winter">冬（乾燥しやすい）</option>
+      <option value="spring">春（ゆらぎやすい）</option>
+      <option value="summer">夏（テカリ・汗）</option>
+      <option value="autumn">秋（夏の疲れ）</option>
+    </select>
+    <label>使うタイミング</label>
+    <select id="timing">
+      <option value="night">夜ケア</option>
+      <option value="morning">朝ケア</option>
+    </select>
+    <button class="primary" id="goBtn">おすすめを見る</button>
+  </section>
+
+  <section class="card hidden" id="resultCard">
+    <h2 id="resultTitle">今日のおすすめ</h2>
+    <div id="tips"></div>
+    <div id="recs"></div>
+    <button class="sub" id="shareBtn">結果を文章にする（コピー用）</button>
+    <div id="shareText" class="hidden" style="margin-top:10px;"></div>
+    <button class="sub hidden" id="copyBtn" style="margin-top:8px;">文章をコピー</button>
+  </section>
+
+  <p class="small">※このアプリは化粧品の選び方の一般的な目安を提案するものです。医療的な診断ではありません。お肌に異常があるときは使用を中止し、皮膚科専門医にご相談ください。成分は「配合されているものを選ぶ」という選び方の目安です。</p>
+</main>
+
+<script>
+// 優先度：ゆらぎ > ニキビ > 乾燥 > 毛穴 > くすみ > スペシャル
+var PRIORITY = ['yuragi', 'acne', 'dry', 'pore', 'dull', 'special'];
+var COND_NAME = { dry: '乾燥', yuragi: 'ゆらぎ・敏感気味', pore: '毛穴・テカリ', dull: 'くすみ・疲れ顔', acne: 'ニキビ', special: 'スペシャルケア' };
+
+var DB = {
+  yuragi: {
+    lotion: { type: '低刺激・シンプル保湿の化粧水', why: 'アルコールフリーなど刺激の少ないタイプを、こすらず手のひらで優しく。ツボクサ（CICA）やパンテノール配合が目安。', own: '' },
+    serum: { type: 'CICA／パンテノール系の美容液', why: 'アイテムを増やさず、落ち着かせるケアに絞る日。新製品の重ね使いは避けて。', own: '' },
+    pack: { type: 'CICA系シートパック', why: 'ゆらぎの日はCICA系。規定時間より長く置かず、剥がした後はクリームで蓋を。', own: '手持ち候補：VT CICA×HYALON、35枚入りデイリーマスク、MEDIHEAL マデカッソシドパッド' },
+    cream: { type: 'シンプルな保湿クリーム', why: '香料控えめのシンプル処方で、しっかり蓋をするのが優先。', own: '' },
+    tip: 'ゆらぎの日は「攻め」のアイテム（レチノール・ピーリング系）はお休み。シンプルケアが正解の日です。'
+  },
+  acne: {
+    lotion: { type: 'さっぱり系・薬用タイプの化粧水', why: 'グリチルリチン酸2Kなど整肌成分配合、ノンコメドジェニック表示が目安。清潔な手で優しく。', own: '' },
+    serum: { type: 'CICA／アゼライン酸系の美容液', why: '気になる部分にだけ使う部分使いもOK。こすらないのが鉄則。', own: '' },
+    pack: { type: 'CICA系・整肌系シートパック', why: '長時間の放置は避けて規定時間で。パック後は油分の多いクリームを重ねすぎない。', own: '手持ち候補：MEDIHEAL マデカッソシドパッド、VT CICA×HYALON' },
+    cream: { type: '軽めのジェルクリーム', why: '油分控えめで蓋は薄く。ベタつく日は量を減らして調整。', own: '' },
+    tip: 'ニキビが気になる日は、新しいアイテムの追加より「触らない・こすらない」が一番のケアです。'
+  },
+  dry: {
+    lotion: { type: '高保湿タイプの化粧水', why: 'ヒアルロン酸・セラミド・グリセリンなど保湿成分配合を、2回に分けて重ねづけ。', own: '手持ち候補：ハトムギ化粧水（大容量・重ねづけ向き）' },
+    serum: { type: '保湿系美容液（セラミド／ヒアルロン酸）', why: '化粧水の水分が逃げる前に重ねるのがコツ。', own: '' },
+    pack: { type: '保湿系シートパック', why: '乾燥の日は保湿系。10〜15分で剥がして、すぐにクリームで蓋。長く置くほど乾くので注意。', own: '手持ち候補：ハトムギ美容マスク、VT CICA×HYALON' },
+    cream: { type: 'こってり系クリーム', why: '仕上げは油分のあるクリームでしっかり蓋。冬は特にここが大事。', own: '' },
+    tip: '乾燥の日は「水分を入れる→油分で蓋」の順番が全て。パックの放置しすぎは逆効果です。'
+  },
+  pore: {
+    lotion: { type: 'ビタミンC誘導体／さっぱり系の化粧水', why: 'テカリやすい日は軽いテクスチャを。Tゾーンは重ねすぎない。', own: '' },
+    serum: { type: 'ビタミンC系美容液（朝）／レチノール系（夜）', why: 'レチノール系は夜だけ、少量から。ゆらぎがある日は使わない。', own: '' },
+    pack: { type: 'ビタミンC系シートパック', why: 'ビタミンC＋パンテノール系で、キメと潤いを同時に。', own: '手持ち候補：VITA+ ビタミンC パンテノールマスク、PURE5 ESSENCE MASK' },
+    cream: { type: '軽めの乳液・ジェルクリーム', why: '蓋は薄く。乾燥する頬だけ重ねる部分使いも。', own: '' },
+    tip: '毛穴・テカリの日は落とすケアのやりすぎに注意。洗いすぎは逆にテカリの原因になります。'
+  },
+  dull: {
+    lotion: { type: 'ビタミンC誘導体配合の化粧水', why: '疲れ顔の日は、まず保湿を十分にしてからビタミン系を。', own: '' },
+    serum: { type: 'ビタミンC／ナイアシンアミド系の美容液', why: '透明感ケアの中心。朝使う場合は日焼け止めまでがセット。', own: '' },
+    pack: { type: 'ビタミン系シートパック', why: '大事な日の前日夜に。パック後はクリームまで済ませて早く寝るのが一番効く。', own: '手持ち候補：VITA+ ビタミンC パンテノールマスク' },
+    cream: { type: 'いつもの保湿クリーム', why: '特別な日以外は通常の保湿で十分。睡眠が最高の美容液。', own: '' },
+    tip: 'くすみ・疲れ顔の正体は大抵、乾燥＋睡眠不足。アイテムより先に「保湿と睡眠」です。'
+  },
+  special: {
+    lotion: { type: '導入（ブースター）系 or いつもの化粧水を丁寧に', why: 'スペシャルケアの日は土台作りから。コットンより手のひらがおすすめ。', own: '手持ち候補：ハトムギ化粧水' },
+    serum: { type: '集中ケア系の美容液', why: 'パックの前後に使うと満足度が上がる組み合わせ。', own: '' },
+    pack: { type: '3ステップ／高保湿のスペシャルパック', why: '週末のご褒美枠。ステップ通りに使うと効果も気分も段違い。', own: '手持ち候補：VT リードルS 3ステップマスク、発酵プラセンタマスク' },
+    cream: { type: 'リッチなクリームで仕上げ', why: 'スペシャルな日は最後まで手を抜かず、クリームでしっかり締める。', own: '' },
+    tip: 'スペシャルケアは毎日やると普通ケアになります。週1〜2回だからこそ特別です。'
+  }
+};
+
+var selected = {};
+document.getElementById('condChips').addEventListener('click', function(e) {
+  if (!e.target.classList.contains('chip')) return;
+  var c = e.target.getAttribute('data-cond');
+  if (selected[c]) { delete selected[c]; e.target.className = 'chip'; }
+  else { selected[c] = true; e.target.className = 'chip on'; }
+});
+
+function pickCond() {
+  for (var i = 0; i < PRIORITY.length; i++) {
+    if (selected[PRIORITY[i]]) return PRIORITY[i];
+  }
+  return null;
+}
+
+document.getElementById('goBtn').addEventListener('click', function() {
+  var main = pickCond();
+  if (!main) { alert('コンディションを1つ以上選んでください'); return; }
+  var season = document.getElementById('season').value;
+  var timing = document.getElementById('timing').value;
+  var d = DB[main];
+  var names = Object.keys(selected).map(function(k) { return COND_NAME[k]; }).join('・');
+
+  document.getElementById('resultTitle').textContent = '今日のおすすめ（' + names + '）';
+
+  var tips = [];
+  tips.push(d.tip);
+  if (season === 'winter' && main !== 'dry') tips.push('冬はどのコンディションでも乾燥が底上げされます。仕上げのクリームだけは保湿強めがおすすめ。');
+  if (season === 'summer') tips.push('夏は軽いテクスチャ中心に。パックは冷蔵庫で冷やすと気持ちいいです（凍らせない）。');
+  if (selected.yuragi && (selected.pore || selected.special)) tips.push('ゆらぎが選ばれているので、今日はレチノール系・3ステップ系の攻めケアはお休みにしています。');
+  if (timing === 'morning') tips.push('朝はパックなら短時間タイプ（スキンパック系）が現実的。最後は日焼け止めまで。手持ち候補：VT SKINPACK luminous');
+
+  document.getElementById('tips').innerHTML = tips.map(function(t) {
+    return '<div class="tip">💡 ' + t + '</div>';
+  }).join('');
+
+  var cats = [
+    ['化粧水', d.lotion], ['美容液', d.serum], ['シートパック', d.pack], ['クリーム', d.cream]
+  ];
+  document.getElementById('recs').innerHTML = cats.map(function(pair) {
+    var r = pair[1];
+    return '<div class="rec"><div class="cat">' + pair[0] + '</div>' +
+      '<div class="type">' + r.type + '</div>' +
+      '<div class="why">' + r.why + '</div>' +
+      (r.own ? '<div class="own">' + r.own + '</div>' : '') + '</div>';
+  }).join('');
+
+  document.getElementById('resultCard').className = 'card';
+  document.getElementById('shareText').className = 'hidden';
+  document.getElementById('copyBtn').className = 'sub hidden';
+  window.scrollTo(0, document.getElementById('resultCard').offsetTop - 10);
+  lastResult = { names: names, d: d, timing: timing };
+});
+
+var lastResult = null;
+document.getElementById('shareBtn').addEventListener('click', function() {
+  if (!lastResult) return;
+  var d = lastResult.d;
+  var text = '今日のお肌ケア診断。\nコンディション：' + lastResult.names + '\n' +
+    '化粧水は「' + d.lotion.type + '」、パックは「' + d.pack.type + '」を選びました。\n' +
+    'コンディションで使い分けるのが、僕のやり方です。\n#メンズ美容 #スキンケア #シートパック #美容 #使い分け';
+  var box = document.getElementById('shareText');
+  box.textContent = text;
+  box.className = '';
+  var cb = document.getElementById('copyBtn');
+  cb.className = 'sub';
+  cb.style.marginTop = '8px';
+});
+document.getElementById('copyBtn').addEventListener('click', function() {
+  var t = document.getElementById('shareText').textContent;
+  if (navigator.clipboard) navigator.clipboard.writeText(t).then(function() { alert('コピーしました'); });
+});
+
+// 季節の初期値を今の月から選ぶ
+(function() {
+  var m = new Date().getMonth() + 1;
+  var s = (m === 12 || m <= 2) ? 'winter' : (m <= 5 ? 'spring' : (m <= 8 ? 'summer' : 'autumn'));
+  document.getElementById('season').value = s;
+})();
+</script>
+</body>
+</html>
